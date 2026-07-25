@@ -155,6 +155,34 @@ Next Room
 
 ---
 
+# Phase 4.5 — HUD: Special-Item Slots
+
+> Added post-Phase-4 (2026-07-25). An increment on the shipped HUD, not part of the
+> original 7-phase plan. Built on its own feature branch with a draft PR kept open for
+> team review; every iteration ends on a playable build.
+
+Goal
+
+Revise the bottom HUD bar so the right region shows the two special-item slots (🔺/⭕)
+instead of the Bag pool, per Flavio's updated wireframe.
+
+Tasks
+
+- Spec 009 (HUD: Special-Item Slots)
+- Replace the bottom-right bag-pool region with two special slots (Triangle, Circle)
+- Empty/glowing slots with button glyphs (presentation only — no gameplay logic)
+
+Deliverable
+
+✓ Bottom bar: hearts (left), held item (center), two special slots (right)
+✓ Spec 008 behavior intact (hearts, held item)
+✓ Build stays playable
+
+Note: the special-item *gameplay* system (equipping, cooldowns, effects) is a separate
+future step — this phase is HUD display only.
+
+---
+
 # Phase 5 — Ship
 
 Goal
