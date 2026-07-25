@@ -33,7 +33,7 @@ None — all resolved as of 2026-07-25.
 
 - Player death just reloads the scene (fine for jam; revisit for a real game-over in Phase 4/5).
 - Kick targets enemies via group iteration (O(n)); fine for jam room sizes.
-- Enemy visuals: freeze tint uses `modulate`, damage state uses Polygon2D `color` — replace when real sprites land.
+- ~~Enemy visuals mixed Polygon2D `color` and `modulate`~~ — resolved 2026-07-25: all feedback (flash, damage tint, freeze) is `modulate`-based and `Body` is typed as Node2D, so swapping graybox for Sprite2D/AnimatedSprite2D in Phase 4 requires zero code changes (keep the node named "Body").
 
 ## Architecture Decisions
 

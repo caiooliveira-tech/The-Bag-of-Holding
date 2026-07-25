@@ -22,7 +22,10 @@ var _freeze_timer: float = 0.0
 
 @onready var _facing_pivot: Node2D = $FacingPivot
 @onready var _facing_marker: Marker2D = $FacingPivot/FacingMarker
-@onready var _body_visual: Polygon2D = $Body
+# Typed loosely on purpose: any Node2D visual (Polygon2D graybox today,
+# AnimatedSprite2D in Phase 4) can be dropped in as "Body" with no code change.
+# All feedback goes through `modulate`, which every CanvasItem has.
+@onready var _body_visual: Node2D = $Body
 
 
 func _ready() -> void:

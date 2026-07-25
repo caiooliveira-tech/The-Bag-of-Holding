@@ -12,13 +12,16 @@ var _player: Player
 var _attack_timer: float = 0.0
 var _freeze_timer: float = 0.0
 
-@onready var _body_visual: Polygon2D = $Body
+# Typed loosely on purpose: any Node2D visual (Polygon2D graybox today,
+# AnimatedSprite2D in Phase 4) can be dropped in as "Body" with no code change.
+# All feedback goes through `modulate`, which every CanvasItem has.
+@onready var _body_visual: Node2D = $Body
 
 
 func _ready() -> void:
 	add_to_group("enemies")
 	hits_remaining = stats.max_hits
-	_body_visual.color = _base_color()
+	_body_visual.modulate = _damage_tint()
 
 
 func _physics_process(delta: float) -> void:
@@ -74,13 +77,15 @@ func _attack() -> void:
 	tween.tween_property(_body_visual, "scale", Vector2.ONE, 0.15)
 
 
-## Darker/more saturated red as the enemy nears its last hit (art-direction.md).
-func _base_color() -> Color:
+## Darker/more saturated as the enemy nears its last hit (art-direction.md).
+## A `modulate` multiplier, so it works the same on graybox and future sprites.
+func _damage_tint() -> Color:
 	var damage_fraction := 1.0 - float(hits_remaining) / float(stats.max_hits)
-	return Color(0.85, 0.3, 0.3).lerp(Color(0.45, 0.03, 0.03), damage_fraction)
+	return Color.WHITE.lerp(Color(0.55, 0.08, 0.08), damage_fraction)
 
 
 func _flash_damage() -> void:
-	_body_visual.color = Color.WHITE
+	# Overbright modulate reads as a white-hot flash even on saturated colors.
+	_body_visual.modulate = Color(3.0, 3.0, 3.0)
 	var tween := create_tween()
-	tween.tween_property(_body_visual, "color", _base_color(), 0.2)
+	tween.tween_property(_body_visual, "modulate", _damage_tint(), 0.2)
