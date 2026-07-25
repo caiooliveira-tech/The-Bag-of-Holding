@@ -196,3 +196,48 @@ Specs 007 + 008 (written first, then coded): room state machine, doors, transiti
 ### References
 
 - Specs 007/008; PROJECT-CONTEXT §3 (loop) e §6 (HUD rules); game-architecture.md (Room states, UI rule).
+
+---
+
+## Session 2026-07-26 — Phase 4.5 (Spec 009: HUD trim + art-ready hooks)
+
+### Feature
+
+Spec 009 MVP scope on branch `feature/hud-special-slots`: HUD trimmed to hearts + held-item box (moved right), bag-pool region removed, art-ready texture hooks with graybox fallback. First session on the Fable model.
+
+### What was implemented
+
+- `ui/hud.tscn`: PoolBox deleted; HeldSlot re-anchored from center (anchors 0.5) to the right edge (anchors 1.0, offsets −240/−20 — mirrors the hearts' 20 px left margin). Added hidden texture twins: `BarBgTex` + `SlotFrameTex` (NinePatchRect) and a `Tex` TextureRect inside each heart.
+- `ui/hud.gd`: pool code removed (`_build_pool_slots`, `_make_icon`, `POOL_SLOT_BG`); new `_apply_art()` shows any texture assigned in the editor and hides its graybox stand-in; hearts driven by exported `heart_texture` + `heart_empty_tint`.
+
+### Why this architecture?
+
+- **Graybox fallback via node twins, not code branches per element:** the scene holds both representations; code only toggles visibility once in `_ready()`. Same idiom the held slot already used (`HeldIcon` ColorRect vs `HeldIconTex` TextureRect), so the codebase stays consistent.
+- **Editor-first art swap:** Design drops PNGs onto `BarBgTex`/`SlotFrameTex` or the `heart_texture` export — zero code edits (ADR-001 means art must come from the team, so the code side has to be ready before the assets exist).
+- **NinePatchRect for bar/frame:** stretches without distorting borders, and margins are tweakable in the Inspector per-texture.
+
+### Alternatives considered
+
+- Exported textures for *everything* on the HUD root: one-stop Inspector panel, but NinePatch margins would then be tuned blind (texture applied only at runtime). Assigning directly on the visible nodes keeps editor preview honest; only the heart texture is a root export because it fans out to 5 nodes.
+- Replacing ColorRects with TextureRects outright: loses the graybox fallback the jam still needs.
+
+### Godot concepts learned
+
+- Control anchors: `anchor_left/right = 1.0` + negative offsets pins a fixed-width box to a parent's right edge.
+- `NinePatchRect` vs `TextureRect`: 9-patch preserves corner/border pixels when stretching.
+- `TextureRect.expand_mode = 1` + `stretch_mode = 5` (keep aspect centered) for icon-in-box rendering.
+- `modulate` tinting a white sprite is the cheap full/empty state (no second texture needed).
+
+### Common mistakes
+
+- Forgetting to remove the `@onready` reference when deleting a scene node (`_pool_box`) — boots fine until the `$` lookup throws at runtime; headless `--quit-after` boot catches it.
+- Godot MCP `run_project` loses the child process in this environment (`get_debug_output` → "no active process"); verify with headless CLI runs instead.
+
+### Suggested exercises
+
+- Assign a temporary PNG to `BarBgTex` and watch `_apply_art()` hide the graybox; tweak the 9-patch margins in the Inspector.
+- Move the HeldSlot to bottom-center again using only anchors/offsets (no code) to internalize the anchor math.
+
+### References
+
+- Godot docs: Control anchors & offsets, NinePatchRect, TextureRect stretch modes.

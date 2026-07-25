@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-Phases 0–4 complete and merged to main. **Phase 5 (ship) intentionally on hold** — the team will rethink the roadmap first (menu scene and other new steps to be defined).
+Phases 0–4 complete and merged to main. **Phase 4.5 (HUD trim, Spec 009) in progress on branch `feature/hud-special-slots`** — draft PR #3 open for team review. **Phase 5 (ship) intentionally on hold** — the team will rethink the roadmap first (menu scene and other new steps to be defined).
 
 ## Current Spec
 
-None (Specs 001–008 all implemented)
+Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). MVP scope implemented on the branch; awaiting team review/playtest before merge.
 
 ## Completed
 
@@ -29,6 +29,7 @@ None (Specs 001–008 all implemented)
 
 ## In Progress
 
+- **Phase 4.5 / Spec 009 (branch `feature/hud-special-slots`, PR #3 draft):** team decided 2026-07-26 the 🔺/⭕ special slots are post-MVP; MVP HUD = hearts (left) + held-item box moved to the right (provisional layout). Implemented 2026-07-26: PoolBox bag-pool removed, HeldSlot re-anchored right, art-ready texture hooks (exported `heart_texture` + `heart_empty_tint`; `BarBgTex`/`SlotFrameTex` NinePatchRects) with graybox fallback. Smoke 21/21 PASS, main scene boots clean. Waiting on Design PNGs (heart icon, wooden bar, slot frame) and team review.
 - Art integration started in-editor (uncommitted): shoelace.png 4-direction spritesheet wired into an AnimatedSprite2D on player.tscn (hidden for now), concept jpegs replaced by transparent pngs.
 
 ## Next Spec

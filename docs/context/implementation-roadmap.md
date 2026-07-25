@@ -172,6 +172,8 @@ Tasks
 - Spec 009 (HUD: Special-Item Slots) — MVP scope + retained post-MVP design
 - Remove the bottom-right bag-pool region from hud.tscn / hud.gd
 - Keep hearts + held-item box (Spec 008 behavior intact)
+- Art-ready texture hooks (hearts / bar background / slot frame) with graybox fallback,
+  so Design's PNGs drop in via the editor with zero code changes
 
 Deliverable
 

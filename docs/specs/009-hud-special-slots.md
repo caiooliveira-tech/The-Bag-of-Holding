@@ -1,6 +1,7 @@
 # Spec 009 - HUD: Special-Item Slots
 
-**Status:** Draft (2026-07-25) · **MVP scope narrowed 2026-07-26 (see below)**
+**Status:** MVP scope implemented on `feature/hud-special-slots` (2026-07-26, PR #3);
+post-MVP sections remain Draft · MVP scope narrowed 2026-07-26
 
 **Supersedes:** the *bag-pool* region of Spec 008 (bottom-right). Hearts (left) are
 unchanged; the held-item box keeps its Spec 008 behavior but is repositioned (see MVP
@@ -42,8 +43,18 @@ work below moves to post-MVP.
   harmonically. This is a layout call only, **subject to change as we iterate**.
 - Net MVP HUD: **hearts (left) + held-item box (shifted right; see position note)**.
 - Presentation only: reacts to EventBus + group lookups; never calls gameplay methods.
-- The held-item box already supports art swap (Spec 008 `_make_icon`: `appearance`
-  texture else `graybox_color`), so dropping final item art in stays code-free.
+- **Art-ready texture hooks (graybox fallback):** every graybox element has a texture
+  twin that replaces it automatically when a texture is assigned in the editor — zero
+  code changes when art lands:
+  - Hearts: one exported `heart_texture` on the HUD root applies to all 5; lost hearts
+    dim via exported `heart_empty_tint`.
+  - Bar background: drop the wooden-slab texture on the `BarBgTex` NinePatchRect in
+    `hud.tscn` (9-patch margins tweakable in-editor).
+  - Held-slot frame: drop the frame texture on `SlotFrameTex` (NinePatchRect).
+  - Item pictures already flow from each item's `.tres` `appearance` (Spec 008).
+- **Assets needed from Design (Silas/Flavio), transparent PNGs:** heart icon (~28 px),
+  wooden bar background (9-patch-friendly), held-slot frame. Until then the graybox
+  stand-ins render.
 
 ### MVP Acceptance Criteria
 
@@ -53,6 +64,8 @@ work below moves to post-MVP.
   box fills on draw and clears on throw/detonation.
 - HUD contains no gameplay logic (EventBus + group lookup only).
 - Game still loads and a room is fully clearable (iteration stays playable).
+- Art-swap check: assigning a texture (heart export / BarBgTex / SlotFrameTex) in the
+  editor replaces the corresponding graybox with zero code edits.
 
 ---
 
