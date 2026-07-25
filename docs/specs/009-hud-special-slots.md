@@ -2,8 +2,9 @@
 
 **Status:** Draft (2026-07-25) · **MVP scope narrowed 2026-07-26 (see below)**
 
-**Supersedes:** the *bag-pool* region of Spec 008 (bottom-right). Hearts (left) and
-held-item (center) from Spec 008 are unchanged.
+**Supersedes:** the *bag-pool* region of Spec 008 (bottom-right). Hearts (left) are
+unchanged; the held-item box keeps its Spec 008 behavior but is repositioned (see MVP
+Scope → held-item box position).
 
 > **MVP decision (2026-07-26, team, in person):** the two special slots are **not** in
 > the MVP HUD. For the MVP the bottom bar is **hearts (left) + the held-item box** only
