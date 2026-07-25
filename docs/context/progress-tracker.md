@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-Phase 4 — implemented on branch `fase-4`, awaiting team playtest before merge to main
+Phases 0–4 complete and merged to main. **Phase 5 (ship) intentionally on hold** — the team will rethink the roadmap first (menu scene and other new steps to be defined).
 
 ## Current Spec
 
-None (Specs 001–008 all implemented; next up: Phase 5 ship — export + itch.io)
+None (Specs 001–008 all implemented)
 
 ## Completed
 
@@ -25,13 +25,15 @@ None (Specs 001–008 all implemented; next up: Phase 5 ship — export + itch.i
 - 2026-07-25 — Phase 3 playtested and merged to main.
 - 2026-07-25 — **Phase 4 implemented (branch `fase-4`):** Specs 007 (room flow) + 008 (HUD) written then coded. Room state machine (WAITING telegraph → COMBAT → CLEARED), Door (blocker→green passage), room_01 → room_02 (3 enemies) → win screen chain, health persistence via GameState, HUD (5 hearts + held-item slot, EventBus-only). Smoke test: 21 checks, SMOKE PASS.
 
+- 2026-07-25 — Phase 4 playtested (HUD aligned to Flavio's wireframe: hearts left, drawn-item picture center, bag pool right) and merged to main.
+
 ## In Progress
 
-- Team playtest of Phase 4 on branch `fase-4`
+- Art integration started in-editor (uncommitted): shoelace.png 4-direction spritesheet wired into an AnimatedSprite2D on player.tscn (hidden for now), concept jpegs replaced by transparent pngs.
 
 ## Next Spec
 
-Phase 5 — bugfix, balance, export presets, itch.io upload (jam deadline: July 26)
+Roadmap revision (team): add menu scene and other new steps, then decide when Phase 5 (export/itch.io) happens.
 
 ## Open Questions
 
