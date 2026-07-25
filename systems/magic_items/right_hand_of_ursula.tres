@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MagicItemResource" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://systems/magic_items/magic_item_resource.gd" id="1"]
+[ext_resource type="Script" path="res://systems/magic_items/effects/freeze_area_effect.gd" id="2"]
+
+[sub_resource type="Resource" id="ursula_effect"]
+script = ExtResource("2")
+radius_tiles = 1.0
+freeze_duration_seconds = 5.0
+
+[resource]
+script = ExtResource("1")
+id = &"right_hand_of_ursula"
+display_name = "The Right Hand of Ursula"
+graybox_color = Color(0.55, 0.85, 1, 1)
+activation_time_seconds = 4.0
+effect = SubResource("ursula_effect")

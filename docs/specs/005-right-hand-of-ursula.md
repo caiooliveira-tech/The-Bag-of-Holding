@@ -1,6 +1,6 @@
 # Spec 005 - The Right Hand of Ursula
 
-**Status:** Not Started
+**Status:** Implemented (2026-07-25)
 
 ## Goal
 

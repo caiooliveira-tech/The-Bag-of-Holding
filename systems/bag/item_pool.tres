@@ -1,9 +1,10 @@
-[gd_resource type="Resource" script_class="ItemPoolResource" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="ItemPoolResource" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://systems/bag/item_pool_resource.gd" id="1"]
 [ext_resource type="Script" path="res://systems/magic_items/magic_item_resource.gd" id="2"]
 [ext_resource type="Resource" path="res://systems/magic_items/fire_orb.tres" id="3"]
+[ext_resource type="Resource" path="res://systems/magic_items/right_hand_of_ursula.tres" id="4"]
 
 [resource]
 script = ExtResource("1")
-items = Array[ExtResource("2")]([ExtResource("3")])
+items = Array[ExtResource("2")]([ExtResource("3"), ExtResource("4")])

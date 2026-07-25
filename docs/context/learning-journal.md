@@ -117,3 +117,40 @@ Specs 002 + 003 + 004: the game's core mechanic, end to end.
 ### References
 
 - Spec 002/003/004; PROJECT-CONTEXT §3–4; pillar 1 (countdown pressure) and 4 (friendly fire).
+
+---
+
+## Session 2026-07-25 (Phase 3) — Right Hand of Ursula
+
+### Feature
+
+Spec 005: the second MVP item, and with it the proof that the item framework extends without base-class edits.
+
+### What was implemented
+
+- `FreezeAreaEffect` (new MagicItemEffect subclass) + `right_hand_of_ursula.tres` (4 s activation, 1-tile radius, 5 s movement-only freeze) + both items in `item_pool.tres`.
+- `effect_flash.gd`: transient fading circle for instant effects (no class_name; preloaded by path).
+- Player freeze tint (blue modulate while frozen, restored on thaw) mirroring the enemy's.
+- Smoke test: per-section injected pools (a 2-item random pool would make tests flaky) and 8 new freeze checks — 19 total.
+
+### Why this architecture?
+
+Adding Ursula touched **zero** existing classes: one subclass, one .tres, one pool entry. That was Spec 003's acceptance criterion, now demonstrated. Freeze override semantics (new freeze replaces the running timer) came out of the test design, not the spec — worth remembering that writing tests surfaces unspecified behavior.
+
+### Godot concepts learned
+
+- A tween needs the node inside the tree (`create_tween()` uses `get_tree()`), so transient visuals start their fade in a post-`add_child()` setup call.
+- Scripts without `class_name` are still perfectly usable via `preload()` by path — and they sidestep the global class cache entirely.
+- Typed arrays built in code (`var a: Array[X] = [...]`) assign cleanly to typed `@export` properties.
+
+### Common mistakes
+
+- A test prop (the second drawn item) landed near the frozen enemy and re-froze it, failing the unfreeze check — test *setups* can create the interference they're testing against. Fixed by moving the enemy clear before the second trigger; frozen position doesn't affect the timer being measured.
+
+### Suggested exercises
+
+- Author `left_hand_of_ursula.tres` conceptually: what would a KnockbackEffect subclass need that FreezeAreaEffect doesn't? (Answer: a direction per target — from item to target.)
+
+### References
+
+- Spec 005; PROJECT-CONTEXT §4 (freeze semantics); pillar 3 (improvisation — two items, two strategies).

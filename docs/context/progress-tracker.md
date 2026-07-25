@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-Phase 2 — implemented on branch `fase-2`, awaiting team playtest before merge to main
+Phase 3 — implemented on branch `fase-3`, awaiting team playtest before merge to main
 
 ## Current Spec
 
-None (Specs 002/003/004 implemented; Spec 005 next, Phase 3)
+None (Specs 001–006 all implemented; next up: Phase 4 content integration)
 
 ## Completed
 
@@ -19,13 +19,16 @@ None (Specs 002/003/004 implemented; Spec 005 next, Phase 3)
 
 - 2026-07-25 — **Phase 2 implemented (branch `fase-2`):** Spec 002 Bag (pool, random draw, held/throw, signals), Spec 003 Magic Item Framework (MagicItemResource + polymorphic MagicItemEffect resources, state-independent countdown, escalating blink 2→10 Hz), Spec 004 Fire Orb (3s, 1-tile radius, 1s linger capped at 1 hit/target via DamageLingerZone). Kick now also redirects thrown/landed items +5 tiles. Automated smoke test (tests/) passes 11/11 checks.
 
+- 2026-07-25 — Phase 2 playtested and merged to main.
+- 2026-07-25 — **Phase 3 implemented (branch `fase-3`):** Spec 005 Right Hand of Ursula (FreezeAreaEffect subclass + .tres — zero base-class changes, proving the framework), player freeze tint, freeze flash visual, pool now holds both MVP items. Smoke test extended to 19 checks (deterministic per-section pools), SMOKE PASS.
+
 ## In Progress
 
-- Team playtest of Phase 2 on branch `fase-2`
+- Team playtest of Phase 3 on branch `fase-3`
 
 ## Next Spec
 
-Spec 005 — Right Hand of Ursula (Phase 3)
+Phase 4 — room transitions, doors, HUD (no spec yet; write specs before coding)
 
 ## Open Questions
 
@@ -49,6 +52,6 @@ See learning-journal.md — session 2026-07-25 covers autoloads, Resources as tu
 
 ## Resume Notes
 
-- Branch `fase-2`: X/J draws the Fire Orb (blinking orange circle overhead, faster as it nears 3s), X/J again throws 2 tiles along facing, C/K kicks a landed item +5 tiles (or hits enemies if no item in reach). Explosion damages player too — friendly fire is live.
-- Smoke test: `Godot.exe --path . res://tests/smoke_test.tscn` prints SMOKE PASS/FAIL.
-- After playtest approval: merge `fase-2` → main, branch `fase-3`, implement Spec 005.
+- Branch `fase-3`: the draw is now a real 50/50 — orange circle = Fire Orb (3s, explosion), light-blue circle = Right Hand of Ursula (4s, 5s movement-only freeze, blue tint on frozen characters, including the player).
+- Smoke test: `Godot.exe --path . res://tests/smoke_test.tscn` prints SMOKE PASS/FAIL (19 checks).
+- After playtest approval: merge `fase-3` → main, branch `fase-4`, write Phase 4 specs (room/door/HUD) before coding.

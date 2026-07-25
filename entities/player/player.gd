@@ -36,7 +36,10 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_dash_cooldown_timer = maxf(_dash_cooldown_timer - delta, 0.0)
+	var was_frozen := is_frozen()
 	_freeze_timer = maxf(_freeze_timer - delta, 0.0)
+	if was_frozen and not is_frozen():
+		modulate = Color.WHITE
 	if _state == State.DASH:
 		_tick_dash(delta)
 	else:
@@ -62,6 +65,7 @@ func is_frozen() -> bool:
 ## Movement-lock only (team decision 2026-07-25): a frozen player still acts.
 func freeze(duration: float) -> void:
 	_freeze_timer = duration
+	modulate = Color(0.55, 0.8, 1.0)
 
 
 ## World position items are thrown/kicked from (ahead of the player, facing-side).
