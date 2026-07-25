@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://systems/magic_items/magic_item.gd" id="1"]
+
+[node name="MagicItem" type="Node2D"]
+script = ExtResource("1")

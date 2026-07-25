@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://systems/bag/bag.gd" id="1"]
+[ext_resource type="Resource" path="res://systems/bag/item_pool.tres" id="2"]
+
+[node name="Bag" type="Node2D"]
+script = ExtResource("1")
+pool = ExtResource("2")
+
+[node name="AttachPoint" type="Marker2D" parent="."]
+position = Vector2(0, -26)

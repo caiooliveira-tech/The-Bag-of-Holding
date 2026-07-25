@@ -1,6 +1,6 @@
 # Spec 002 - Bag System
 
-**Status:** Not Started
+**Status:** Implemented (2026-07-25)
 
 ## Goal
 

@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-Phase 2 — Core Game Mechanic (Bag / Magic Items)
+Phase 2 — implemented on branch `fase-2`, awaiting team playtest before merge to main
 
 ## Current Spec
 
-Spec 002 — Bag System
+None (Specs 002/003/004 implemented; Spec 005 next, Phase 3)
 
 ## Completed
 
@@ -17,13 +17,15 @@ Spec 002 — Bag System
 - 2026-07-25 — **Spec 006 (Basic Enemy) written + implemented:** proximity detection (5 tiles), chase, melee attack on cooldown, discrete hits with white-flash + darkening tint, freeze support, EnemyStats.tres.
 - 2026-07-25 — Graybox room_01 (20x11.25 tiles, 2x zoom camera) set as main scene. **Phase 1 deliverable met:** player enters room, enemy chases/attacks, enemy dies (2 kicks).
 
+- 2026-07-25 — **Phase 2 implemented (branch `fase-2`):** Spec 002 Bag (pool, random draw, held/throw, signals), Spec 003 Magic Item Framework (MagicItemResource + polymorphic MagicItemEffect resources, state-independent countdown, escalating blink 2→10 Hz), Spec 004 Fire Orb (3s, 1-tile radius, 1s linger capped at 1 hit/target via DamageLingerZone). Kick now also redirects thrown/landed items +5 tiles. Automated smoke test (tests/) passes 11/11 checks.
+
 ## In Progress
 
-- Phase 2: Spec 002 (Bag) → Spec 003 (Magic Item Framework) → Spec 004 (Fire Orb)
+- Team playtest of Phase 2 on branch `fase-2`
 
 ## Next Spec
 
-Spec 002 — Bag System
+Spec 005 — Right Hand of Ursula (Phase 3)
 
 ## Open Questions
 
@@ -47,5 +49,6 @@ See learning-journal.md — session 2026-07-25 covers autoloads, Resources as tu
 
 ## Resume Notes
 
-- Playable now: WASD/arrows move, Space/Shift dash, C/K kick (kills the enemy in 2 hits), X/J attack (emits signal; Bag lands in Spec 002).
-- Next: Spec 002 Bag System — pool, random draw, held-follows-player, throw 2 tiles, countdown from draw.
+- Branch `fase-2`: X/J draws the Fire Orb (blinking orange circle overhead, faster as it nears 3s), X/J again throws 2 tiles along facing, C/K kicks a landed item +5 tiles (or hits enemies if no item in reach). Explosion damages player too — friendly fire is live.
+- Smoke test: `Godot.exe --path . res://tests/smoke_test.tscn` prints SMOKE PASS/FAIL.
+- After playtest approval: merge `fase-2` → main, branch `fase-3`, implement Spec 005.

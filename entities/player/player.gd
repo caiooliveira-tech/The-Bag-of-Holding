@@ -26,6 +26,7 @@ var _freeze_timer: float = 0.0
 # AnimatedSprite2D in Phase 4) can be dropped in as "Body" with no code change.
 # All feedback goes through `modulate`, which every CanvasItem has.
 @onready var _body_visual: Node2D = $Body
+@onready var _bag: Bag = $Bag
 
 
 func _ready() -> void:
@@ -44,6 +45,7 @@ func _physics_process(delta: float) -> void:
 	_facing_pivot.rotation = facing.angle()
 	if Input.is_action_just_pressed("attack"):
 		attack_pressed.emit()
+		_bag.draw_or_throw(facing)
 	if Input.is_action_just_pressed("special"):
 		special_pressed.emit()
 		_kick()
@@ -110,11 +112,17 @@ func _tick_dash(delta: float) -> void:
 		dash_ended.emit()
 
 
-## Apprentice Boot, damage half: 1 hit to enemies near the facing point.
-## (Item-redirect half comes with the Bag system, Spec 002+.)
+## Apprentice Boot: redirect a thrown/landed item 5 tiles further,
+## OR (if no item is in reach) 1 hit to enemies near the facing point.
 func _kick() -> void:
 	var kick_point := throw_origin()
 	var kick_range := GameState.tiles(stats.kick_range_tiles)
+	for node: Node in get_tree().get_nodes_in_group("magic_items"):
+		var item := node as MagicItem
+		if item != null and item.is_kickable() \
+				and item.global_position.distance_to(kick_point) <= kick_range:
+			item.kick(facing)
+			return
 	for node: Node in get_tree().get_nodes_in_group("enemies"):
 		var enemy := node as Enemy
 		if enemy != null and enemy.global_position.distance_to(kick_point) <= kick_range:

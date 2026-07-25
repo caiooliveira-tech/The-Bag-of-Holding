@@ -1,6 +1,6 @@
 # Spec 004 - Fire Orb
 
-**Status:** Not Started
+**Status:** Implemented (2026-07-25)
 
 ## Goal
 

@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://entities/player/player.gd" id="1"]
 [ext_resource type="Resource" path="res://entities/player/player_stats.tres" id="2"]
+[ext_resource type="PackedScene" path="res://systems/bag/bag.tscn" id="3"]
 
 [sub_resource type="CircleShape2D" id="body_shape"]
 radius = 12.0
@@ -38,3 +39,5 @@ monitoring = false
 
 [node name="HurtShape" type="CollisionShape2D" parent="Hurtbox"]
 shape = SubResource("hurt_shape")
+
+[node name="Bag" parent="." instance=ExtResource("3")]
