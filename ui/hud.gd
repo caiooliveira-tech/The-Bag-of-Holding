@@ -2,11 +2,15 @@
 ## health via group lookup, never calls gameplay methods.
 extends CanvasLayer
 
+const HEART_FULL := Color(0.9, 0.2, 0.3)
+const HEART_EMPTY := Color(0.14, 0.1, 0.12)
+const SLOT_EMPTY := Color(0.3, 0.28, 0.3, 0.5)
+
 var _player: Player
 
-@onready var _hearts: Array[Node] = $Hearts.get_children()
-@onready var _swatch: ColorRect = $HeldSlot/Swatch
-@onready var _item_name: Label = $HeldSlot/ItemName
+@onready var _hearts: Array[Node] = $Bar/Hearts.get_children()
+@onready var _slot_bg: ColorRect = $Bar/HeldSlot/SlotBg
+@onready var _item_name: Label = $Bar/HeldSlot/ItemName
 
 
 func _ready() -> void:
@@ -24,12 +28,11 @@ func _refresh_hearts() -> void:
 	if _player == null:
 		return
 	for i in _hearts.size():
-		var full := i < _player.health
-		(_hearts[i] as CanvasItem).modulate = Color.WHITE if full else Color(1, 1, 1, 0.15)
+		(_hearts[i] as ColorRect).color = HEART_FULL if i < _player.health else HEART_EMPTY
 
 
 func _clear_held() -> void:
-	_swatch.visible = false
+	_slot_bg.color = SLOT_EMPTY
 	_item_name.text = ""
 
 
@@ -38,8 +41,7 @@ func _on_player_damaged(_amount: int, _source: Node) -> void:
 
 
 func _on_item_drawn(item_data: MagicItemResource) -> void:
-	_swatch.visible = true
-	_swatch.color = item_data.graybox_color
+	_slot_bg.color = item_data.graybox_color
 	_item_name.text = item_data.display_name
 
 
