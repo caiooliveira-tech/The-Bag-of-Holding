@@ -1,0 +1,73 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/enemy.gd" id="1"]
+[ext_resource type="Resource" path="res://entities/enemies/melee_grunt.tres" id="2"]
+[ext_resource type="Texture2D" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="3"]
+
+[sub_resource type="CircleShape2D" id="body_shape"]
+radius = 12.0
+
+[sub_resource type="AtlasTexture" id="atlas_front"]
+atlas = ExtResource("3")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="atlas_back"]
+atlas = ExtResource("3")
+region = Rect2(128, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="atlas_right"]
+atlas = ExtResource("3")
+region = Rect2(128, 64, 32, 32)
+
+[sub_resource type="AtlasTexture" id="atlas_left"]
+atlas = ExtResource("3")
+region = Rect2(128, 96, 32, 32)
+
+[sub_resource type="SpriteFrames" id="frames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("atlas_back")
+}],
+"loop": 1,
+"name": &"walk_back",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("atlas_front")
+}],
+"loop": 1,
+"name": &"walk_front",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("atlas_left")
+}],
+"loop": 1,
+"name": &"walk_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("atlas_right")
+}],
+"loop": 1,
+"name": &"walk_right",
+"speed": 5.0
+}]
+
+[node name="Enemy2" type="CharacterBody2D"]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1")
+stats = ExtResource("2")
+
+[node name="Body" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+sprite_frames = SubResource("frames")
+animation = &"walk_front"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("body_shape")

@@ -21,7 +21,9 @@ var state: State = State.HELD
 
 var _elapsed: float = 0.0
 var _triggered: bool = false
-var _visual: Polygon2D
+# Sprite2D when the resource has an appearance texture, Polygon2D graybox
+# otherwise — the blink only needs `modulate`, so CanvasItem covers both.
+var _visual: CanvasItem
 
 
 func setup(item_data: MagicItemResource) -> void:
@@ -108,10 +110,17 @@ func _update_blink() -> void:
 
 
 func _build_graybox_visual() -> void:
-	_visual = Polygon2D.new()
-	var points := PackedVector2Array()
-	for i in 12:
-		points.append(Vector2.from_angle(TAU * i / 12.0) * GRAYBOX_RADIUS_PX)
-	_visual.polygon = points
-	_visual.color = data.graybox_color
+	if data.appearance != null:
+		var sprite := Sprite2D.new()
+		sprite.texture = data.appearance
+		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+		_visual = sprite
+	else:
+		var polygon := Polygon2D.new()
+		var points := PackedVector2Array()
+		for i in 12:
+			points.append(Vector2.from_angle(TAU * i / 12.0) * GRAYBOX_RADIUS_PX)
+		polygon.polygon = points
+		polygon.color = data.graybox_color
+		_visual = polygon
 	add_child(_visual)
