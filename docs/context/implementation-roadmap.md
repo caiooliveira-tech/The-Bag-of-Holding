@@ -163,8 +163,9 @@ Next Room
 
 Goal
 
-Trim the bottom HUD bar to hearts (left) + held-item box (center) for the MVP — drop the
-bag-pool region. The two special-item slots (🔺/⭕) are deferred to post-MVP.
+Trim the bottom HUD bar to hearts (left) + the held-item box for the MVP — drop the
+bag-pool region and shift the item box right to balance the bar (provisional layout).
+The two special-item slots (🔺/⭕) are deferred to post-MVP.
 
 Tasks
 
@@ -174,7 +175,7 @@ Tasks
 
 Deliverable
 
-✓ Bottom bar: hearts (left), held-item box (center); no right-side region
+✓ Bottom bar: hearts (left), held-item box (shifted right); no right-side region
 ✓ Spec 008 behavior intact (hearts, held item)
 ✓ Build stays playable
 

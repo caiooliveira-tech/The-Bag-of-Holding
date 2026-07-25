@@ -6,14 +6,14 @@
 held-item (center) from Spec 008 are unchanged.
 
 > **MVP decision (2026-07-26, team, in person):** the two special slots are **not** in
-> the MVP HUD. For the MVP the bottom bar is **hearts (left) + held-item box (center)**
-> only — no right-side region. The Spec 008 bag pool is dropped and no special slots are
-> added yet. The special-slot design in this spec is retained as the **post-MVP** target.
+> the MVP HUD. For the MVP the bottom bar is **hearts (left) + the held-item box** only
+> — no right-side region. The Spec 008 bag pool is dropped and no special slots are added
+> yet. The special-slot design in this spec is retained as the **post-MVP** target.
 
 ## Goal
 
-- **MVP (this branch):** trim the bottom HUD bar to hearts (left) + held-item box
-  (center); retire the Spec 008 bag-pool region on the right. No special slots.
+- **MVP (this branch):** trim the bottom HUD bar to hearts (left) + the held-item box;
+  retire the Spec 008 bag-pool region on the right. No special slots.
 - **Post-MVP:** the right region gains two special-item slots (🔺/⭕ equip buttons from
   the design doc).
 
@@ -31,17 +31,23 @@ work below moves to post-MVP.
 ## MVP Scope (this branch)
 
 - Keep the single bottom bar; central play area stays clean (Brawl Stars / Bomberman
-  rule). Hearts (bottom-left) and held-item (bottom-center) behave exactly as Spec 008.
+  rule). Hearts (bottom-left) and the held-item box behave exactly as Spec 008 (the
+  box's *position* changes — see below).
 - **Remove the bottom-right region:** drop the `PoolBox` bag-pool display from
   `hud.tscn` / `hud.gd`. The right side is empty for the MVP.
-- Net MVP HUD: **hearts (left) + held-item box (center)**.
+- **Held-item box position (provisional):** with the right-side region gone, move the
+  held-item box toward the **right** of the bar rather than leaving it dead-center, so
+  the two remaining elements — hearts far-left, item box on the right — fill the bar more
+  harmonically. This is a layout call only, **subject to change as we iterate**.
+- Net MVP HUD: **hearts (left) + held-item box (shifted right; see position note)**.
 - Presentation only: reacts to EventBus + group lookups; never calls gameplay methods.
 - The held-item box already supports art swap (Spec 008 `_make_icon`: `appearance`
   texture else `graybox_color`), so dropping final item art in stays code-free.
 
 ### MVP Acceptance Criteria
 
-- Bottom bar shows hearts (left) + held-item box (center); no bag pool, no special slots.
+- Bottom bar shows hearts (left) + the held-item box (shifted right per the position
+  note); no bag pool, no special slots.
 - Spec 008 behavior intact: hearts dim on damage and persist across rooms; the held-item
   box fills on draw and clears on throw/detonation.
 - HUD contains no gameplay logic (EventBus + group lookup only).
