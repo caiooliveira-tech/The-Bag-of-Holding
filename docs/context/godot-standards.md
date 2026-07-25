@@ -10,9 +10,11 @@
 
 # Coding Principles
 
-- Static typing everywhere
+- Static typing everywhere (`var health: int = 100`, typed function signatures)
 - Composition over inheritance
 - One responsibility per script
+- Comment why, not what
+- Avoid magic numbers — prefer Resources and exported variables
 
 ---
 
@@ -42,11 +44,22 @@ snake_case.tres
 
 Signals
 
-snake_case
+snake_case (past-tense events, e.g. `health_depleted`)
 
 Methods
 
 snake_case()
+
+Classes and node names
+
+PascalCase (`class_name Player`)
+
+---
+
+# Folder Organization
+
+Organize by feature, not by node type — a system's scene, script, and resources
+live together (see `game-architecture.md#folder-structure`).
 
 ---
 
@@ -76,11 +89,27 @@ Avoid signal chains longer than two hops.
 
 ---
 
+# Autoloads
+
+Treat autoloads as a last resort; default to passing dependencies explicitly.
+
+Reserve them for true cross-scene systems (GameState, EventBus).
+
+---
+
 # State Machines
 
 Required for complex gameplay.
 
 Avoid boolean explosions.
+
+---
+
+# Spec-Driven Workflow
+
+Every feature has a spec under docs/specs/ before implementation.
+
+Reference the spec ID (e.g. `Spec 001`) in commit messages and PR titles.
 
 ---
 

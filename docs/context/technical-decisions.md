@@ -2,6 +2,18 @@
 
 Document long-term technical constraints and conventions here.
 
+## Engine & Runtime
+
+- **Engine:** Godot 4.7 (per `project.godot` feature tag; running 4.7.1 stable).
+- **Scripting language:** GDScript (no Mono/C# build present — do not introduce
+  C# without an explicit decision here).
+- **Rendering method:** Forward+.
+- **3D physics engine:** Jolt Physics.
+- **Windows rendering driver:** Direct3D 12.
+
+These are already encoded in `project.godot`; they're recorded here so the
+reasoning/constraint is visible without having to diff the engine config.
+
 ## Decided 2026-07-25
 
 - **Aiming/facing:** movement-direction-based (Zelda/gamepad-style). Facing = last non-zero movement direction; no mouse aiming. Determines throw and kick direction.
@@ -10,3 +22,12 @@ Document long-term technical constraints and conventions here.
 - **Fire Orb linger:** the 1-second post-trigger damage area deals at most 1 hit total per target — no repeated ticks.
 - **Freeze (Right Hand of Ursula):** movement-lock only. Frozen characters can still attack and be attacked.
 - **Docs format:** all documentation lives as Markdown (.md) in the repo — no .docx. Word drafts were converted to .md on 2026-07-25.
+- **Controller/gamepad support:** yes — the input map ships keyboard + gamepad bindings for every action (left stick, Cross/dash, Square/attack, Circle/special).
+
+## Pending Decisions
+
+Not yet decided — flag before assuming an answer in a spec:
+
+- Target platforms / export presets (Phase 5, currently on hold).
+- Localization strategy.
+- Multiplayer/networking (assume single-player until decided otherwise).
