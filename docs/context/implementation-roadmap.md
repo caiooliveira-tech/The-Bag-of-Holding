@@ -155,31 +155,31 @@ Next Room
 
 ---
 
-# Phase 4.5 — HUD: Special-Item Slots
+# Phase 4.5 — HUD: trim to hearts + held item (special slots → post-MVP)
 
-> Added post-Phase-4 (2026-07-25). An increment on the shipped HUD, not part of the
-> original 7-phase plan. Built on its own feature branch with a draft PR kept open for
-> team review; every iteration ends on a playable build.
+> Added post-Phase-4 (2026-07-25); MVP scope narrowed 2026-07-26 (team). An increment on
+> the shipped HUD, not part of the original 7-phase plan. Built on its own feature branch
+> with a draft PR kept open for team review; every iteration ends on a playable build.
 
 Goal
 
-Revise the bottom HUD bar so the right region shows the two special-item slots (🔺/⭕)
-instead of the Bag pool, per Flavio's updated wireframe.
+Trim the bottom HUD bar to hearts (left) + held-item box (center) for the MVP — drop the
+bag-pool region. The two special-item slots (🔺/⭕) are deferred to post-MVP.
 
 Tasks
 
-- Spec 009 (HUD: Special-Item Slots)
-- Replace the bottom-right bag-pool region with two special slots (Triangle, Circle)
-- Empty/glowing slots with button glyphs (presentation only — no gameplay logic)
+- Spec 009 (HUD: Special-Item Slots) — MVP scope + retained post-MVP design
+- Remove the bottom-right bag-pool region from hud.tscn / hud.gd
+- Keep hearts + held-item box (Spec 008 behavior intact)
 
 Deliverable
 
-✓ Bottom bar: hearts (left), held item (center), two special slots (right)
+✓ Bottom bar: hearts (left), held-item box (center); no right-side region
 ✓ Spec 008 behavior intact (hearts, held item)
 ✓ Build stays playable
 
-Note: the special-item *gameplay* system (equipping, cooldowns, effects) is a separate
-future step — this phase is HUD display only.
+Post-MVP (not this phase): the two special-item slots + the special-item gameplay system
+(equipping, cooldowns, effects).
 
 ---
 
