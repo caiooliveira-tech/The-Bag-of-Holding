@@ -26,6 +26,8 @@ var _freeze_timer: float = 0.0
 # AnimatedSprite2D in Phase 4) can be dropped in as "Body" with no code change.
 # All feedback goes through `modulate`, which every CanvasItem has.
 @onready var _body_visual: Node2D = $Body
+# Null when Body is still a graybox polygon; guarded in _update_animation().
+@onready var _body_sprite: AnimatedSprite2D = $Body as AnimatedSprite2D
 @onready var _bag: Bag = $Bag
 
 
@@ -47,6 +49,7 @@ func _physics_process(delta: float) -> void:
 		_tick_move()
 	move_and_slide()
 	_facing_pivot.rotation = facing.angle()
+	_update_animation()
 	if Input.is_action_just_pressed("attack"):
 		attack_pressed.emit()
 		_bag.draw_or_throw(facing)
@@ -137,6 +140,23 @@ func _kick() -> void:
 
 func _snap_to_8(direction: Vector2) -> Vector2:
 	return Vector2.from_angle(snappedf(direction.angle(), PI / 4.0))
+
+
+## Maps the 8-way facing onto the 4 directional animations (horizontal wins
+## on diagonals). Walking plays the loop; standing still holds the idle pose.
+func _update_animation() -> void:
+	if _body_sprite == null:
+		return
+	var anim: StringName
+	if absf(facing.x) > absf(facing.y):
+		anim = &"walk_right" if facing.x > 0.0 else &"walk_left"
+	else:
+		anim = &"walk_front" if facing.y > 0.0 else &"walk_back"
+	if velocity != Vector2.ZERO and not is_frozen():
+		_body_sprite.play(anim)
+	else:
+		_body_sprite.animation = anim
+		_body_sprite.stop()
 
 
 func _flash_damage() -> void:

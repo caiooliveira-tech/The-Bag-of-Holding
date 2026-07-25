@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xjkirn3sklbr"
-path="res://.godot/imported/shoelace.png-a37153fbaae1c801a13cd4043403b35d.ctex"
+uid="uid://bdkoqbyg61r4o"
+path="res://.godot/imported/index.icon.png-96098a584bb713a61c1e8aa1df56a1bb.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://entities/player/shoelace.png"
-dest_files=["res://.godot/imported/shoelace.png-a37153fbaae1c801a13cd4043403b35d.ctex"]
+source_file="res://build/index.icon.png"
+dest_files=["res://.godot/imported/index.icon.png-96098a584bb713a61c1e8aa1df56a1bb.ctex"]
 
 [params]
 
