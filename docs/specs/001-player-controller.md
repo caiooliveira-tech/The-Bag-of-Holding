@@ -1,6 +1,6 @@
 # Spec 001 - Player Controller
 
-**Status:** Not Started
+**Status:** Implemented (2026-07-25)
 
 ## Goal
 

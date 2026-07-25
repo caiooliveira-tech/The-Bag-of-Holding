@@ -1,0 +1,40 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://entities/player/player.gd" id="1"]
+[ext_resource type="Resource" path="res://entities/player/player_stats.tres" id="2"]
+
+[sub_resource type="CircleShape2D" id="body_shape"]
+radius = 12.0
+
+[sub_resource type="CircleShape2D" id="hurt_shape"]
+radius = 12.0
+
+[node name="Player" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1")
+stats = ExtResource("2")
+
+[node name="Body" type="Polygon2D" parent="."]
+color = Color(0.92, 0.92, 0.98, 1)
+polygon = PackedVector2Array(-12, -12, 12, -12, 12, 12, -12, 12)
+
+[node name="FacingPivot" type="Node2D" parent="."]
+
+[node name="FacingIndicator" type="Polygon2D" parent="FacingPivot"]
+color = Color(0.45, 0.75, 1, 1)
+polygon = PackedVector2Array(12, -4, 20, 0, 12, 4)
+
+[node name="FacingMarker" type="Marker2D" parent="FacingPivot"]
+position = Vector2(20, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("body_shape")
+
+[node name="Hurtbox" type="Area2D" parent="."]
+collision_layer = 16
+collision_mask = 0
+monitoring = false
+
+[node name="HurtShape" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("hurt_shape")
