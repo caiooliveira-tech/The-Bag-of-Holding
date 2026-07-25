@@ -53,33 +53,42 @@ offset_right = 110.0
 [node name="SlotBg" type="ColorRect" parent="Bar/HeldSlot"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-color = Color(0.3, 0.28, 0.3, 0.5)
+color = Color(0.22, 0.2, 0.24, 0.35)
+
+[node name="HeldIcon" type="ColorRect" parent="Bar/HeldSlot"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -18.0
+offset_top = 5.0
+offset_right = 18.0
+offset_bottom = 41.0
+visible = false
+
+[node name="HeldIconTex" type="TextureRect" parent="Bar/HeldSlot"]
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -18.0
+offset_top = 5.0
+offset_right = 18.0
+offset_bottom = 41.0
+expand_mode = 1
+stretch_mode = 5
+visible = false
 
 [node name="ItemName" type="Label" parent="Bar/HeldSlot"]
 anchor_right = 1.0
-anchor_bottom = 1.0
+offset_top = 42.0
+offset_bottom = 62.0
+theme_override_font_sizes/font_size = 12
 horizontal_alignment = 1
-vertical_alignment = 1
 text = ""
 
-[node name="Specials" type="Control" parent="Bar"]
+[node name="PoolBox" type="HBoxContainer" parent="Bar"]
 anchor_left = 1.0
 anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -160.0
+offset_left = -130.0
+offset_top = 10.0
 offset_right = -20.0
-
-[node name="KickSlot" type="ColorRect" parent="Bar/Specials"]
-offset_left = 0.0
-offset_top = 10.0
-offset_right = 140.0
 offset_bottom = 54.0
-color = Color(0.09, 0.08, 0.1, 1)
-
-[node name="KickLabel" type="Label" parent="Bar/Specials"]
-offset_top = 10.0
-offset_right = 140.0
-offset_bottom = 54.0
-horizontal_alignment = 1
-vertical_alignment = 1
-text = "Boot (C/K)"
+theme_override_constants/separation = 8
+alignment = 2
