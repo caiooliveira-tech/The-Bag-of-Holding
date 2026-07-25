@@ -52,9 +52,17 @@ work below moves to post-MVP.
     `hud.tscn` (9-patch margins tweakable in-editor).
   - Held-slot frame: drop the frame texture on `SlotFrameTex` (NinePatchRect).
   - Item pictures already flow from each item's `.tres` `appearance` (Spec 008).
-- **Assets needed from Design (Silas/Flavio), transparent PNGs:** heart icon (~28 px),
-  wooden bar background (9-patch-friendly), held-slot frame. Until then the graybox
-  stand-ins render.
+- **Art status (2026-07-26):** wooden bar (`assets/ui/wooden_bg.png` on `BarBgTex`),
+  held-slot frame (`assets/ui/item_container.png` on `SlotFrameTex`, native 92×99, pokes
+  above the plank per mockup) and item icons (200×200 frames from
+  `systems/magic_items/spritesheet.png`, coords per `spritesheet.json`, wired as
+  `AtlasTexture` sub-resources into each item's `.tres` `appearance`) are **integrated**.
+  Two spare icons (devil_horns, chess_knight) sit ready for the post-MVP Left Hand /
+  Troy items. **Still missing from Design: a heart icon (~28 px transparent PNG)** —
+  hearts render as graybox squares until it lands (one Inspector assign to
+  `heart_texture`).
+- Known nit: the item-name label clips long names in the 92 px box (mockup shows no
+  label) — pending team call on hiding it.
 
 ### MVP Acceptance Criteria
 

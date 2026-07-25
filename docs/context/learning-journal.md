@@ -238,6 +238,18 @@ Spec 009 MVP scope on branch `feature/hud-special-slots`: HUD trimmed to hearts 
 - Assign a temporary PNG to `BarBgTex` and watch `_apply_art()` hide the graybox; tweak the 9-patch margins in the Inspector.
 - Move the HeldSlot to bottom-center again using only anchors/offsets (no code) to internalize the anchor math.
 
+### Late addition (same session): first real HUD art integrated
+
+Design delivered the wooden bar, item container and a 400x400 item spritesheet with a
+JSON frame map. Integration touched zero GDScript — proof the hooks worked: textures
+assigned on `BarBgTex`/`SlotFrameTex` in hud.tscn, and each item's HUD icon wired as an
+`AtlasTexture` sub-resource (atlas = spritesheet, region from the JSON coords) into the
+`.tres` `appearance` field the HUD already reads. New concepts: `AtlasTexture` (region
+view over a sheet — no image slicing), hand-editing `.tres` ext/sub-resources with
+`load_steps`, and scripted screenshot verification (instance the room, emit
+`EventBus.item_drawn`, `get_viewport().get_texture().get_image().save_png()`), which
+caught that a reported "sprite not showing" was actually the box clearing on throw.
+
 ### References
 
-- Godot docs: Control anchors & offsets, NinePatchRect, TextureRect stretch modes.
+- Godot docs: Control anchors & offsets, NinePatchRect, TextureRect stretch modes, AtlasTexture.
