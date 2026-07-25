@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cretiylhowjkg"
-path="res://.godot/imported/velcro.jpeg-cdb8f93e110746a8803cb71eff8b1434.ctex"
+uid="uid://xjkirn3sklbr"
+path="res://.godot/imported/shoelace.png-a37153fbaae1c801a13cd4043403b35d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://entities/enemies/velcro.jpeg"
-dest_files=["res://.godot/imported/velcro.jpeg-cdb8f93e110746a8803cb71eff8b1434.ctex"]
+source_file="res://entities/player/shoelace.png"
+dest_files=["res://.godot/imported/shoelace.png-a37153fbaae1c801a13cd4043403b35d.ctex"]
 
 [params]
 

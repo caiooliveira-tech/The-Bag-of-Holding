@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://babdcymluau58"
-path="res://.godot/imported/itens.jpeg-dac413949a38aaff21fd659ec0103c95.ctex"
+uid="uid://cvfuf3677e283"
+path="res://.godot/imported/itens.png-2e9c7bace675ab3f2938f3e6f31980f4.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://systems/magic_items/itens.jpeg"
-dest_files=["res://.godot/imported/itens.jpeg-dac413949a38aaff21fd659ec0103c95.ctex"]
+source_file="res://systems/magic_items/itens.png"
+dest_files=["res://.godot/imported/itens.png-2e9c7bace675ab3f2938f3e6f31980f4.ctex"]
 
 [params]
 

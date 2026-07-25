@@ -55,6 +55,11 @@ None — all resolved as of 2026-07-25.
 
 See learning-journal.md — session 2026-07-25 covers autoloads, Resources as tunables, enum FSM vs node FSM, and group-based decoupling.
 
+## Reminders — activating the Shoelace spritesheet (art WIP in player.tscn)
+
+1. When switching to the real sprite: **delete the Polygon2D `Body` and rename the AnimatedSprite2D to `Body`** (and make it visible). All feedback (damage flash, freeze tint) is modulate-based on a Node2D named "Body", so it works on the sprite with zero code changes.
+2. player.gd needs ~5 lines to play the right animation (`front`/`back`/`left`/`right`) from the existing `facing` vector — ask Claude when ready.
+
 ## Resume Notes
 
 - Branch `fase-4`: full loop playable — telegraph beat, combat, clear, green door, room_02 (3 enemies), win screen (Attack restarts). Hearts top-left, held item top-right. Health persists between rooms; death restarts the current room at full HP.

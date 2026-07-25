@@ -1,18 +1,14 @@
-[gd_resource type="Resource" script_class="MagicItemResource" load_steps=4 format=3]
+[gd_resource type="Resource" script_class="MagicItemResource" format=3 uid="uid://e7oaq5gnytdj"]
 
-[ext_resource type="Script" path="res://systems/magic_items/magic_item_resource.gd" id="1"]
-[ext_resource type="Script" path="res://systems/magic_items/effects/area_damage_effect.gd" id="2"]
+[ext_resource type="Script" uid="uid://dlug5efsn6q0t" path="res://systems/magic_items/magic_item_resource.gd" id="1"]
+[ext_resource type="Script" uid="uid://bi8ncdmaeoeks" path="res://systems/magic_items/effects/area_damage_effect.gd" id="2"]
 
 [sub_resource type="Resource" id="fire_orb_effect"]
 script = ExtResource("2")
-damage_tier = 2
-radius_tiles = 1.0
-linger_seconds = 1.0
 
 [resource]
 script = ExtResource("1")
 id = &"fire_orb"
 display_name = "Fire Orb"
 graybox_color = Color(1, 0.55, 0.15, 1)
-activation_time_seconds = 3.0
 effect = SubResource("fire_orb_effect")

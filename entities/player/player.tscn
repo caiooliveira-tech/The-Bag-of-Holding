@@ -1,8 +1,60 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://buetenuvqyf1f"]
 
-[ext_resource type="Script" path="res://entities/player/player.gd" id="1"]
+[ext_resource type="Script" uid="uid://b8pnk23g0dmf4" path="res://entities/player/player.gd" id="1"]
 [ext_resource type="Resource" path="res://entities/player/player_stats.tres" id="2"]
 [ext_resource type="PackedScene" path="res://systems/bag/bag.tscn" id="3"]
+[ext_resource type="Texture2D" uid="uid://xjkirn3sklbr" path="res://entities/player/shoelace.png" id="3_bls4j"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fkugw"]
+atlas = ExtResource("3_bls4j")
+region = Rect2(0, 155, 126, 155)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8fjmc"]
+atlas = ExtResource("3_bls4j")
+region = Rect2(0, 0, 126, 155)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qiwj3"]
+atlas = ExtResource("3_bls4j")
+region = Rect2(0, 465, 126, 155)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_26q78"]
+atlas = ExtResource("3_bls4j")
+region = Rect2(0, 310, 126, 155)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xuxey"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fkugw")
+}],
+"loop": 1,
+"name": &"back",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8fjmc")
+}],
+"loop": 1,
+"name": &"front",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qiwj3")
+}],
+"loop": 1,
+"name": &"left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_26q78")
+}],
+"loop": 1,
+"name": &"right",
+"speed": 5.0
+}]
 
 [sub_resource type="CircleShape2D" id="body_shape"]
 radius = 12.0
@@ -10,34 +62,39 @@ radius = 12.0
 [sub_resource type="CircleShape2D" id="hurt_shape"]
 radius = 12.0
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" unique_id=934916421]
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1")
 stats = ExtResource("2")
 
-[node name="Body" type="Polygon2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1680336656]
+visible = false
+sprite_frames = SubResource("SpriteFrames_xuxey")
+animation = &"right"
+
+[node name="Body" type="Polygon2D" parent="." unique_id=1953246757]
 color = Color(0.92, 0.92, 0.98, 1)
 polygon = PackedVector2Array(-12, -12, 12, -12, 12, 12, -12, 12)
 
-[node name="FacingPivot" type="Node2D" parent="."]
+[node name="FacingPivot" type="Node2D" parent="." unique_id=1025280955]
 
-[node name="FacingIndicator" type="Polygon2D" parent="FacingPivot"]
+[node name="FacingIndicator" type="Polygon2D" parent="FacingPivot" unique_id=1866994176]
 color = Color(0.45, 0.75, 1, 1)
 polygon = PackedVector2Array(12, -4, 20, 0, 12, 4)
 
-[node name="FacingMarker" type="Marker2D" parent="FacingPivot"]
+[node name="FacingMarker" type="Marker2D" parent="FacingPivot" unique_id=732397682]
 position = Vector2(20, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1978409074]
 shape = SubResource("body_shape")
 
-[node name="Hurtbox" type="Area2D" parent="."]
+[node name="Hurtbox" type="Area2D" parent="." unique_id=1841114615]
 collision_layer = 16
 collision_mask = 0
 monitoring = false
 
-[node name="HurtShape" type="CollisionShape2D" parent="Hurtbox"]
+[node name="HurtShape" type="CollisionShape2D" parent="Hurtbox" unique_id=15770326]
 shape = SubResource("hurt_shape")
 
-[node name="Bag" parent="." instance=ExtResource("3")]
+[node name="Bag" parent="." unique_id=1920520197 instance=ExtResource("3")]
