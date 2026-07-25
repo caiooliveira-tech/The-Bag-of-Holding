@@ -201,3 +201,25 @@ Cache node references.
 Avoid allocations inside gameplay loops.
 
 Only optimize after gameplay is validated.
+
+## World Scale
+
+Base Tile Size
+
+32 x 32 px
+
+Gameplay measurements
+
+1 tile = 32 pixels
+
+Movement is free.
+
+Tiles are used only as measurement units and level construction units.
+
+Examples
+
+Explosion Radius = 1 tile = 32 px
+
+Throw Distance = 2 tiles = 64 px
+
+Enemy Detection = 5 tiles = 160 px
