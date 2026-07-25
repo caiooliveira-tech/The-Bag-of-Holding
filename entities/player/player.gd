@@ -31,7 +31,8 @@ var _freeze_timer: float = 0.0
 
 func _ready() -> void:
 	add_to_group("player")
-	health = stats.max_health
+	# Health persists across room transitions via GameState (-1 = full).
+	health = GameState.player_health if GameState.player_health > 0 else stats.max_health
 
 
 func _physics_process(delta: float) -> void:
@@ -82,6 +83,7 @@ func take_damage(amount: int, source: Node) -> void:
 	EventBus.player_damaged.emit(amount, source)
 	_flash_damage()
 	if health <= 0:
+		GameState.player_health = -1
 		EventBus.player_died.emit()
 		get_tree().reload_current_scene.call_deferred()
 

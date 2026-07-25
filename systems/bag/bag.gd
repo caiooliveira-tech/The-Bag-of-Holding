@@ -40,7 +40,7 @@ func _draw_item() -> void:
 	item.item_kicked.connect(_on_item_kicked)
 	item.effect_triggered.connect(_on_item_effect_triggered)
 	item_drawn.emit(item_data.id)
-	EventBus.item_drawn.emit(item_data.id)
+	EventBus.item_drawn.emit(item_data)
 
 
 func _throw_held(direction: Vector2) -> void:

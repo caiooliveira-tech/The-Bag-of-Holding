@@ -154,3 +154,45 @@ Adding Ursula touched **zero** existing classes: one subclass, one .tres, one po
 ### References
 
 - Spec 005; PROJECT-CONTEXT §4 (freeze semantics); pillar 3 (improvisation — two items, two strategies).
+
+---
+
+## Session 2026-07-25 (Phase 4) — Room Flow + HUD
+
+### Feature
+
+Specs 007 + 008 (written first, then coded): room state machine, doors, transitions, health persistence, HUD.
+
+### What was implemented
+
+- `rooms/room.gd`: WAITING (1 s telegraph, enemies inactive) → COMBAT → CLEARED; counts its own enemies via `EventBus.enemy_died`; opens the door; handles the transition (stores health in GameState, `change_scene_to_file`).
+- `rooms/door.gd/.tscn`: dumb door — blocker collision + Area2D passage that only reports `player_entered`.
+- `ui/hud.gd/.tscn`: 5 hearts (dim on loss) + held-item slot (swatch + name); EventBus-only, no gameplay calls.
+- `ui/win_screen.tscn`, `rooms/room_02.tscn` (3 enemies); health persists across rooms via `GameState.player_health`.
+- `EventBus.item_drawn` upgraded to carry the full MagicItemResource (UI needs color/name, not just an id).
+
+### Why this architecture?
+
+- The **room owns the flow**; door and enemies stay decision-free. One owner per question ("is combat over?") keeps the count in exactly one place.
+- **Health in GameState, not in a persistent player node**: scenes are swapped whole (simple, jam-safe); the autoload carries the one number that must survive. Autoloads hold data, never node references.
+- **HUD reads, never writes**: the UI-never-contains-gameplay rule from game-architecture.md, enforced by only connecting to EventBus.
+
+### Godot concepts learned
+
+- `set_deferred("disabled", true)` for collision shapes — flipping physics state inside a physics callback is unsafe.
+- `change_scene_to_file` should also be deferred (`.bind(path).call_deferred()`).
+- Preloaded scripts (`const X := preload(...)`) work as type annotations — and sidestep the global class cache for fresh classes.
+- PowerShell 5.1 `Get-Content` reads ANSI by default: round-tripping UTF-8 docs through it mangles em-dashes (mojibake). Use the file-writing tools, not shell pipes, for docs.
+
+### Common mistakes
+
+- Counting enemies with a group query *at clear time* would count test-spawned/off-room enemies; counting once at `_ready` and decrementing on the death signal keeps ownership clean.
+
+### Suggested exercises
+
+- Add a room_03 with a different enemy layout: duplicate the scene, edit positions and `next_scene_path` — no code.
+- Change `telegraph_seconds` in the Inspector and feel how the calm beat changes room pacing.
+
+### References
+
+- Specs 007/008; PROJECT-CONTEXT §3 (loop) e §6 (HUD rules); game-architecture.md (Room states, UI rule).

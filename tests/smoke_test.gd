@@ -8,12 +8,16 @@ const ROOM_SCENE: PackedScene = preload("res://rooms/room_01.tscn")
 const ENEMY_SCENE: PackedScene = preload("res://entities/enemies/enemy.tscn")
 const FIRE_ORB: MagicItemResource = preload("res://systems/magic_items/fire_orb.tres")
 const URSULA: MagicItemResource = preload("res://systems/magic_items/right_hand_of_ursula.tres")
+const ROOM_SCRIPT: GDScript = preload("res://rooms/room.gd")
+const DOOR_SCRIPT: GDScript = preload("res://rooms/door.gd")
 
+var _room: ROOM_SCRIPT
 var _failures: int = 0
 
 
 func _ready() -> void:
-	add_child(ROOM_SCENE.instantiate())
+	_room = ROOM_SCENE.instantiate() as ROOM_SCRIPT
+	add_child(_room)
 	_run()
 
 
@@ -101,6 +105,12 @@ func _run() -> void:
 	await _wait(5.0)
 	_check(not enemy2.is_frozen(), "enemy unfroze after 5 s (ursula overrode pre-freeze)")
 	_check(not player.is_frozen(), "player unfroze after 5 s")
+
+	# ---- Section 3: room flow (Spec 007) ----
+	# The room's only own enemy died back in section 1, so by now:
+	_check(_room.state == ROOM_SCRIPT.State.CLEARED, "room CLEARED after its last enemy died")
+	var door := _room.get_node("Door") as DOOR_SCRIPT
+	_check(door != null and door.is_open, "door opened on room clear")
 
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")

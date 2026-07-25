@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-Phase 3 — implemented on branch `fase-3`, awaiting team playtest before merge to main
+Phase 4 — implemented on branch `fase-4`, awaiting team playtest before merge to main
 
 ## Current Spec
 
-None (Specs 001–006 all implemented; next up: Phase 4 content integration)
+None (Specs 001–008 all implemented; next up: Phase 5 ship — export + itch.io)
 
 ## Completed
 
@@ -22,13 +22,16 @@ None (Specs 001–006 all implemented; next up: Phase 4 content integration)
 - 2026-07-25 — Phase 2 playtested and merged to main.
 - 2026-07-25 — **Phase 3 implemented (branch `fase-3`):** Spec 005 Right Hand of Ursula (FreezeAreaEffect subclass + .tres — zero base-class changes, proving the framework), player freeze tint, freeze flash visual, pool now holds both MVP items. Smoke test extended to 19 checks (deterministic per-section pools), SMOKE PASS.
 
+- 2026-07-25 — Phase 3 playtested and merged to main.
+- 2026-07-25 — **Phase 4 implemented (branch `fase-4`):** Specs 007 (room flow) + 008 (HUD) written then coded. Room state machine (WAITING telegraph → COMBAT → CLEARED), Door (blocker→green passage), room_01 → room_02 (3 enemies) → win screen chain, health persistence via GameState, HUD (5 hearts + held-item slot, EventBus-only). Smoke test: 21 checks, SMOKE PASS.
+
 ## In Progress
 
-- Team playtest of Phase 3 on branch `fase-3`
+- Team playtest of Phase 4 on branch `fase-4`
 
 ## Next Spec
 
-Phase 4 — room transitions, doors, HUD (no spec yet; write specs before coding)
+Phase 5 — bugfix, balance, export presets, itch.io upload (jam deadline: July 26)
 
 ## Open Questions
 
@@ -52,6 +55,6 @@ See learning-journal.md — session 2026-07-25 covers autoloads, Resources as tu
 
 ## Resume Notes
 
-- Branch `fase-3`: the draw is now a real 50/50 — orange circle = Fire Orb (3s, explosion), light-blue circle = Right Hand of Ursula (4s, 5s movement-only freeze, blue tint on frozen characters, including the player).
-- Smoke test: `Godot.exe --path . res://tests/smoke_test.tscn` prints SMOKE PASS/FAIL (19 checks).
-- After playtest approval: merge `fase-3` → main, branch `fase-4`, write Phase 4 specs (room/door/HUD) before coding.
+- Branch `fase-4`: full loop playable — telegraph beat, combat, clear, green door, room_02 (3 enemies), win screen (Attack restarts). Hearts top-left, held item top-right. Health persists between rooms; death restarts the current room at full HP.
+- Smoke test: `Godot.exe --path . res://tests/smoke_test.tscn` (21 checks). Door-crossing/scene-change is playtest-only (change_scene would kill the test container).
+- After playtest approval: merge `fase-4` → main, branch `fase-5`: balance pass, Web export preset, itch.io upload before the July 26 deadline.

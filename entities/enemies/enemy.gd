@@ -8,6 +8,7 @@ signal damage_taken(amount: int)
 
 var hits_remaining: int = 0
 
+var _active: bool = true
 var _player: Player
 var _attack_timer: float = 0.0
 var _freeze_timer: float = 0.0
@@ -30,6 +31,9 @@ func _physics_process(delta: float) -> void:
 	_freeze_timer = maxf(_freeze_timer - delta, 0.0)
 	if was_frozen and not is_frozen():
 		modulate = Color.WHITE
+	if not _active:
+		velocity = Vector2.ZERO
+		return
 	if _player == null:
 		# Player may enter the tree after us; resolve once, then keep the cache.
 		_player = get_tree().get_first_node_in_group("player") as Player
@@ -45,6 +49,12 @@ func _physics_process(delta: float) -> void:
 		elif _attack_timer <= 0.0:
 			_attack()
 	move_and_slide()
+
+
+## Room state machine gates this: inactive during the WAITING telegraph.
+## Inactive enemies still take damage — only behavior is paused.
+func set_active(value: bool) -> void:
+	_active = value
 
 
 func is_frozen() -> bool:

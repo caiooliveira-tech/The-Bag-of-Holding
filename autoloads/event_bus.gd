@@ -13,8 +13,9 @@ signal player_died
 signal enemy_died(enemy: Node)
 @warning_ignore("unused_signal")
 signal room_cleared
+# Carries the full resource so UI can render color/name without a catalog.
 @warning_ignore("unused_signal")
-signal item_drawn(item_id: StringName)
+signal item_drawn(item_data: MagicItemResource)
 @warning_ignore("unused_signal")
 signal item_thrown(item_id: StringName, position: Vector2, direction: Vector2)
 @warning_ignore("unused_signal")
