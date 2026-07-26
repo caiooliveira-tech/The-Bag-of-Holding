@@ -102,9 +102,33 @@ panels, logo and text across every screen — no per-screen art duplication.
 - Layout pass (Caio feedback): menu + pause use a corner-anchored logo parchment
   (`bg-logo-main-menu.png`, flush top-left, delivered pre-cropped) via
   `MenuUI.corner_logo`; menu + difficulty descriptions sit beside the buttons,
-  top-aligned to the first button.
+  top-aligned to the first button. Logo art `logo-jogo.png` re-set to the game's
+  name "The Bag of Holding" (Design); all screens read it as an image, no
+  hardcoded title text remains.
+- Fixes pass (Caio feedback):
+  - **Volume control**: AudioManager creates Master→Music/SFX buses at runtime
+    (no bus-layout .tres), routes music/tick/sfx, and exposes `get_volume/
+    set_volume` persisted to `user://settings.cfg`. Options gained an AUDIO panel
+    (Master / Music / SFX sliders); layout went two-column (Resolution+Audio left,
+    Controls right).
+  - **Pause → Options bug**: Options now opens as an *embedded overlay* over the
+    paused game (`embedded=true` + `closed` signal) instead of a scene change, so
+    ESC returns to the pause menu with the run intact (was dumping to the main
+    menu / losing the run). Verified: after close `paused=true`, player still alive.
+  - **Win screen**: hint text now reads the keyboard key from the InputMap
+    ("Press Space…") instead of the hardcoded PlayStation glyph "(X/J)".
+  - **New-item-acquired screen**: `ItemAcquired` autoload (CanvasLayer) — on a
+    door pickup, `Room` calls `ItemAcquired.show_and_continue(item, next_path)`:
+    the game pauses and a centered scroll announces "[item name] was added to The
+    Bag of Holding." with the `bag.png` illustration + "press any button"; the
+    next room loads only when the player advances (6 s auto-advance safety).
+    Delivered transparent `assets/screens/bag.png` (`MenuUI.BAG`) is the art.
+  - **HUD held-item box**: moved to the bottom-center of the bar and reduced to
+    the item icon only (the name label was removed per Caio) — the container art
+    now frames just the drawn item's icon.
 - Verified via `tests/screenshot_screens.tscn` (title/menu/options/credits/
-  difficulty/level-title/pause all render to spec). Smoke 43/43 PASS. Awaiting playtest.
+  difficulty/level-title/pause/pause-options all render to spec). Smoke 43/43 PASS.
+  Awaiting playtest.
 
 ## Phase 6.5 — Difficulty Levels (Spec 018) — merged 2026-07-27 (PR #4)
 

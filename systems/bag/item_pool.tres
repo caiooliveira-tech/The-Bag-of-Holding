@@ -1,11 +1,11 @@
-[gd_resource type="Resource" script_class="ItemPoolResource" load_steps=9 format=3]
+[gd_resource type="Resource" script_class="ItemPoolResource" format=3 uid="uid://b4vpva36mvdwl"]
 
-[ext_resource type="Script" path="res://systems/bag/item_pool_resource.gd" id="1"]
-[ext_resource type="Script" path="res://systems/magic_items/magic_item_resource.gd" id="2"]
-[ext_resource type="Resource" path="res://systems/magic_items/fire_orb.tres" id="3"]
-[ext_resource type="Resource" path="res://systems/magic_items/right_hand_of_ursula.tres" id="4"]
-[ext_resource type="Resource" path="res://systems/magic_items/left_hand_of_ursula.tres" id="5"]
-[ext_resource type="Resource" path="res://systems/magic_items/troy_wooden_horse.tres" id="6"]
+[ext_resource type="Script" uid="uid://bvaqu4akpjg1g" path="res://systems/bag/item_pool_resource.gd" id="1"]
+[ext_resource type="Script" uid="uid://dlug5efsn6q0t" path="res://systems/magic_items/magic_item_resource.gd" id="2"]
+[ext_resource type="Resource" uid="uid://e7oaq5gnytdj" path="res://systems/magic_items/fire_orb.tres" id="3"]
+[ext_resource type="Resource" uid="uid://c8jooj113mk0w" path="res://systems/magic_items/right_hand_of_ursula.tres" id="4"]
+[ext_resource type="Resource" uid="uid://bi8wi7kkgvfxw" path="res://systems/magic_items/left_hand_of_ursula.tres" id="5"]
+[ext_resource type="Resource" uid="uid://dxn675g12ihhx" path="res://systems/magic_items/troy_wooden_horse.tres" id="6"]
 [ext_resource type="Resource" path="res://systems/magic_items/atomic_orb.tres" id="7"]
 [ext_resource type="Resource" path="res://systems/magic_items/magnetic_horseshoe.tres" id="8"]
 

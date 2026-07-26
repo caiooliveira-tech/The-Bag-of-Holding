@@ -4,7 +4,7 @@
 extends CanvasLayer
 
 const MAIN_MENU := "res://ui/menu/main_menu.tscn"
-const OPTIONS := "res://ui/menu/options_menu.tscn"
+const OPTIONS_SCENE: PackedScene = preload("res://ui/menu/options_menu.tscn")
 
 const ITEMS: Array[Dictionary] = [
 	{"label": "RESTART LEVEL", "action": &"restart"},
@@ -17,6 +17,9 @@ var _open: bool = false
 var _selected: int = 0
 var _rows: Array[TextureRect] = []
 var _root: Control
+## Options shown as an overlay ON TOP of the paused game (not a scene change),
+## so closing it returns to the pause menu with the run intact.
+var _options: Control
 
 
 func _ready() -> void:
@@ -51,6 +54,9 @@ func _build() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	# The options overlay owns input while it's up (its own ESC closes it).
+	if _options != null:
+		return
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
 	var key := (event as InputEventKey).keycode
@@ -103,16 +109,37 @@ func _refresh() -> void:
 func _activate(index: int) -> void:
 	AudioManager.play_sfx(&"button_clicked")
 	var action: StringName = ITEMS[index]["action"]
-	_resume()
 	match action:
 		&"restart":
+			_resume()
 			get_tree().reload_current_scene()
 		&"options":
-			get_tree().change_scene_to_file(OPTIONS)
+			_open_options()  # overlay; stays paused, run intact
 		&"menu":
+			_resume()
 			GameState.reset_run()
 			get_tree().change_scene_to_file(MAIN_MENU)
 		&"exit":
 			get_tree().quit()
+
+
+## Show the options screen as an overlay over the paused game. ESC there routes
+## back here (via the `closed` signal) instead of dumping the run to the menu.
+func _open_options() -> void:
+	_root.visible = false
+	var opts := OPTIONS_SCENE.instantiate() as Control
+	opts.embedded = true
+	opts.closed.connect(_close_options)
+	add_child(opts)
+	_options = opts
+
+
+func _close_options() -> void:
+	AudioManager.play_sfx(&"button_clicked")
+	if _options != null:
+		_options.queue_free()
+		_options = null
+	_root.visible = true
+	_refresh()
 
 

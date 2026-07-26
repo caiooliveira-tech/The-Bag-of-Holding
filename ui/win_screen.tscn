@@ -33,4 +33,4 @@ offset_left = -300.0
 offset_right = 300.0
 offset_bottom = 26.0
 horizontal_alignment = 1
-text = "Press Attack (X/J) to climb again"
+text = "Press Space to climb again"

@@ -25,7 +25,6 @@ var _heart_tweens: Array[Tween] = []
 @onready var _slot_frame_tex: NinePatchRect = $Bar/HeldSlot/SlotFrameTex
 @onready var _held_icon: ColorRect = $Bar/HeldSlot/HeldIcon
 @onready var _held_icon_tex: TextureRect = $Bar/HeldSlot/HeldIconTex
-@onready var _item_name: Label = $Bar/HeldSlot/ItemName
 
 
 func _ready() -> void:
@@ -123,7 +122,6 @@ func _animate_heart(index: int, tex: TextureRect, target: float) -> void:
 func _clear_held() -> void:
 	_held_icon.visible = false
 	_held_icon_tex.visible = false
-	_item_name.text = ""
 
 
 func _on_player_damaged(_amount: int, _source: Node) -> void:
@@ -136,7 +134,6 @@ func _on_item_drawn(item_data: MagicItemResource) -> void:
 	_held_icon_tex.texture = item_data.appearance
 	_held_icon.visible = not has_art
 	_held_icon.color = item_data.graybox_color
-	_item_name.text = item_data.display_name
 
 
 func _on_item_thrown(_item_id: StringName, _position: Vector2, _direction: Vector2) -> void:

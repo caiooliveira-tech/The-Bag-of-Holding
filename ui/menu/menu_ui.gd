@@ -17,6 +17,8 @@ const CROW: Texture2D = preload("res://assets/screens/img-main-menu.png")
 # Parchment pre-cropped to sit flush in the top-left corner (top + left edges
 # straight, bottom + right torn/curled). Carries the logo on menu/pause.
 const BG_LOGO: Texture2D = preload("res://assets/screens/bg-logo-main-menu.png")
+# The bag on its own (transparent) — the item-acquired scroll's illustration.
+const BAG: Texture2D = preload("res://assets/screens/bag.png")
 const LOGO: Texture2D = preload("res://assets/logo-jogo.png")
 const BTN_ACTIVE: Texture2D = preload("res://assets/ui/btn_active.png")
 const BTN_INACTIVE: Texture2D = preload("res://assets/ui/btn_inactive.png")

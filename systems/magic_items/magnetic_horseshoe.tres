@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="MagicItemResource" load_steps=6 format=3]
+[gd_resource type="Resource" script_class="MagicItemResource" format=3 uid="uid://c3tvnu1jhldiq"]
 
 [ext_resource type="Script" uid="uid://dlug5efsn6q0t" path="res://systems/magic_items/magic_item_resource.gd" id="1"]
 [ext_resource type="Script" uid="uid://by6b2qgh3xgd2" path="res://systems/magic_items/effects/magnet_area_effect.gd" id="2"]
@@ -10,8 +10,6 @@ region = Rect2(256, 96, 32, 32)
 
 [sub_resource type="Resource" id="magnet_effect"]
 script = ExtResource("2")
-radius_tiles = 3.0
-cluster_duration_seconds = 5.0
 
 [resource]
 script = ExtResource("1")

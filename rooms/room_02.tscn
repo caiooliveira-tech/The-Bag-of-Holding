@@ -1,14 +1,14 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene format=4 uid="uid://c0dbphvjihlel"]
 
-[ext_resource type="Script" path="res://rooms/room.gd" id="1"]
-[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="2"]
+[ext_resource type="Script" uid="uid://bj0vxeb2sppsx" path="res://rooms/room.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://buetenuvqyf1f" path="res://entities/player/player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://entities/enemies/enemy2.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://rooms/door.tscn" id="4"]
-[ext_resource type="PackedScene" path="res://ui/hud.tscn" id="5"]
-[ext_resource type="TileSet" path="res://rooms/room_tileset.tres" id="6"]
-[ext_resource type="Script" path="res://rooms/room_tiles.gd" id="7"]
-[ext_resource type="Texture2D" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="8"]
-[ext_resource type="Script" path="res://systems/juice/game_camera.gd" id="9"]
+[ext_resource type="PackedScene" uid="uid://cxf0nmga4j2iw" path="res://ui/hud.tscn" id="5"]
+[ext_resource type="TileSet" uid="uid://df3sbpup3q7g2" path="res://rooms/room_tileset.tres" id="6"]
+[ext_resource type="Script" uid="uid://c111jaovktnxn" path="res://rooms/room_tiles.gd" id="7"]
+[ext_resource type="Texture2D" uid="uid://cgqbmw35qq01j" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="8"]
+[ext_resource type="Script" uid="uid://6253jixtuq0i" path="res://systems/juice/game_camera.gd" id="9"]
 [ext_resource type="PackedScene" path="res://ui/screen_fx.tscn" id="10"]
 
 [sub_resource type="RectangleShape2D" id="wall_top_left"]
@@ -17,14 +17,14 @@ size = Vector2(320, 32)
 [sub_resource type="RectangleShape2D" id="wall_top_right"]
 size = Vector2(288, 32)
 
+[sub_resource type="RectangleShape2D" id="wall_bottom"]
+size = Vector2(640, 32)
+
 [sub_resource type="RectangleShape2D" id="wall_side_upper"]
 size = Vector2(32, 160)
 
 [sub_resource type="RectangleShape2D" id="wall_side_lower"]
 size = Vector2(32, 168)
-
-[sub_resource type="RectangleShape2D" id="wall_bottom"]
-size = Vector2(640, 32)
 
 [sub_resource type="AtlasTexture" id="door_closed_row2"]
 atlas = ExtResource("8")
@@ -34,89 +34,89 @@ region = Rect2(224, 32, 32, 32)
 atlas = ExtResource("8")
 region = Rect2(256, 32, 32, 32)
 
-[node name="Room02" type="Node2D"]
+[node name="Room02" type="Node2D" unique_id=461633288]
 script = ExtResource("1")
 next_scene_path = "res://ui/win_screen.tscn"
 level_title = "1st Floor - Room B"
 
-[node name="RoomTiles" type="TileMapLayer" parent="."]
+[node name="RoomTiles" type="TileMapLayer" parent="." unique_id=1797347976]
 texture_filter = 1
 tile_set = ExtResource("6")
 script = ExtResource("7")
 variant_row = 1
 
-[node name="WallTiles" type="TileMapLayer" parent="."]
+[node name="WallTiles" type="TileMapLayer" parent="." unique_id=176438792]
 texture_filter = 1
+tile_map_data = PackedByteArray("AAAMAAQAAAAAAAUAAAAMAAUAAAAAAAUAAAAMAAYAAAAAAAUAAAAMAAcAAAAAAAUAAAAIAAYAAAABAAUAAAAJAAYAAAACAAUAAAAKAAYAAAACAAUAAAA=")
 tile_set = ExtResource("6")
 
-[node name="Walls" type="StaticBody2D" parent="."]
-collision_layer = 1
+[node name="Walls" type="StaticBody2D" parent="." unique_id=242993571]
 collision_mask = 0
 
-[node name="TopLeft" type="CollisionShape2D" parent="Walls"]
+[node name="TopLeft" type="CollisionShape2D" parent="Walls" unique_id=506964653]
 position = Vector2(160, 16)
 shape = SubResource("wall_top_left")
 
-[node name="TopRight" type="CollisionShape2D" parent="Walls"]
+[node name="TopRight" type="CollisionShape2D" parent="Walls" unique_id=1771599908]
 position = Vector2(496, 16)
 shape = SubResource("wall_top_right")
 
-[node name="Bottom" type="CollisionShape2D" parent="Walls"]
+[node name="Bottom" type="CollisionShape2D" parent="Walls" unique_id=404588643]
 position = Vector2(320, 344)
 shape = SubResource("wall_bottom")
 
-[node name="LeftUpper" type="CollisionShape2D" parent="Walls"]
+[node name="LeftUpper" type="CollisionShape2D" parent="Walls" unique_id=246703442]
 position = Vector2(16, 80)
 shape = SubResource("wall_side_upper")
 
-[node name="LeftLower" type="CollisionShape2D" parent="Walls"]
+[node name="LeftLower" type="CollisionShape2D" parent="Walls" unique_id=1740808290]
 position = Vector2(16, 276)
 shape = SubResource("wall_side_lower")
 
-[node name="RightUpper" type="CollisionShape2D" parent="Walls"]
+[node name="RightUpper" type="CollisionShape2D" parent="Walls" unique_id=742287402]
 position = Vector2(624, 80)
 shape = SubResource("wall_side_upper")
 
-[node name="RightLower" type="CollisionShape2D" parent="Walls"]
+[node name="RightLower" type="CollisionShape2D" parent="Walls" unique_id=1633369901]
 position = Vector2(624, 276)
 shape = SubResource("wall_side_lower")
 
-[node name="Doors" type="Node2D" parent="."]
+[node name="Doors" type="Node2D" parent="." unique_id=303496593]
 
-[node name="DoorTop" parent="Doors" instance=ExtResource("4")]
+[node name="DoorTop" parent="Doors" unique_id=1762453143 instance=ExtResource("4")]
 position = Vector2(336, 16)
 closed_texture = SubResource("door_closed_row2")
 open_texture = SubResource("door_open_row2")
 
-[node name="DoorLeft" parent="Doors" instance=ExtResource("4")]
+[node name="DoorLeft" parent="Doors" unique_id=740262774 instance=ExtResource("4")]
 position = Vector2(16, 176)
 rotation = -1.5707964
 closed_texture = SubResource("door_closed_row2")
 open_texture = SubResource("door_open_row2")
 
-[node name="DoorRight" parent="Doors" instance=ExtResource("4")]
+[node name="DoorRight" parent="Doors" unique_id=1278578144 instance=ExtResource("4")]
 position = Vector2(624, 176)
 rotation = 1.5707964
 closed_texture = SubResource("door_closed_row2")
 open_texture = SubResource("door_open_row2")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=26732597]
 position = Vector2(320, 180)
 zoom = Vector2(2, 2)
 script = ExtResource("9")
 
-[node name="Player" parent="." instance=ExtResource("2")]
+[node name="Player" parent="." unique_id=987735510 instance=ExtResource("2")]
 position = Vector2(320, 290)
 
-[node name="Enemy1" parent="." instance=ExtResource("3")]
+[node name="Enemy1" parent="." unique_id=2086423498 instance=ExtResource("3")]
 position = Vector2(160, 100)
 
-[node name="Enemy2" parent="." instance=ExtResource("3")]
+[node name="Enemy2" parent="." unique_id=1936436943 instance=ExtResource("3")]
 position = Vector2(480, 100)
 
-[node name="Enemy3" parent="." instance=ExtResource("3")]
+[node name="Enemy3" parent="." unique_id=459050964 instance=ExtResource("3")]
 position = Vector2(320, 150)
 
-[node name="HUD" parent="." instance=ExtResource("5")]
+[node name="HUD" parent="." unique_id=2106757364 instance=ExtResource("5")]
 
-[node name="ScreenFX" parent="." instance=ExtResource("10")]
+[node name="ScreenFX" parent="." unique_id=799115417 instance=ExtResource("10")]

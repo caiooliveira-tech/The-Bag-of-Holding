@@ -75,9 +75,12 @@ static func pick_offers(count: int) -> Array[MagicItemResource]:
 func _on_player_entered_door(player: Player, door: DOOR_SCRIPT) -> void:
 	if next_scene_path.is_empty():
 		return
-	# Walking through = picking this door's item (no-op on owned duplicates).
-	if door.offered_item != null and GameState.unlock_item(door.offered_item):
-		EventBus.item_unlocked.emit(door.offered_item)
 	GameState.player_health = player.health
 	GameState.current_room += 1
-	get_tree().change_scene_to_file.bind(next_scene_path).call_deferred()
+	# Walking through = picking this door's item (no-op on owned duplicates).
+	if door.offered_item != null and GameState.unlock_item(door.offered_item):
+		EventBus.item_unlocked.emit(door.offered_item)  # pickup SFX hook
+		# Announce the new item, then advance once the player continues.
+		ItemAcquired.show_and_continue(door.offered_item, next_scene_path)
+	else:
+		get_tree().change_scene_to_file.bind(next_scene_path).call_deferred()

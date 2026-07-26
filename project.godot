@@ -13,10 +13,11 @@ config_version=5
 config/name="The Bag of Holding"
 run/main_scene="res://ui/menu/title_screen.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
-boot_splash/show_image=false
 boot_splash/bg_color=Color(0, 0, 0, 1)
-config/icon="res://icon.svg"
-boot_splash/minimum_display_time=0
+boot_splash/show_image=false
+boot_splash/image="uid://kekiwmoor015"
+config/icon="uid://bvw2w8m2gj04x"
+config/windows_native_icon="res://assets/THUMB_ICHIO.ico"
 
 [autoload]
 
@@ -27,6 +28,7 @@ AudioManager="*res://autoloads/audio_manager.gd"
 Pause="*res://ui/menu/pause_menu.gd"
 DeathScreen="*res://ui/menu/death_screen.gd"
 LevelTitle="*res://ui/level_title.gd"
+ItemAcquired="*res://ui/item_acquired.gd"
 
 [display]
 

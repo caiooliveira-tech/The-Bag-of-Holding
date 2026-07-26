@@ -61,6 +61,11 @@ const EXPLOSION_BY_ITEM := {
 
 const SFX_VOICES := 10
 
+## Player-facing volume buses (Spec 022 options). Master feeds Music + SFX;
+## created at runtime so no bus-layout .tres is needed. Keys map to bus names.
+const VOLUME_BUSES := {&"master": &"Master", &"music": &"Music", &"sfx": &"SFX"}
+const SETTINGS_PATH := "user://settings.cfg"
+
 var _music: AudioStreamPlayer
 var _current_music: StringName = &""
 var _sfx: Array[AudioStreamPlayer] = []
@@ -68,13 +73,16 @@ var _next_voice: int = 0
 ## Looping bomb-countdown tick, on while at least one item is counting down.
 var _tick: AudioStreamPlayer
 var _active_items: int = 0
+## Linear 0..1 volume per bus key; loaded from disk, applied to the buses.
+var _volumes: Dictionary = {&"master": 1.0, &"music": 1.0, &"sfx": 1.0}
 
 
 func _ready() -> void:
 	# Keep music and menu-click SFX alive while the tree is paused.
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_ensure_buses()
 	_music = AudioStreamPlayer.new()
-	_music.bus = &"Master"
+	_music.bus = &"Music"
 	_music.volume_db = -9.0
 	add_child(_music)
 	for stream in MUSIC.values():
@@ -82,12 +90,16 @@ func _ready() -> void:
 	_tick_stream.loop = true
 	_tick = AudioStreamPlayer.new()
 	_tick.stream = _tick_stream
+	_tick.bus = &"SFX"
 	_tick.volume_db = -6.0
 	add_child(_tick)
 	for i in SFX_VOICES:
 		var player := AudioStreamPlayer.new()
+		player.bus = &"SFX"
 		add_child(player)
 		_sfx.append(player)
+
+	_load_settings()
 
 	EventBus.item_drawn.connect(_on_item_drawn)
 	EventBus.item_thrown.connect(func(_i, _p, _dir): play_sfx(&"thrown_bomb"))
@@ -164,3 +176,49 @@ func _reset_tick() -> void:
 	_active_items = 0
 	if _tick != null:
 		_tick.stop()
+
+
+## Create the Music/SFX buses (routed to Master) if a layout didn't supply them.
+func _ensure_buses() -> void:
+	for name in [&"Music", &"SFX"]:
+		if AudioServer.get_bus_index(name) == -1:
+			var idx := AudioServer.bus_count
+			AudioServer.add_bus(idx)
+			AudioServer.set_bus_name(idx, name)
+			AudioServer.set_bus_send(idx, &"Master")
+
+
+## Linear 0..1 volume for a bus key ("master"/"music"/"sfx"). Persisted.
+func get_volume(key: StringName) -> float:
+	return _volumes.get(key, 1.0)
+
+
+func set_volume(key: StringName, value: float) -> void:
+	if not VOLUME_BUSES.has(key):
+		return
+	var v := clampf(value, 0.0, 1.0)
+	_volumes[key] = v
+	var idx := AudioServer.get_bus_index(VOLUME_BUSES[key])
+	# Below ~-40 dB is inaudible; snap a zero slider to a hard mute.
+	AudioServer.set_bus_volume_db(idx, -80.0 if v <= 0.001 else linear_to_db(v))
+	_save_settings()
+
+
+func _load_settings() -> void:
+	var config := ConfigFile.new()
+	if config.load(SETTINGS_PATH) == OK:
+		for key in VOLUME_BUSES:
+			_volumes[key] = float(config.get_value("audio", String(key), 1.0))
+	# Apply directly (not via set_volume) so loading doesn't re-save every key.
+	for key in VOLUME_BUSES:
+		var idx := AudioServer.get_bus_index(VOLUME_BUSES[key])
+		var v: float = _volumes[key]
+		AudioServer.set_bus_volume_db(idx, -80.0 if v <= 0.001 else linear_to_db(v))
+
+
+func _save_settings() -> void:
+	var config := ConfigFile.new()
+	config.load(SETTINGS_PATH)  # keep any other sections intact
+	for key in VOLUME_BUSES:
+		config.set_value("audio", String(key), _volumes[key])
+	config.save(SETTINGS_PATH)
