@@ -34,7 +34,9 @@ func setup(members: Array[Node2D], duration_seconds: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	_time_left -= delta
-	_members = _members.filter(func(m: Node2D) -> bool: return is_instance_valid(m))
+	# Array.filter() returns an untyped Array; assign() copies back into the
+	# typed Array[Node2D] without the "can't assign Array to Array[Node2D]" error.
+	_members.assign(_members.filter(func(m: Node2D) -> bool: return is_instance_valid(m)))
 	if _time_left <= 0.0 or _members.is_empty():
 		_release()
 		return

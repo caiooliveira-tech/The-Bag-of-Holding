@@ -6,10 +6,11 @@ const MAIN_MENU := "res://ui/menu/main_menu.tscn"
 
 # Names as the team wrote them in the mock; roles filled from their fronts.
 const ENTRIES: Array[Dictionary] = [
-	{"name": "Silas Chosen", "role": "Art, tiles, monster design"},
-	{"name": "Caio Goncalves dos Santos Curintxa", "role": "Programming, game systems"},
+	{"name": "Silas Chosen", "role": "Art, tiles, monster design, Game Designer"},
+	{"name": "Caio Goncalves dos Santos Curintxa", "role": "Programming, game systems and Game Designer"},
 	{"name": "RH da Silva Sauro", "role": "Programming, enemy AI"},
 	{"name": "Flavio Lee Budoia", "role": "UI/HUD design, level layouts"},
+	{"name": "Heitor Mendes dos Santos", "role": "Tester"},
 	{"name": "Coffee, sweat, tears and fun", "role": "The fuel that drive us all."},
 	{"name": "Xuxa e Sasha", "role": "Um beijo. E outro especialmente pra voce."},
 ]

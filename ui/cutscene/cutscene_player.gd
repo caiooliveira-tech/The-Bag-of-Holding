@@ -67,20 +67,23 @@ func _show_frame(frame: CutsceneFrameResource) -> void:
 	_banner.visible = dialogue
 
 	if dialogue:
-		# Banner bleeds off the bottom edge and the art perches on it, so the
-		# speaker and their words read as one unit (Design's storyboard).
-		var banner_size := Vector2(1160, 320)
+		# Banner sits near the bottom with only a small bleed, and the art
+		# perches on it, so the speaker and their words read as one unit
+		# (Design's storyboard) while the text stays fully on-screen.
+		var banner_size := Vector2(1180, 360)
 		_banner.position = Vector2((MenuUI.SCREEN.x - banner_size.x) * 0.5,
-				MenuUI.SCREEN.y - banner_size.y + 70.0)
+				MenuUI.SCREEN.y - 322.0)
 		_banner.size = banner_size
-		_art.size = Vector2(620, 450)
+		_art.size = Vector2(600, 430)
 		_art.position = Vector2((MenuUI.SCREEN.x - _art.size.x) * 0.5,
-				_banner.position.y - _art.size.y + 30.0)
+				_banner.position.y - _art.size.y + 44.0)
 		_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		_text.add_theme_color_override("font_color", MenuUI.INK)
-		_text.position = _banner.position + Vector2(110.0, 80.0)
-		_text.size = Vector2(banner_size.x - 220.0, 130.0)
+		# Text in the visible upper half of the banner, tall enough for up to
+		# ~4 lines so long speeches never run off the bottom of the screen.
+		_text.position = Vector2(_banner.position.x + 120.0, _banner.position.y + 60.0)
+		_text.size = Vector2(banner_size.x - 240.0, 210.0)
 	else:
 		# Reading: prop on one side, Euclidus's words in light text on the other.
 		var art_left := frame.layout == CutsceneFrameResource.Layout.READING_LEFT
