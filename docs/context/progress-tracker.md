@@ -2,13 +2,11 @@
 
 ## Current Phase
 
-Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5) and 6 A–B (walls, ranged enemy) complete and merged to main, plus menus/audio/death screen and items Specs 011–012. **Phase 6.5 (Difficulty Levels, Spec 018) implemented on branch `feature/difficulty-levels`** — draft PR #4 open for team review. Next: Phase 6 C–E (smart chaser, RunManager 20-room run, item-choice doors), then Phase 5 (ship).
+Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–B (walls, ranged enemy) and **6.5 (Difficulty Levels)** complete and merged to main, plus menus/audio/death screen and items Specs 011–012. Next: Phase 6 C–E (smart chaser, RunManager 20-room run, item-choice doors), then Phase 5 (ship).
 
 ## Current Spec
 
-Spec 018 — Difficulty Levels (Phase 6.5) — **implemented** on branch `feature/difficulty-levels` (PR #4 draft), 2026-07-27. Awaiting team review/playtest. Phase 6 C–E (smart chaser, RunManager, door unlocks) remain queued.
-
-- **Implementation:** `systems/difficulty/` (DifficultyResource + apprentice/wizard/archmage .tres); `GameState.difficulty` (defaults Wizard = today's balance; survives reset_run). Enemies compute `applied_*` stats at spawn (speed/cooldowns/detection; base .tres never mutated); player takes max health + G3 i-frame duration from the difficulty (`Player.max_health()`); HUD heart bar syncs its count to max health (clones the template heart — Apprentice shows 7). New `ui/menu/difficulty_select` (wooden-button style, hotkeys 1/2/3, Wizard pre-selected, ESC backs out); main menu NEW GAME routes there. Smoke +7 checks (zero-drift, multipliers, countdown-invariant, 7-heart spawn), **41/41 PASS**. Flavor text = placeholder pending Design. Tune 2026-07-27 (Rafael playtest): Apprentice enemy speed 0.85 → 0.7 (±15% was unreadable in play).
+None — Spec 018 merged 2026-07-27 (PR #4). Next up: Spec 015 (smart chaser, Phase 6 C).
 
 ## Completed
 
@@ -64,6 +62,10 @@ D(RunManager/20 rooms)→E(door item unlock).
   → `ranged_shooter.tres`, `enemy1` stays melee). Firing plays shot.mp3 via
   `EventBus.enemy_shot`. Smoke +2 (ranged shot damages in the open; projectile
   stopped by a wall), 33/33 PASS.
+
+## Phase 6.5 — Difficulty Levels (Spec 018) — merged 2026-07-27 (PR #4)
+
+Three levels selected after New Game — Apprentice / Wizard / Archmage. `systems/difficulty/` (DifficultyResource + 3 .tres); `GameState.difficulty` defaults to Wizard = the pre-difficulty balance exactly (zero drift, smoke-asserted) and survives reset_run. Enemies compute `applied_*` stats at spawn (speed/cooldowns/detection — base .tres never mutated); player max health + G3 i-frame duration come from the difficulty; HUD heart bar clones its template heart to match (Apprentice = 7 hearts). `ui/menu/difficulty_select` in the wooden-button style (hotkeys 1/2/3, Wizard pre-selected, ESC back). **Item countdowns never scale** (technical-decisions.md). Playtest tune: Apprentice enemy speed 0.85 → 0.7. Smoke 41/41 PASS. Open: flavor text (Design), Archmage speed feel.
 
 ## Death screen, pause-key control, web audio, hit-sound trim — 2026-07-26
 
@@ -203,6 +205,5 @@ Both steps completed: `Body` is now the AnimatedSprite2D (32x32 frames from SHEE
 ## Resume Notes
 
 - Main is fully playable: menu → difficulty select → room_01 → room_02 → win; pause (ESC), death screen, audio, juice all live. 4 items in the pool; melee + ranged enemies; walls with LoS.
-- Branch `feature/difficulty-levels` (PR #4 draft): Spec 018 implemented + Apprentice speed tune. Merge after team review.
 - Smoke test: `godot --headless --path . res://tests/smoke_test.tscn` (41 checks). Door-crossing/scene-change is playtest-only (change_scene would kill the test container).
 - Known pre-existing: a few ObjectDB exit-leak warnings on headless runs (tech debt, check before ship).

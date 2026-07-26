@@ -76,7 +76,7 @@ Coding conventions (see [`docs/context/godot-standards.md`](docs/context/godot-s
 | 4 / 4.5 | Rooms, doors, HUD (+ art integration) | ✅ |
 | 4.6 | Game feel / juice pass (shake, hitstop, i-frames…) | ✅ |
 | 6 A–B | Maze walls + line of sight, ranged enemy + projectiles | ✅ |
-| 6.5 | Difficulty levels (Apprentice / Wizard / Archmage) | 🔄 in review |
+| 6.5 | Difficulty levels (Apprentice / Wizard / Archmage) | ✅ |
 | 6 C–E | Smart chaser, 20-room run (RunManager), item-choice doors | ⏳ |
 | 5 | Ship: export + itch.io | ⏳ |
 
