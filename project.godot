@@ -13,7 +13,10 @@ config_version=5
 config/name="The Bag of Holding"
 run/main_scene="res://ui/menu/main_menu.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
+boot_splash/bg_color=Color(1, 1, 1, 1)
+boot_splash/image="uid://kekiwmoor015"
 config/icon="res://icon.svg"
+boot_splash/minimum_display_time=2000
 
 [autoload]
 

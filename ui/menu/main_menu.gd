@@ -39,7 +39,7 @@ func _build() -> void:
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
 
-	var title := _label("THE BAG OF HOLDING", FONT_BOLD, 30, TEXT)
+	var title := _label("THE BAG OF NO BOTTOM", FONT_BOLD, 30, TEXT)
 	title.position = Vector2(80, 52)
 	add_child(title)
 
