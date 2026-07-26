@@ -273,7 +273,36 @@ func _run() -> void:
 		await get_tree().physics_frame
 	_check(player.health == wall_hp, "projectile stopped by a wall before the player")
 
-	# ---- Section 10: difficulty levels (Spec 018) ----
+	# ---- Section 10: smart chaser (Spec 015) ----
+	await _reset_arena(player)
+	wall_tiles.clear()
+	# Separation: two chasers starting on top of each other fan apart.
+	player.global_position = Vector2(320, 300)
+	var c1 := ENEMY_SCENE.instantiate() as Enemy
+	var c2 := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(c1)
+	get_tree().current_scene.add_child(c2)
+	c1.set_active(true)
+	c2.set_active(true)
+	c1.global_position = Vector2(320, 110)
+	c2.global_position = Vector2(324, 110)
+	for i in 30:
+		await get_tree().physics_frame
+	_check(c1.global_position.distance_to(c2.global_position) > 18.0,
+			"two chasers separate instead of clumping")
+
+	# Lunge: a chaser in range winds up then lunges and deals a hit.
+	await _reset_arena(player)
+	player.global_position = Vector2(320, 300)
+	var lunger := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(lunger)
+	lunger.set_active(true)
+	lunger.global_position = Vector2(320, 244)  # just inside lunge range
+	var lunge_hp := player.health
+	await _wait(1.3)  # windup + lunge should land one hit
+	_check(player.health < lunge_hp, "chaser's telegraphed lunge damages the player")
+
+	# ---- Section 11: difficulty levels (Spec 018) ----
 	await _reset_arena(player)
 	_check(GameState.difficulty != null and GameState.difficulty.display_name == "Wizard",
 			"default difficulty is Wizard (baseline)")
@@ -281,8 +310,9 @@ func _run() -> void:
 	var baseline := ENEMY_SCENE.instantiate() as Enemy
 	get_tree().current_scene.add_child(baseline)
 	baseline.global_position = Vector2(2000, 2000)
+	# Melee cadence is the lunge recover now (Spec 015 replaced attack_cooldown).
 	_check(is_equal_approx(baseline.applied_move_speed, baseline.stats.move_speed)
-			and is_equal_approx(baseline.applied_attack_cooldown, baseline.stats.attack_cooldown),
+			and is_equal_approx(baseline.applied_lunge_recover, baseline.stats.lunge_recover),
 			"Wizard-applied enemy stats equal base stats (zero drift)")
 	var orb_countdown := FIRE_ORB.activation_time_seconds
 	GameState.difficulty = preload("res://systems/difficulty/archmage.tres")
@@ -293,8 +323,8 @@ func _run() -> void:
 			"Archmage enemy speed scaled x1.15")
 	_check(is_equal_approx(hard.applied_detection_tiles, hard.stats.detection_radius_tiles * 1.2),
 			"Archmage detection scaled x1.2")
-	_check(is_equal_approx(hard.applied_attack_cooldown, hard.stats.attack_cooldown * 0.8),
-			"Archmage attack cooldown scaled x0.8")
+	_check(is_equal_approx(hard.applied_lunge_recover, hard.stats.lunge_recover * 0.8),
+			"Archmage melee cooldown scaled x0.8")
 	_check(is_equal_approx(FIRE_ORB.activation_time_seconds, orb_countdown),
 			"item countdown unchanged by difficulty (design stance)")
 	GameState.difficulty = preload("res://systems/difficulty/apprentice.tres")

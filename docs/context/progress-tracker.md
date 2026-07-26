@@ -6,9 +6,10 @@ Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–B (walls, ranged enemy
 
 ## Current Spec
 
-Two threads in flight (2026-07-27):
-- **Specs 017 + 020 + 021 (Phase 6 E), Drafts** on branch `feature/item-pickup`: complete the catalog (Magnetic Horseshoe, Atomic Orb), then item choice at doors. Team rules decided: full-catalog offers, distinct per room, duplicates allowed as the "no thanks" door (picking owned items does nothing). Open: guarantee-one-unowned bias (team), horseshoe pin interpretation, icons for the two new items (Design).
-- **Spec 019 — Floor-Based Difficulty Progression (Phase 6.6), Draft** on branch `feature/floor-difficulty` (PR #5): replaces Spec 018's select screen with floor-indexed tiers. Awaiting Rafael's calls (tier values, bonus-hits, .tres renames).
+**Active (2026-07-28): Specs 017 + 020 + 021 (Phase 6 E — item pickup + full catalog)** on branch `feature/item-pickup` — alignment landed, PR #6 reopened. Order: Spec 021 Atomic Orb → Spec 020 Magnetic Horseshoe (agglutination cluster, v2) → Spec 017 item choice at doors. Sheet icons for all 6 items confirmed on SHEETS (atomic 224,96; horseshoe 256,96).
+
+Parked:
+- **Spec 019 (Phase 6.6 — floor-based difficulty):** draft on branch `feature/floor-difficulty`; **PR #5 closed pending team alignment** (tier values, bonus-hits, .tres renames). No code written. Reopen when the design is settled.
 
 ## Completed
 
@@ -68,6 +69,12 @@ D(RunManager/20 rooms)→E(door item unlock).
   → `ranged_shooter.tres`, `enemy1` stays melee). Firing plays shot.mp3 via
   `EventBus.enemy_shot`. Smoke +2 (ranged shot damages in the open; projectile
   stopped by a wall), 33/33 PASS.
+- **C — Smart chaser (Spec 015, done):** the melee enemy replaced the magnet with
+  steering (separation so they don't clump + a per-enemy strafe/flank + raycast
+  wall-avoidance) and a **telegraphed lunge** state machine (CHASE → WINDUP crouch
+  → committed LUNGE with one contact hit → RECOVER), all parameterized on
+  `EnemyStats`. Ranged archetype unchanged. Smoke +2 (two chasers separate;
+  telegraphed lunge damages), 36/36 PASS.
 
 ## Phase 6.5 — Difficulty Levels (Spec 018) — merged 2026-07-27 (PR #4)
 
