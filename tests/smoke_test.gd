@@ -16,6 +16,8 @@ const AREA_DAMAGE: GDScript = preload("res://systems/magic_items/effects/area_da
 const RANGED_SCENE: PackedScene = preload("res://entities/enemies/enemy2.tscn")
 const PROJECTILE_SCENE: PackedScene = preload("res://entities/projectiles/enemy_projectile.tscn")
 const PLAYER_SCENE: PackedScene = preload("res://entities/player/player.tscn")
+const ATOMIC: MagicItemResource = preload("res://systems/magic_items/atomic_orb.tres")
+const MAGNET_EFFECT: GDScript = preload("res://systems/magic_items/effects/magnet_area_effect.gd")
 
 var _room: ROOM_SCRIPT
 var _failures: int = 0
@@ -341,6 +343,99 @@ func _run() -> void:
 	await get_tree().process_frame
 	# Leave the session on the baseline so nothing later inherits a test level.
 	GameState.difficulty = preload("res://systems/difficulty/wizard.tres")
+
+	# ---- Section 12: Atomic Orb (Spec 021) ----
+	await _reset_arena(player)
+	player.global_position = Vector2(80, 300)  # well outside the 3-tile blast
+	var near_atomic := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(near_atomic)
+	near_atomic.global_position = Vector2(384, 208)  # 2 tiles from the blast
+	var far_atomic := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(far_atomic)
+	far_atomic.global_position = Vector2(500, 340)  # ~5.7 tiles: outside
+	await get_tree().physics_frame
+	var atomic_point := Node2D.new()
+	get_tree().current_scene.add_child(atomic_point)
+	atomic_point.global_position = Vector2(320, 208)
+	var atomic_fx: MagicItemEffect = AREA_DAMAGE.new()
+	atomic_fx.set("damage_tier", 3)
+	atomic_fx.set("radius_tiles", 3.0)
+	atomic_fx.set("linger_seconds", 0.05)
+	atomic_fx.execute(atomic_point)
+	await get_tree().physics_frame
+	_check(near_atomic.hits_remaining <= 0,
+			"atomic blast (heavy, 3 tiles) kills a full-health grunt outright")
+	_check(is_instance_valid(far_atomic) and far_atomic.hits_remaining == far_atomic.stats.max_hits,
+			"enemy outside the 3-tile radius is untouched")
+	_check(ATOMIC.activation_time_seconds == 5.0 and ATOMIC.id == &"atomic_orb",
+			"atomic orb data: 5 s countdown, wired id")
+
+	# ---- Section 13: Magnetic Horseshoe (Spec 020) ----
+	await _reset_arena(player)
+	player.global_position = Vector2(80, 300)  # outside the pull radius
+	var glued_a := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(glued_a)
+	glued_a.global_position = Vector2(300, 100)
+	var glued_b := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(glued_b)
+	glued_b.global_position = Vector2(400, 130)
+	var free_c := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(free_c)
+	free_c.global_position = Vector2(560, 300)  # far from the magnet point
+	await get_tree().physics_frame
+	var magnet_point := Node2D.new()
+	get_tree().current_scene.add_child(magnet_point)
+	magnet_point.global_position = Vector2(350, 100)
+	var magnet_fx: MagicItemEffect = MAGNET_EFFECT.new()
+	magnet_fx.set("cluster_duration_seconds", 0.9)
+	magnet_fx.execute(magnet_point)
+	for i in 20:
+		await get_tree().physics_frame  # the yank
+	_check(glued_a.global_position.distance_to(magnet_point.global_position) < 48.0
+			and glued_b.global_position.distance_to(magnet_point.global_position) < 48.0,
+			"magnet gathers both enemies in radius onto the point")
+	_check(free_c.global_position.distance_to(Vector2(560, 300)) < 8.0,
+			"enemy outside the radius is not pulled")
+	for i in 20:
+		await get_tree().physics_frame
+	_check(glued_a.global_position.distance_to(glued_b.global_position) < 64.0,
+			"glued members stay together (blob cohesion)")
+	for i in 40:
+		await get_tree().physics_frame  # past the 0.9 s duration
+	_check(get_tree().get_nodes_in_group("magnet_clusters").is_empty(),
+			"cluster releases after its duration")
+
+	# ---- Section 14: run pool + door offers (Spec 017) ----
+	await _reset_arena(player)
+	player.global_position = Vector2(80, 300)
+	GameState.reset_run()
+	_check(GameState.run_pool.size() == 1 and GameState.run_pool[0].id == &"fire_orb",
+			"new run pool starts with only the Fire Orb")
+	# With a run active, draws must come from the run pool, not the bag's .tres
+	# (the injected Ursula-only pool would betray a fallback draw).
+	bag.pool = _pool_with(URSULA)
+	var drawn_ids: Array[StringName] = []
+	var catcher := func(d: MagicItemResource) -> void: drawn_ids.append(d.id)
+	EventBus.item_drawn.connect(catcher)
+	for i in 3:
+		bag.draw_or_throw(Vector2.RIGHT)   # draw
+		bag.draw_or_throw(Vector2.RIGHT)   # throw it away
+		await get_tree().physics_frame
+	EventBus.item_drawn.disconnect(catcher)
+	_check(drawn_ids == ([&"fire_orb", &"fire_orb", &"fire_orb"] as Array[StringName]),
+			"run-pool draws are Fire Orb only before any pickup")
+	_check(GameState.unlock_item(URSULA), "door pickup adds a new item to the run pool")
+	_check(not GameState.unlock_item(URSULA) and GameState.run_pool.size() == 2,
+			"duplicate pickup is a no-op (the 'no thanks' door)")
+	var offers: Array[MagicItemResource] = ROOM_SCRIPT.pick_offers(3)
+	_check(offers.size() == 3 and offers[0] != offers[1]
+			and offers[1] != offers[2] and offers[0] != offers[2],
+			"door offers are distinct within a room")
+	GameState.run_pool.clear()  # back to fallback mode; nothing runs after this
+	GameState.current_room = 0
+	atomic_point.queue_free()
+	magnet_point.queue_free()
+	await get_tree().process_frame
 
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")

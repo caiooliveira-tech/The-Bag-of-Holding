@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="ItemPoolResource" load_steps=7 format=3]
+[gd_resource type="Resource" script_class="ItemPoolResource" load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://systems/bag/item_pool_resource.gd" id="1"]
 [ext_resource type="Script" path="res://systems/magic_items/magic_item_resource.gd" id="2"]
@@ -6,7 +6,9 @@
 [ext_resource type="Resource" path="res://systems/magic_items/right_hand_of_ursula.tres" id="4"]
 [ext_resource type="Resource" path="res://systems/magic_items/left_hand_of_ursula.tres" id="5"]
 [ext_resource type="Resource" path="res://systems/magic_items/troy_wooden_horse.tres" id="6"]
+[ext_resource type="Resource" path="res://systems/magic_items/atomic_orb.tres" id="7"]
+[ext_resource type="Resource" path="res://systems/magic_items/magnetic_horseshoe.tres" id="8"]
 
 [resource]
 script = ExtResource("1")
-items = Array[ExtResource("2")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6")])
+items = Array[ExtResource("2")]([ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8")])

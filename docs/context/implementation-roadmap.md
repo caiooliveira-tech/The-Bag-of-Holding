@@ -258,7 +258,12 @@ Sub-phases
   cycles the 3 palettes, encodes the difficulty curve.
 - **E — Item unlock at doors (Spec 017):** on clear, each open door shows an
   item; walking through picks it into the run's pool. Pool starts at Fire Orb
-  and grows; persists across rooms via GameState.
+  and grows; persists across rooms via GameState. Team rules (2026-07-27):
+  offers come from the full catalog, distinct per room; duplicates of owned
+  items are allowed and act as the "no thanks" door (picking them does
+  nothing). Prerequisite: complete the catalog first — **Spec 020 (Magnetic
+  Horseshoe)** and **Spec 021 (Atomic Orb)** — so doors have 6 items to
+  distribute.
 
 Deliverable
 

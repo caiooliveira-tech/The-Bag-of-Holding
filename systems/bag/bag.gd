@@ -31,7 +31,11 @@ func draw_or_throw(direction: Vector2) -> void:
 
 
 func _draw_item() -> void:
-	var item_data: MagicItemResource = pool.items.pick_random()
+	# The run's growing pool (Spec 017) when a run is active; the static
+	# .tres otherwise (dev scene runs, smoke-test injected pools).
+	var source: Array[MagicItemResource] = GameState.run_pool \
+			if not GameState.run_pool.is_empty() else pool.items
+	var item_data: MagicItemResource = source.pick_random()
 	var item := MAGIC_ITEM_SCENE.instantiate() as MagicItem
 	item.setup(item_data)
 	_attach_point.add_child(item)

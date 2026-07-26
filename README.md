@@ -77,11 +77,13 @@ Coding conventions (see [`docs/context/godot-standards.md`](docs/context/godot-s
 | 4.6 | Game feel / juice pass (shake, hitstop, i-frames…) | ✅ |
 | 6 A–B | Maze walls + line of sight, ranged enemy + projectiles | ✅ |
 | 6.5 | Difficulty levels (Apprentice / Wizard / Archmage) | ✅ |
-| 6 C–E | Smart chaser, 20-room run (RunManager), item-choice doors | ⏳ |
+| 6 C | Smart chaser (steering, separation, telegraphed lunge) | ✅ |
+| 6 E | Full 6-item catalog + item choice at doors | 🔄 in review |
+| 6 D | 20-room run (RunManager) | ⏳ |
 | 5 | Ship: export + itch.io | ⏳ |
 
 See [`docs/context/implementation-roadmap.md`](docs/context/implementation-roadmap.md) for the full plan.
 
 ## Status
 
-Playable end-to-end: main menu → difficulty select → tiled combat rooms → win/death screens, with 4 magic items (Fire Orb, both Hands of Ursula, Troy the Wooden Horse), melee + ranged enemies, walls with line-of-sight, audio, and a full game-feel pass. Specs 001–014 + 018 implemented; next up is the 20-room roguelike run (Phase 6 C–E). Track live progress in [`docs/context/progress-tracker.md`](docs/context/progress-tracker.md).
+Playable end-to-end: main menu → difficulty select → tiled combat rooms → win/death screens, with 6 magic items (Fire Orb, both Hands of Ursula, Troy, Atomic Orb, Magnetic Horseshoe), item pickups at cleared-room doors, smart melee + ranged enemies, walls with line-of-sight, audio, and a full game-feel pass. Specs 001–015, 017–018, 020–021 implemented; next up is the 20-room run (Phase 6 D). Track live progress in [`docs/context/progress-tracker.md`](docs/context/progress-tracker.md).

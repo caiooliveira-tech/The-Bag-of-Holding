@@ -37,6 +37,10 @@ signal freeze_ended
 ## A ranged enemy fired a projectile (Spec 014).
 @warning_ignore("unused_signal")
 signal enemy_shot
+## A door pickup added a NEW item to the run's pool (Spec 017) — not fired
+## on "no thanks" duplicate doors.
+@warning_ignore("unused_signal")
+signal item_unlocked(item_data: MagicItemResource)
 ## Entered a new room/level — carries the title for the drop-in sign (Spec 022).
 @warning_ignore("unused_signal")
 signal level_entered(title: String)

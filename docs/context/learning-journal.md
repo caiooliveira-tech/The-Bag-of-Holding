@@ -319,6 +319,61 @@ scaling enemy pressure and player durability — never the item countdowns.
 
 - Godot docs: Resource (caching), Node.duplicate, SceneTree.quit.
 
+
+---
+
+## Session 2026-07-28 — Phase 6 E (Specs 017+020+021: full catalog + door pickups)
+
+### Feature
+
+Atomic Orb, Magnetic Horseshoe (agglutination cluster), and the door item-pickup
+loop: the run pool starts at Fire Orb and grows through door choices.
+
+### What was implemented
+
+- `atomic_orb.tres` — zero new code (AreaDamageEffect data: tier 3, 3 tiles, 2 s).
+- `MagnetAreaEffect` + `MagnetCluster` (`systems/magic_items/effects/`): gathers
+  every character in radius and glues them for 5 s by re-applying a centroid-seeking
+  impulse through the existing `apply_knockback` channel each physics frame.
+- `GameState.run_pool` + `ITEM_CATALOG` + `unlock_item()`; Bag falls back to its
+  `.tres` when no run is active; `Room.pick_offers()` (static, distinct sampling);
+  door offer icons on the door's local +Y; `EventBus.item_unlocked`.
+
+### Why this architecture?
+
+- **Knockback as the pull channel:** the cluster moves members without touching
+  player/enemy movement code — both classes already expose `apply_knockback`, and
+  re-applying per frame turns an impulse API into a continuous force. Emergent
+  "blob moves as one" (members keep their AI/input) instead of a scripted leader.
+- **Empty-pool-means-no-run:** the fallback rule keeps every existing entry path
+  (smoke injection, dev scene runs) untouched — same zero-drift trick as Spec 018.
+- **Doors stay dumb:** the Room samples offers and owns the pickup; the door only
+  displays and reports which one was walked through (signal `.bind(door)`).
+
+### Godot concepts learned
+
+- `Callable.bind()` to add the emitter's identity to a signal connection.
+- `top_level = true` to opt a child node out of its parent's (rotated) transform.
+- `global_transform.y` as "the door's room-inward direction" on ±90° variants.
+- Static funcs on preloaded GDScript consts are callable without an instance.
+- Typed-inference gotcha: `PreloadedScript.new()` and static calls through a
+  `GDScript` const return Variant — annotate explicitly under warnings-as-errors.
+
+### Common mistakes
+
+- Placing door decorations in door-local space: the top door's icon floated
+  outside the camera. Local axes (or `top_level` + a room-inward offset) fix it.
+- Debug scenes that fight the Room state machine: the telegraph re-activates
+  every enemy, silently undoing a test's `set_active(false)`.
+
+### Suggested exercises
+
+- Add a 7th catalog item as pure data and watch doors offer it with zero code.
+- Tune `MagnetCluster.PULL_GAIN` / `PULL_MAX` in the script and feel blob stiffness.
+
+### References
+
+- Godot docs: CharacterBody2D.move_and_slide, Callable.bind, Node2D.top_level.
 ---
 
 ## Session 2026-07-27 (later) — Spec 022 (Screen Redesign + Title + Level Title)
