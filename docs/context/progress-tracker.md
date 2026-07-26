@@ -48,6 +48,10 @@ no balance drift except G3's post-hit i-frames (needs a team call).
   (from `MagicItemEffect.effect_kind()`). Smoke 21/21 PASS. Awaiting playtest.
   NOTE: new `class_name` scripts are preloaded by path in CLI-reached code (ImpactBurst)
   to dodge the global class-cache miss on headless/smoke runs.
+- **G4 (branch `fase-4.6-g4`) implemented 2026-07-26:** draw overshoot (item springs
+  0→1.2→1.0 elastic on draw), urgency pulse (item scale pulses with the blink when
+  urgency > 0.6, skipped in flight), explosion ring (`systems/juice/expanding_ring.gd`
+  on area_damage trigger), dash ghost trail (fading sprite after-images). Smoke 24/24 PASS.
 - **G3 (branch `fase-4.6-g3`) implemented 2026-07-26:** post-hit i-frames
   (`PlayerStats.hit_iframe_duration` = 0.5s, set 0 to disable) blocking ENEMY damage
   only — unified with dash i-frames via `_is_enemy_invulnerable()`; own item effects

@@ -9,6 +9,10 @@ signal special_pressed
 
 enum State { IDLE, MOVE, DASH }
 
+## Game feel (Spec 010, G4): dash after-image cadence and look.
+const GHOST_INTERVAL: float = 0.03
+const GHOST_COLOR: Color = Color(0.6, 0.8, 1.0, 0.45)
+
 @export var stats: PlayerStats
 
 var facing: Vector2 = Vector2.DOWN
@@ -22,6 +26,7 @@ var _freeze_timer: float = 0.0
 var _knockback: Vector2 = Vector2.ZERO
 var _iframe_timer: float = 0.0
 var _iframe_tween: Tween
+var _ghost_timer: float = 0.0
 
 @onready var _facing_pivot: Node2D = $FacingPivot
 @onready var _facing_marker: Marker2D = $FacingPivot/FacingMarker
@@ -160,11 +165,34 @@ func _start_dash(direction: Vector2) -> void:
 
 func _tick_dash(delta: float) -> void:
 	velocity = _dash_direction * stats.dash_speed
+	_ghost_timer -= delta
+	if _ghost_timer <= 0.0:
+		_spawn_dash_ghost()
+		_ghost_timer = GHOST_INTERVAL
 	_dash_timer -= delta
 	if _dash_timer <= 0.0:
 		_state = State.IDLE
 		_dash_cooldown_timer = stats.dash_cooldown
 		dash_ended.emit()
+
+
+## Fading after-image of the current sprite frame (Spec 010, G4).
+func _spawn_dash_ghost() -> void:
+	if _body_sprite == null or _body_sprite.sprite_frames == null:
+		return
+	var tex := _body_sprite.sprite_frames.get_frame_texture(
+			_body_sprite.animation, _body_sprite.frame)
+	if tex == null:
+		return
+	var ghost := Sprite2D.new()
+	ghost.texture = tex
+	ghost.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	ghost.global_position = _body_sprite.global_position
+	ghost.modulate = GHOST_COLOR
+	get_tree().current_scene.add_child(ghost)
+	var tween := ghost.create_tween()
+	tween.tween_property(ghost, "modulate:a", 0.0, 0.18)
+	tween.tween_callback(ghost.queue_free)
 
 
 ## Apprentice Boot: redirect a thrown/landed item 5 tiles further,

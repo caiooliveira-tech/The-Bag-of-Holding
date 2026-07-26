@@ -97,7 +97,7 @@ Sells the core mechanic and friendly-fire clarity.
 
 **Deliverable:** taking a hit is survivable and legible; no more instant double-taps.
 
-### Phase G4 — Action Personality (cheap, high-charm)
+### Phase G4 — Action Personality (cheap, high-charm) — **Implemented 2026-07-26**
 
 Small tweens on the most-repeated actions.
 

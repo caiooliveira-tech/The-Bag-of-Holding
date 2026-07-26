@@ -39,7 +39,17 @@ func setup(item_data: MagicItemResource) -> void:
 func _ready() -> void:
 	add_to_group("magic_items")
 	_build_graybox_visual()
+	_play_draw_overshoot()
 	countdown_started.emit()
+
+
+## The draw springs out of the bag (Spec 010, G4): 0 → 1.2 → 1.0, elastic.
+func _play_draw_overshoot() -> void:
+	_visual.scale = Vector2.ZERO
+	var tween := create_tween()
+	tween.tween_property(_visual, "scale", Vector2(1.2, 1.2), 0.12) \
+			.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(_visual, "scale", Vector2.ONE, 0.08)
 
 
 func _process(delta: float) -> void:
@@ -156,6 +166,11 @@ func _update_blink() -> void:
 	var hz: float = lerpf(BLINK_MIN_HZ, BLINK_MAX_HZ, urgency)
 	var bright := fmod(_elapsed * hz, 1.0) < 0.5
 	_visual.modulate = Color.WHITE if bright else Color(0.55, 0.55, 0.55)
+	# Near detonation, pulse the size with the blink (Spec 010, G4). Skipped
+	# in flight, where _apply_flight owns the scale (squash & stretch).
+	if state != State.THROWN and urgency > 0.6:
+		var pulse := 1.0 + 0.14 * urgency * absf(sin(_elapsed * hz * PI))
+		_visual.scale = Vector2(pulse, pulse)
 
 
 func _build_graybox_visual() -> void:
