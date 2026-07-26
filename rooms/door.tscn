@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://rooms/door.gd" id="1"]
+[ext_resource type="Texture2D" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="2"]
 
 [sub_resource type="RectangleShape2D" id="blocker_shape"]
 size = Vector2(64, 32)
@@ -8,14 +9,30 @@ size = Vector2(64, 32)
 [sub_resource type="RectangleShape2D" id="passage_shape"]
 size = Vector2(56, 44)
 
+[sub_resource type="AtlasTexture" id="door_closed_row1"]
+atlas = ExtResource("2")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="door_open_row1"]
+atlas = ExtResource("2")
+region = Rect2(256, 0, 32, 32)
+
 [node name="Door" type="StaticBody2D"]
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("1")
+closed_texture = SubResource("door_closed_row1")
+open_texture = SubResource("door_open_row1")
 
-[node name="Body" type="Polygon2D" parent="."]
-color = Color(0.5, 0.36, 0.2, 1)
-polygon = PackedVector2Array(-32, -16, 32, -16, 32, 16, -32, 16)
+[node name="Body" type="Node2D" parent="."]
+
+[node name="LeafLeft" type="Sprite2D" parent="Body"]
+position = Vector2(-16, 0)
+texture_filter = 1
+
+[node name="LeafRight" type="Sprite2D" parent="Body"]
+position = Vector2(16, 0)
+texture_filter = 1
 
 [node name="Blocker" type="CollisionShape2D" parent="."]
 shape = SubResource("blocker_shape")
