@@ -33,6 +33,12 @@ reasoning/constraint is visible without having to diff the engine config.
   post-hit i-frames) only. **Item countdown timers never scale with difficulty** —
   the countdown puzzle is the game's identity and timer mastery must transfer
   across levels.
+- **Difficulty becomes floor-based (Spec 019, same day — supersedes 018's menu):**
+  the select screen is removed; difficulty is a function of the floor
+  (`current_room` → tier array, clamped). Enemies repeat across floors but arrive
+  buffed. Player durability is constant for the whole run (5 hearts / 0.5 s
+  i-frames). The countdown stance above is unchanged. Spec 018's resource/apply
+  infrastructure carries forward.
 
 ## Pending Decisions
 

@@ -6,7 +6,9 @@ Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–B (walls, ranged enemy
 
 ## Current Spec
 
-None — Spec 018 merged 2026-07-27 (PR #4). Next up: Spec 015 (smart chaser, Phase 6 C).
+Two threads in flight (2026-07-27):
+- **Spec 019 — Floor-Based Difficulty Progression (Phase 6.6), Draft** on branch `feature/floor-difficulty`. Replaces Spec 018's select screen: difficulty climbs with the tower (tier array indexed by `current_room`, clamped; new `enemy_bonus_hits` knob; player durability constant). Awaiting Rafael/team review before implementation.
+- **Spec 017 — Item choice at doors (Phase 6 E):** design doubts translated and sent to the team (offer rules, duplicates, door destinations, phase order, pool visibility); spec will be written once answers land.
 
 ## Completed
 

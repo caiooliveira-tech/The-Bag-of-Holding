@@ -276,6 +276,10 @@ Deliverable
 > countdown timers never scale** (design stance: the countdown is the game's
 > identity; mastery must transfer across difficulties). Independent of Phase 6
 > C–E; interacts with D only in that room composition stays RunManager's job.
+>
+> **Superseded in part by Phase 6.6 (Spec 019, 2026-07-27):** the select screen
+> is removed; difficulty becomes floor-based. The resource/apply infrastructure
+> built here carries forward unchanged.
 
 Goal
 
@@ -295,6 +299,35 @@ Deliverable
 
 ✓ Three playable difficulties selectable at New Game
 ✓ Wizard identical to today's balance; countdowns identical on all levels
+✓ Smoke test green
+
+---
+
+# Phase 6.6 — Floor-Based Difficulty Progression
+
+> Added 2026-07-27 (Rafael). Spec 019. Replaces Spec 018's select screen:
+> difficulty now climbs with the tower — each floor maps to a tier
+> (`DifficultyResource` array indexed by room, clamped at the end), enemies
+> repeat but arrive buffed (speed / cooldowns / detection / bonus hits).
+> Player durability stays constant; **countdowns still never scale**. Designed
+> to be absorbed by RunManager (Phase 6 D) when it lands.
+
+Goal
+
+The tower is the difficulty curve — no menu, just an ever-harder climb.
+
+Tasks
+
+- Spec 019: tier array in GameState (`difficulty` becomes a getter of
+  `current_room`), `enemy_bonus_hits` knob, tier .tres data
+- Remove `ui/menu/difficulty_select`; New Game → room_01 directly
+- Enemy max-hits buffed per tier (applied at spawn, tint math included)
+- Smoke rework: floor-2 zero-drift anchor, floor-3 buffs, clamp, countdowns
+
+Deliverable
+
+✓ Difficulty rises floor by floor with no player-facing menu
+✓ Floor 2 = exact old baseline; clamping beyond the last tier
 ✓ Smoke test green
 
 ---
