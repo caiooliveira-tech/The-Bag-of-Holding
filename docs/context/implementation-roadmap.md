@@ -220,6 +220,32 @@ Deliverable
 
 ---
 
+# Phase 4.7 — Front-End & Narrative
+
+> Spec 022 (title screen, brick/parchment menu art pass, level-title sign) —
+> **shipped**. Spec 023 (cutscenes) added 2026-07-28 after Design delivered the
+> 12-frame intro storyboard. Own branch, docs-only spec first, as always.
+
+Goal
+
+Wrap the game in its story and its look: a title screen, art-passed menus, and
+an intro cutscene that explains the letter, the Bag, and the tower.
+
+Tasks
+
+- Spec 022 — title screen, menu redesign, level-title sign ✔
+- Spec 023 — data-driven cutscene player (`CutsceneResource` + frame resources)
+  and the intro: raven → letter → Bag → "I'll take the bag to the tower"
+- Import the delivered raven / letter / bag art into `assets/cutscenes/`
+
+Deliverable
+
+✓ New Game → difficulty → intro cutscene → room_01, skippable with ESC
+✓ Adding another cutscene (e.g. the ending) is pure data, no new code
+✓ Smoke test green
+
+---
+
 # Phase 6 — Roguelike Progression (challenge & content)
 
 > Added 2026-07-26 (team). Turns two dumb rooms into a designed 20-room run with

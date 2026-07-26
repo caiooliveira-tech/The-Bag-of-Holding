@@ -6,15 +6,17 @@ Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–C (walls, ranged enemy
 
 ## Current Spec
 
-**Active (2026-07-28): Specs 017 + 020 + 021 implemented** on branch `feature/item-pickup` (PR #6) — awaiting Rafael's playtest + team review.
+**Spec 023 — Cutscenes (Phase 4.7) — implemented** on branch `feature/cutscenes` (PR #7), 2026-07-28; awaiting playtest + team review.
 
-- **Spec 021 Atomic Orb:** pure data on AreaDamageEffect (5 s / heavy 3 hits / 3 tiles / 2 s linger), icon SHEETS (224,96). Placeholder SFX (fireball).
-- **Spec 020 Magnetic Horseshoe (v2 cluster):** `MagnetAreaEffect` + `MagnetCluster` — everyone in 3 tiles (player included, LoS) yanked to the point and glued 5 s via per-frame centroid pull on the knockback channel (zero movement-code changes); horseshoe icon rides the blob. Icon (256,96); placeholder SFX (hand_explosions).
-- **Spec 017 door pickups:** `GameState.run_pool` starts [fire_orb] on reset_run (empty = fallback to the Bag's .tres, so dev/smoke flows unchanged); on clear each door gets a distinct random offer from the 6-item `ITEM_CATALOG` (floating icon on the door's room-inward axis); walk-through = pickup (owned duplicate = silent no-op, the "no thanks" door); `EventBus.item_unlocked` → draw SFX. Item pool .tres now lists all 6 (fallback/reference).
-- Smoke +12 checks (atomic kill/radius/data, magnet gather/outsider/cohesion/release, run-pool start/draws/unlock/no-op/distinct-offers), **55/55 PASS**. Door-offer placement verified by scripted screenshots.
+- `systems/cutscenes/`: `CutsceneFrameResource` (text / art / layout / optional sfx) + `CutsceneResource` (frames + next_scene_path) + `intro.tres` (12 frames). `ui/cutscene/cutscene_player.gd|tscn` renders it; `intro_cutscene.tscn` binds the resource. Adding the ending cutscene is now pure data.
+- Two layouts per Design's storyboard: DIALOGUE (art perched on a full-bleed `bg.png` banner, centered ink text) and READING (letter/Bag on one side, Euclidus's words in light text on the other, no banner).
+- Typewriter reveal; a press completes the line, the next advances; ESC skips. Flow: New Game → difficulty → cutscene → room_01, **once per launch** via `GameState.intro_seen`.
+- Art imported to `assets/cutscenes/` (raven/letter/bag). Smoke +4 data checks, **59/59 PASS**; layouts verified by scripted screenshots.
+- Still open: caw SFX + optional cutscene music (Design); ending cutscene content.
 
-Parked:
-- **Spec 019 (Phase 6.6 — floor-based difficulty):** draft on branch `feature/floor-difficulty`; **PR #5 closed pending team alignment** (tier values, bonus-hits, .tres renames). No code written. Reopen when the design is settled.
+Parked: **Spec 019 (floor-based difficulty, Phase 6.6)** on `feature/floor-difficulty`, PR #5 closed pending team alignment.
+
+Queued next: Phase 6 D — Spec 016 (RunManager, 20-room run).
 
 ## Completed
 
