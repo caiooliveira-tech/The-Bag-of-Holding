@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="LevelResource" format=3 uid="uid://dk3rl84equ2f6"]
+
+[ext_resource type="Script" uid="uid://bovx6nmc6lddh" path="res://systems/run/level_resource.gd" id="1"]
+[ext_resource type="Script" uid="uid://dfbbsclxvkije" path="res://systems/tutorial/tutorial_beat_resource.gd" id="2_i55mv"]
+
+[resource]
+script = ExtResource("1")
+title = "7th Floor - Cover"
+palette_row = 1
+shooter_count = 3
+wall_pattern = 2

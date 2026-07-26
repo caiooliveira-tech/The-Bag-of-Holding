@@ -5,7 +5,7 @@
 ## Spec 022 redesign: brick backdrop + banner, built on the MenuUI helper.
 extends Control
 
-const ROOM_01 := "res://rooms/room_01.tscn"
+const FIRST_LEVEL := "res://rooms/level.tscn"
 const INTRO_CUTSCENE := "res://ui/cutscene/intro_cutscene.tscn"
 const MAIN_MENU := "res://ui/menu/main_menu.tscn"
 
@@ -122,4 +122,4 @@ func _activate(index: int) -> void:
 	GameState.reset_run()
 	# The story beat is the last thing before play (Spec 023); once per launch,
 	# so replaying a run drops you straight into the tower.
-	get_tree().change_scene_to_file(ROOM_01 if GameState.intro_seen else INTRO_CUTSCENE)
+	get_tree().change_scene_to_file(FIRST_LEVEL if GameState.intro_seen else INTRO_CUTSCENE)

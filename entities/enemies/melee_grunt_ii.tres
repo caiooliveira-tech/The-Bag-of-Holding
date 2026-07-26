@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="EnemyStats" format=3 uid="uid://cgf02jy0kmq4b"]
+
+[ext_resource type="Script" uid="uid://ceb2vo8s8n042" path="res://entities/enemies/enemy_stats.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+move_speed = 112.0
+detection_radius_tiles = 5.5
+attack_cooldown = 0.68
+max_hits = 3
+tint = Color(0.72, 0.92, 1.2, 1)

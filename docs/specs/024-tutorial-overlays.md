@@ -1,6 +1,11 @@
 # Spec 024 - Tutorial Overlays (Level 1)
 
-**Status:** Draft (2026-07-28)
+**Status:** Implemented (2026-07-28, branch `feature/levels`, PR #8)
+
+Implementation notes: shipped with the proposed copy fixes **and** the movement
+line (open question 1) — beat 1 now names WASD/arrows and SHIFT, since nothing
+else told the player how to move. `TutorialOverlay` is an autoload mirroring
+DeathScreen/Pause/LevelTitle.
 
 **Pairs with:** Spec 016 (level 1 is the tutorial floor) and Spec 022 (reuses
 the parchment/ink front-end look).

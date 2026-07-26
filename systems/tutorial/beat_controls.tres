@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="TutorialBeatResource" format=3 uid="uid://voyb74yckm0u"]
+
+[ext_resource type="Script" uid="uid://dfbbsclxvkije" path="res://systems/tutorial/tutorial_beat_resource.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+text = "Move with WASD or the arrows, dash with SHIFT.
+
+Press SPACE to draw an item from your bag — press it again to throw. Every enemy on the floor must go."

@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="TutorialBeatResource" format=3 uid="uid://crktdivm7naeo"]
+
+[ext_resource type="Script" uid="uid://dfbbsclxvkije" path="res://systems/tutorial/tutorial_beat_resource.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+text = "Clearing a floor unlocks its doors, and each one offers a new item for your bag.
+
+Choose well — from then on it is drawn at random."
+trigger = 1
