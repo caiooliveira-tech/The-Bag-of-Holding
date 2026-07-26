@@ -3,16 +3,8 @@
 ## the tree is paused (process_mode ALWAYS). Ignored in menus (no player).
 extends CanvasLayer
 
-const FONT_BOLD: FontFile = preload("res://assets/fonts/Dellas-Bold.otf")
-const FONT_REG: FontFile = preload("res://assets/fonts/Dellas-Regular.otf")
-const BTN_ACTIVE: Texture2D = preload("res://assets/ui/btn_active.png")
-const BTN_INACTIVE: Texture2D = preload("res://assets/ui/btn_inactive.png")
-
 const MAIN_MENU := "res://ui/menu/main_menu.tscn"
 const OPTIONS := "res://ui/menu/options_menu.tscn"
-
-const TEXT := Color(0.93, 0.92, 0.95)
-const MUTED := Color(0.62, 0.6, 0.66)
 
 const ITEMS: Array[Dictionary] = [
 	{"label": "RESTART LEVEL", "action": &"restart"},
@@ -41,30 +33,21 @@ func _build() -> void:
 	add_child(_root)
 
 	var dim := ColorRect.new()
-	dim.color = Color(0.05, 0.04, 0.07, 0.72)
+	dim.color = Color(0.05, 0.04, 0.07, 0.78)
 	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
 	dim.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_root.add_child(dim)
 
-	var title := _label("THE BAG OF NO BOTTOM", FONT_BOLD, 30, TEXT)
-	title.position = Vector2(80, 52)
-	_root.add_child(title)
+	# Logo on its corner parchment, flush to the top-left — matches the menu.
+	MenuUI.corner_logo(_root)
+	MenuUI.label_at(_root, "PAUSED", MenuUI.FONT_BOLD, 22, MenuUI.LIGHT, Vector2(84, 250))
 
 	for i in ITEMS.size():
-		var row := TextureRect.new()
-		row.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		row.stretch_mode = TextureRect.STRETCH_SCALE
-		row.position = Vector2(80, 132 + i * 52)
-		row.custom_minimum_size = Vector2(360, 44)
-		_root.add_child(row)
-		var name_label := _label(ITEMS[i]["label"], FONT_BOLD, 16, TEXT)
-		name_label.position = Vector2(24, 12)
-		row.add_child(name_label)
+		var row := MenuUI.button_row(_root, ITEMS[i]["label"], Vector2(80, 296 + i * 58))
 		_rows.append(row)
 
-	var hint := _label("[ESC] RESUME     [W/S] NAVIGATE     [SPACE/ENTER] SELECT", FONT_REG, 12, MUTED)
-	hint.position = Vector2(80, 688)
-	_root.add_child(hint)
+	MenuUI.label_at(_root, "[ESC] RESUME     [W/S] NAVIGATE     [SPACE/ENTER] SELECT",
+			MenuUI.FONT_REG, 12, MenuUI.LIGHT_MUTED, Vector2(80, 688))
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -114,10 +97,7 @@ func _move(delta: int) -> void:
 
 func _refresh() -> void:
 	for i in _rows.size():
-		var active := i == _selected
-		_rows[i].texture = BTN_ACTIVE if active else BTN_INACTIVE
-		_rows[i].custom_minimum_size.x = 360.0 if active else 320.0
-		_rows[i].size.x = _rows[i].custom_minimum_size.x
+		MenuUI.select_button(_rows[i], i == _selected)
 
 
 func _activate(index: int) -> void:
@@ -136,10 +116,3 @@ func _activate(index: int) -> void:
 			get_tree().quit()
 
 
-func _label(text: String, font: FontFile, size: int, color: Color) -> Label:
-	var label := Label.new()
-	label.text = text
-	label.add_theme_font_override("font", font)
-	label.add_theme_font_size_override("font_size", size)
-	label.add_theme_color_override("font_color", color)
-	return label

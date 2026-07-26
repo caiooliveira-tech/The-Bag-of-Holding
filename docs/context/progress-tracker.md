@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–C (walls, ranged enemy, smart chaser) and **6.5 (Difficulty Levels)** complete and merged to main, plus menus/audio/death screen and items Specs 011–012. **Phase 6 E (full catalog + door pickups, Specs 017/020/021) implemented on PR #6, in team review.** Next: Phase 6 D (RunManager 20-room run), then Phase 5 (ship). Parked: Spec 019 floor difficulty (pending team alignment).
+Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–C (walls, ranged enemy, smart chaser), **6.5 (Difficulty Levels)** and **Spec 022 (screen redesign + Title + Level Title)** complete on main, plus menus/audio/death screen and items Specs 011–012. Next: Phase 6 D–E (RunManager 20-room run, item-choice doors), then Phase 5 (ship).
 
 ## Current Spec
 
@@ -80,6 +80,31 @@ D(RunManager/20 rooms)→E(door item unlock).
   → committed LUNGE with one contact hit → RECOVER), all parameterized on
   `EnemyStats`. Ranged archetype unchanged. Smoke +2 (two chasers separate;
   telegraphed lunge damages), 36/36 PASS.
+
+## Screen redesign + Title + Level Title (Spec 022) — 2026-07-27
+
+Art pass over the front-end using `assets/screens/` (brick wall, scroll,
+banner, hanging sign, crow) + `logo-jogo.png`. New shared `ui/menu/menu_ui.gd`
+(`class_name MenuUI`, static builders + tokens) drives brick backdrop, parchment
+panels, logo and text across every screen — no per-screen art duplication.
+- **Title Screen** (`ui/menu/title_screen.*`, now `main_scene`): logo on a scroll
+  + pulsing "PRESS ANY BUTTON TO START"; any key/pad/click → menu. Boot splash is
+  now black with `show_image=false` (blank), so the Title fades in "fresh".
+- **Main menu / Options / Credits / Pause / Difficulty select** rebuilt on MenuUI;
+  behavior unchanged (same options/controls/difficulty flow/ESC routes). Crow art
+  first shipped with an opaque white box (interim mechanical cut-out); Design then
+  delivered a transparent `img-main-menu.png`, so the cut-out was dropped and the
+  helper points straight at the delivered asset.
+- **Level Title**: `EventBus.level_entered(title)` + `LevelTitle` autoload
+  (CanvasLayer) drops `bg2.png` from the top over a black dim overlay (fades in
+  with the drop, out with the lift), holds ~1.4 s. `Room` gained `@export
+  level_title`; room_01 = "1st Floor - Room A", room_02 = "…Room B".
+- Layout pass (Caio feedback): menu + pause use a corner-anchored logo parchment
+  (`bg-logo-main-menu.png`, flush top-left, delivered pre-cropped) via
+  `MenuUI.corner_logo`; menu + difficulty descriptions sit beside the buttons,
+  top-aligned to the first button.
+- Verified via `tests/screenshot_screens.tscn` (title/menu/options/credits/
+  difficulty/level-title/pause all render to spec). Smoke 43/43 PASS. Awaiting playtest.
 
 ## Phase 6.5 — Difficulty Levels (Spec 018) — merged 2026-07-27 (PR #4)
 

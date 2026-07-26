@@ -28,6 +28,7 @@ size = Vector2(32, 168)
 [node name="Room01" type="Node2D" unique_id=1097286714]
 script = ExtResource("1")
 next_scene_path = "res://rooms/room_02.tscn"
+level_title = "1st Floor - Room A"
 
 [node name="RoomTiles" type="TileMapLayer" parent="." unique_id=1957818684]
 texture_filter = 1

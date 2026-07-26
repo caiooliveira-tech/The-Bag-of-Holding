@@ -11,6 +11,8 @@ const DOOR_SCRIPT: GDScript = preload("res://rooms/door.gd")
 
 @export_file("*.tscn") var next_scene_path: String = ""
 @export var telegraph_seconds: float = 1.0
+## Announced by the drop-in Level Title sign on entry (Spec 022). Empty = no sign.
+@export var level_title: String = ""
 
 var state: State = State.WAITING
 
@@ -21,6 +23,7 @@ var _enemies_alive: int = 0
 
 func _ready() -> void:
 	AudioManager.play_music(&"in_game")
+	EventBus.level_entered.emit(level_title)
 	EventBus.enemy_died.connect(_on_enemy_died)
 	for node in _doors:
 		var door := node as DOOR_SCRIPT

@@ -41,3 +41,6 @@ signal enemy_shot
 ## on "no thanks" duplicate doors.
 @warning_ignore("unused_signal")
 signal item_unlocked(item_data: MagicItemResource)
+## Entered a new room/level — carries the title for the drop-in sign (Spec 022).
+@warning_ignore("unused_signal")
+signal level_entered(title: String)
