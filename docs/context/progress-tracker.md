@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–B (walls, ranged enemy) and **6.5 (Difficulty Levels)** complete and merged to main, plus menus/audio/death screen and items Specs 011–012. Next: Phase 6 C–E (smart chaser, RunManager 20-room run, item-choice doors), then Phase 5 (ship).
+Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–C (walls, ranged enemy, smart chaser) and **6.5 (Difficulty Levels)** complete and merged to main, plus menus/audio/death screen and items Specs 011–012. **Phase 6 E (full catalog + door pickups, Specs 017/020/021) implemented on PR #6, in team review.** Next: Phase 6 D (RunManager 20-room run), then Phase 5 (ship). Parked: Spec 019 floor difficulty (pending team alignment).
 
 ## Current Spec
 
