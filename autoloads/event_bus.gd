@@ -31,3 +31,6 @@ signal player_dashed
 signal player_kicked
 @warning_ignore("unused_signal")
 signal door_opened
+## A character's freeze wore off (thaw) — used for the un-freeze SFX.
+@warning_ignore("unused_signal")
+signal freeze_ended

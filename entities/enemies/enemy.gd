@@ -176,6 +176,7 @@ func _update_idle_bob(delta: float) -> void:
 
 ## Icy overbright pop as the freeze breaks (Spec 010, G2), settling to normal.
 func _thaw_flash() -> void:
+	EventBus.freeze_ended.emit()
 	modulate = Color(2.0, 2.2, 2.6)
 	var tween := create_tween()
 	tween.tween_property(self, "modulate", Color.WHITE, 0.25)

@@ -27,23 +27,25 @@ on rooms.
 SFX by event:
 - `item_drawn` → draw_item · `item_thrown` → thrown_bomb
 - `item_effect_triggered` → per item: fire_orb → fireball_explosion,
-  right_hand → freeze-explosion, left_hand → hand_explosions, troy → horse_explosion
+  right_hand → **freeze** (the freeze cue), left_hand → hand_explosions,
+  troy → horse_explosion
+- `freeze_ended` (new, thaw) → **freeze-explosion** (the un-freeze cue)
 - `player_damaged` → player_hit · `enemy_damaged` (new) → enemy_hit
 - `player_dashed` (new) → dash · `player_kicked` (new) → kick
-- `door_opened` (new) → door_open · `room_cleared` → object_collected_soundtrack
+- `door_opened` (new) → door_open
+- **clock_ticking** loops while ≥1 item is counting down (started on
+  `item_drawn`, stopped when the last active item triggers; reset on scene
+  entry so it can't stick on)
 - menu: navigate → button_change, select → button_clicked
 
 New EventBus signals added for the hooks that had none: `enemy_damaged`,
-`player_dashed`, `player_kicked`, `door_opened`.
+`player_dashed`, `player_kicked`, `door_opened`, `freeze_ended`.
 
-## Not yet wired (need a moment/decision)
+## Not yet wired (reserved for later, per team)
 
-- `clock_ticking.mp3` — likely the item countdown; needs a held-loop design.
-- `shot.mp3` — no ranged attack exists (post-MVP enemy archetype).
-- `freeze.mp3` — the freeze *apply* moment vs. `freeze-explosion` (the blast);
-  currently only the explosion is used.
-- `object_collected_soundtrack.mp3` — has "soundtrack" in the name but reads as
-  a one-shot reward jingle, so it's mapped to `room_cleared` rather than looped.
+- `shot.mp3` — reserved for a future use (no ranged attack yet).
+- `object_collected_soundtrack.mp3` — reserved for a future "collected" moment
+  (item pick at a door / reward), not the room clear.
 
 ## Out of Scope
 
