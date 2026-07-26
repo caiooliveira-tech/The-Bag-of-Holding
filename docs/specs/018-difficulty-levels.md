@@ -36,12 +36,16 @@ more alert, and more relentless.
 | --- | --- | --- | --- |
 | Player max health | 7 | 5 | 4 |
 | Post-hit i-frames (G3) | 0.8 s | 0.5 s | 0.25 s |
-| Enemy move speed × | 0.85 | 1.0 | 1.15 |
+| Enemy move speed × | 0.7 | 1.0 | 1.15 |
 | Enemy attack/shoot cooldown × | 1.25 | 1.0 | 0.8 |
 | Enemy detection radius × | 0.8 | 1.0 | 1.2 |
 
 Wizard's multipliers are all 1.0 and its absolute values equal today's
 `PlayerStats.tres` — the definition of "no drift".
+
+Tuning log: Apprentice enemy speed 0.85 → **0.7** (playtest 2026-07-27 — at
+±15% the three levels' speeds were indistinguishable in play; Archmage left at
+1.15 pending the same playtest scrutiny).
 
 ## Functional Requirements
 
