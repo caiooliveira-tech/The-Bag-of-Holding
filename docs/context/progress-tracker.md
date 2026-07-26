@@ -6,7 +6,12 @@ Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–B (walls, ranged enemy
 
 ## Current Spec
 
-None — Spec 018 merged 2026-07-27 (PR #4). Next up: Spec 015 (smart chaser, Phase 6 C).
+None active — two spec threads are parked (2026-07-27):
+
+- **Specs 017 + 020 + 021 (Phase 6 E — item pickup + full catalog):** drafted on branch `feature/item-pickup`; **PR #6 closed pending team alignment** on the item designs (esp. the Horseshoe agglutination-cluster mechanic — see Spec 020 v2). No code written. Reopen the PR when alignment lands.
+- **Spec 019 (Phase 6.6 — floor-based difficulty):** draft on branch `feature/floor-difficulty`, **PR #5 open**, awaiting Rafael's calls (tier values, bonus-hits, .tres renames) — he is aligning details with the team.
+
+Also queued: Spec 015 (smart chaser, Phase 6 C).
 
 ## Completed
 
