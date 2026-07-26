@@ -6,7 +6,9 @@ Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–B (walls, ranged enemy
 
 ## Current Spec
 
-None — Spec 018 merged 2026-07-27 (PR #4). Next up: Spec 015 (smart chaser, Phase 6 C).
+Two threads in flight (2026-07-27):
+- **Specs 017 + 020 + 021 (Phase 6 E), Drafts** on branch `feature/item-pickup`: complete the catalog (Magnetic Horseshoe, Atomic Orb), then item choice at doors. Team rules decided: full-catalog offers, distinct per room, duplicates allowed as the "no thanks" door (picking owned items does nothing). Open: guarantee-one-unowned bias (team), horseshoe pin interpretation, icons for the two new items (Design).
+- **Spec 019 — Floor-Based Difficulty Progression (Phase 6.6), Draft** on branch `feature/floor-difficulty` (PR #5): replaces Spec 018's select screen with floor-indexed tiers. Awaiting Rafael's calls (tier values, bonus-hits, .tres renames).
 
 ## Completed
 
