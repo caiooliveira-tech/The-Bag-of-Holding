@@ -27,6 +27,7 @@ var _knockback: Vector2 = Vector2.ZERO
 var _iframe_timer: float = 0.0
 var _iframe_tween: Tween
 var _ghost_timer: float = 0.0
+var _bob_time: float = 0.0
 
 @onready var _facing_pivot: Node2D = $FacingPivot
 @onready var _facing_marker: Marker2D = $FacingPivot/FacingMarker
@@ -66,6 +67,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_facing_pivot.rotation = facing.angle()
 	_update_animation()
+	_update_idle_bob(delta)
 	if Input.is_action_just_pressed("attack"):
 		attack_pressed.emit()
 		_bag.draw_or_throw(facing)
@@ -237,6 +239,18 @@ func _flash_damage() -> void:
 	_body_visual.modulate = Color(1.0, 0.35, 0.35)
 	var tween := create_tween()
 	tween.tween_property(_body_visual, "modulate", Color.WHITE, 0.25)
+
+
+## Subtle standing bob (Spec 010, G5) — only while idle, upright, not shoved.
+func _update_idle_bob(delta: float) -> void:
+	if _body_sprite == null:
+		return
+	if _state == State.IDLE and not is_frozen() and _knockback == Vector2.ZERO:
+		_bob_time += delta
+		_body_sprite.position.y = sin(_bob_time * 6.0) * 1.2
+	else:
+		_bob_time = 0.0
+		_body_sprite.position.y = 0.0
 
 
 ## Icy overbright pop as the freeze breaks (Spec 010, G2), settling to normal.

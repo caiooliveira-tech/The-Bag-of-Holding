@@ -16,6 +16,7 @@ var hits_remaining: int = 0
 
 var _active: bool = true
 var _dying: bool = false
+var _bob_time: float = 0.0
 var _facing: Vector2 = Vector2.DOWN
 var _player: Player
 var _attack_timer: float = 0.0
@@ -48,6 +49,7 @@ func _physics_process(delta: float) -> void:
 	if not _active:
 		velocity = Vector2.ZERO
 		_update_animation()
+		_update_idle_bob(delta)
 		return
 	if _player == null:
 		# Player may enter the tree after us; resolve once, then keep the cache.
@@ -67,6 +69,7 @@ func _physics_process(delta: float) -> void:
 		_facing = velocity.normalized()
 	move_and_slide()
 	_update_animation()
+	_update_idle_bob(delta)
 
 
 ## Room state machine gates this: inactive during the WAITING telegraph.
@@ -143,6 +146,19 @@ func _flash_damage() -> void:
 	_body_visual.modulate = Color(3.0, 3.0, 3.0)
 	var tween := create_tween()
 	tween.tween_property(_body_visual, "modulate", _damage_tint(), 0.2)
+
+
+## Subtle standing bob (Spec 010, G5) — while holding still (idle/telegraph),
+## not frozen, not dying. Reads as menacing life before combat.
+func _update_idle_bob(delta: float) -> void:
+	if _body_sprite == null:
+		return
+	if velocity == Vector2.ZERO and not is_frozen() and not _dying:
+		_bob_time += delta
+		_body_sprite.position.y = sin(_bob_time * 5.0) * 1.0
+	else:
+		_bob_time = 0.0
+		_body_sprite.position.y = 0.0
 
 
 ## Icy overbright pop as the freeze breaks (Spec 010, G2), settling to normal.

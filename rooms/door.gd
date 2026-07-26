@@ -5,6 +5,8 @@ extends StaticBody2D
 
 signal player_entered(player: Player)
 
+const IMPACT_BURST: GDScript = preload("res://systems/juice/impact_burst.gd")
+
 ## Tile art per room palette (Design template cols 8/9); assign both, or
 ## leave empty to keep the graybox polygon + green-modulate fallback.
 @export var closed_texture: Texture2D
@@ -33,6 +35,10 @@ func open() -> void:
 	else:
 		# Graybox fallback: overbright green modulate = "go".
 		_body_visual.modulate = Color(0.6, 2.0, 0.8)
+	# Dust puff on open (Spec 010, G5).
+	var dust := IMPACT_BURST.new() as CPUParticles2D
+	add_child(dust)
+	dust.burst(Color(0.75, 0.7, 0.6), 10)
 
 
 ## Swaps every sprite leaf under Body (the door is two 32 px leaves).

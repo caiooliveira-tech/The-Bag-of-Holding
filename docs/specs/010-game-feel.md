@@ -1,6 +1,6 @@
 # Spec 010 - Game Feel (Juice)
 
-**Status:** Not Started
+**Status:** Implemented (G1–G5, 2026-07-26)
 
 ## Goal
 
@@ -110,7 +110,7 @@ Small tweens on the most-repeated actions.
 
 **Deliverable:** the moment-to-moment actions have character.
 
-### Phase G5 — Optional Atmosphere (stretch)
+### Phase G5 — Optional Atmosphere (stretch) — **Implemented 2026-07-26 (subset)**
 
 - Subtle idle bob on player/enemies, door-open shake + dust, screen-clear
   flourish on room clear, tiny controller rumble hooks (gamepad already bound).
