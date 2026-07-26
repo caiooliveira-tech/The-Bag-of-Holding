@@ -257,17 +257,17 @@ Deliverable
 
 Goal
 
-A continuous, flow-tuned 20-room MVP: teach one mechanic/enemy at a time, ramp
-up, and let the player build an arsenal across the run.
+A continuous, flow-tuned 12-level MVP: teach one archetype at a time, ramp up,
+and let the player build an arsenal across the run.
 
-Level structure (3 acts by palette)
+Level structure (3 acts of 4, by palette) — revised 2026-07-28
 
-- **Tutorial (rooms 1–4, blue):** one lesson each — move→draw→throw→countdown
-  (1 weak chaser), friendly fire, wall-as-cover, introduce the chaser.
-- **Escalation (5–13, pink):** introduce the ranged shooter isolated, then
-  chaser+ranged combos, mazes, bigger groups.
-- **Mastery (14–20, green):** dense mixes, tight mazes, full arsenal; room 20 =
-  arena/finale.
+- **Act I (1–4, blue) — chasers:** tutorial with a penned enemy → 3 chasers →
+  3 chasers + simple maze → 5 chasers + complex maze.
+- **Act II (5–8, pink) — shooters:** 1 shooter → 3 shooters → 3 + simple maze →
+  5 + complex maze.
+- **Act III (9–12, green) — mixed:** chaser+shooter pair, then more of both with
+  mazes tightening; level 12 is the hardest mix.
 
 Sub-phases
 
@@ -279,9 +279,16 @@ Sub-phases
   a preferred distance and shoots on cooldown.
 - **C — Smarter chaser (Spec 015):** replace the magnet — separation (no
   clumping), strafe/flank, wall-aware steering, telegraphed lunge. Parameterized.
-- **D — Run structure (Spec 016):** `RunManager` sequences the 20 rooms (data:
-  palette + enemy spawns + wall-layout ref per room), advances on clear+door,
-  cycles the 3 palettes, encodes the difficulty curve.
+- **D — Run structure (Spec 016, revised 2026-07-28):** **12 levels in 3 acts
+  of 4** (not 20 — the team authored a tighter curve). `RunManager` sequences
+  `LevelResource` data (palette + enemy counts + wall pattern) into one shared
+  `level.tscn`; mazes are generated from named patterns (`CROSS`,
+  `TIC_TAC_TOE`, `RING`, `PEN`) into the paintable WallTiles layer. Each act
+  teaches one archetype (chasers → shooters → mixed) with the same rhythm:
+  meet it, face a group, add a simple maze, survive the hard mix.
+- **Tutorial overlays (Spec 024):** level 1 pauses for two parchment beats —
+  how to draw/throw, then what clearing a floor grants — with the tutorial
+  enemy penned behind walls so the controls can be tried risk-free.
 - **E — Item unlock at doors (Spec 017):** on clear, each open door shows an
   item; walking through picks it into the run's pool. Pool starts at Fire Orb
   and grows; persists across rooms via GameState. Team rules (2026-07-27):
@@ -293,7 +300,7 @@ Sub-phases
 
 Deliverable
 
-✓ A 20-room run that teaches, escalates, and holds flow
+✓ A 12-level run that teaches, escalates, and holds flow
 ✓ Two distinct enemy behaviours (smart chaser + ranged kiter) + projectiles
 ✓ Maze walls with collision; 3 room palettes
 ✓ Per-run item unlocks via door choice; smoke test green after each sub-phase

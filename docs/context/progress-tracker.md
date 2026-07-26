@@ -6,17 +6,13 @@ Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–C (walls, ranged enemy
 
 ## Current Spec
 
-**Spec 023 — Cutscenes (Phase 4.7) — implemented** on branch `feature/cutscenes` (PR #7), 2026-07-28; awaiting playtest + team review.
+**Specs 016 + 024 (Phase 6 D — the 12-level run + tutorial), Drafts** on branch `feature/levels` (PR #8), 2026-07-28. Docs only; awaiting review before implementation.
 
-- `systems/cutscenes/`: `CutsceneFrameResource` (text / art / layout / optional sfx) + `CutsceneResource` (frames + next_scene_path) + `intro.tres` (12 frames). `ui/cutscene/cutscene_player.gd|tscn` renders it; `intro_cutscene.tscn` binds the resource. Adding the ending cutscene is now pure data.
-- Two layouts per Design's storyboard: DIALOGUE (art perched on a full-bleed `bg.png` banner, centered ink text) and READING (letter/Bag on one side, Euclidus's words in light text on the other, no banner).
-- Typewriter reveal; a press completes the line, the next advances; ESC skips. Flow: New Game → difficulty → cutscene → room_01, **once per launch** via `GameState.intro_seen`.
-- Art imported to `assets/cutscenes/` (raven/letter/bag). Smoke +4 data checks, **59/59 PASS**; layouts verified by scripted screenshots.
-- Still open: caw SFX + optional cutscene music (Design); ending cutscene content.
+- **016 revises the 20-room plan to 12 levels in 3 acts of 4** (team level design): Act I blue/chasers, Act II pink/shooters, Act III green/mixed — each act repeating "meet the archetype → face a group → add a simple maze → survive the hard mix". Data-driven: `LevelResource` per floor + `RunManager` + one shared `level.tscn`; mazes generated from named patterns (`PEN`, `CROSS`, `TIC_TAC_TOE`, `RING`) into the existing WallTiles layer.
+- **024:** two parchment tutorial beats on level 1 (draw/throw, then what clearing grants), pausing play, closed with SPACE; the tutorial enemy is penned behind walls so controls can be tried risk-free.
+- Open: keep room_01/02 as smoke fixtures, whether Spec 019 (floor-scaled difficulty) is still needed now that the curve is authored, level-12 ending, and two copy/UX calls in 024.
 
-Parked: **Spec 019 (floor-based difficulty, Phase 6.6)** on `feature/floor-difficulty`, PR #5 closed pending team alignment.
-
-Queued next: Phase 6 D — Spec 016 (RunManager, 20-room run).
+Parked: **Spec 019 (floor-based difficulty, Phase 6.6)** on `feature/floor-difficulty`, PR #5 closed pending team alignment — see the question above about whether it survives at all.
 
 ## Completed
 
