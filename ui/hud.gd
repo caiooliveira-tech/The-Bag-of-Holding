@@ -1,20 +1,29 @@
-## HUD (Spec 008): presentation only. Listens to EventBus, reads player
-## health and the bag pool via group lookup, never calls gameplay methods.
-## Layout per Flavio's wireframe: bottom bar — hearts left, drawn item's
-## picture center, bag pool items right.
+## HUD (Specs 008 + 009): presentation only. Listens to EventBus, reads
+## player health via group lookup, never calls gameplay methods.
+## MVP layout (Spec 009): bottom bar — hearts left, drawn item's picture
+## right (provisional position; 🔺/⭕ special slots are post-MVP).
+## Art swap is editor-only: assign heart_texture below and/or drop textures
+## on BarBgTex / SlotFrameTex in hud.tscn; the graybox hides itself.
 extends CanvasLayer
 
 const HEART_FULL := Color(0.9, 0.2, 0.3)
 const HEART_EMPTY := Color(0.14, 0.1, 0.12)
-const POOL_SLOT_BG := Color(0.09, 0.08, 0.1)
+
+## Heart sprite from Design (applied to all 5 hearts); graybox squares until set.
+@export var heart_texture: Texture2D
+## Tint for lost hearts when heart_texture is set (full hearts render as authored).
+@export var heart_empty_tint := Color(0.3, 0.3, 0.3, 0.8)
 
 var _player: Player
 
 @onready var _hearts: Array[Node] = $Bar/Hearts.get_children()
+@onready var _bar_bg: ColorRect = $Bar/BarBg
+@onready var _bar_bg_tex: NinePatchRect = $Bar/BarBgTex
+@onready var _slot_bg: ColorRect = $Bar/HeldSlot/SlotBg
+@onready var _slot_frame_tex: NinePatchRect = $Bar/HeldSlot/SlotFrameTex
 @onready var _held_icon: ColorRect = $Bar/HeldSlot/HeldIcon
 @onready var _held_icon_tex: TextureRect = $Bar/HeldSlot/HeldIconTex
 @onready var _item_name: Label = $Bar/HeldSlot/ItemName
-@onready var _pool_box: HBoxContainer = $Bar/PoolBox
 
 
 func _ready() -> void:
@@ -22,9 +31,21 @@ func _ready() -> void:
 	EventBus.item_drawn.connect(_on_item_drawn)
 	EventBus.item_thrown.connect(_on_item_thrown)
 	EventBus.item_effect_triggered.connect(_on_item_effect_triggered)
+	_apply_art()
 	_clear_held()
 	_refresh_hearts.call_deferred()
-	_build_pool_slots.call_deferred()
+
+
+## Any texture assigned in the editor replaces its graybox stand-in.
+func _apply_art() -> void:
+	_bar_bg_tex.visible = _bar_bg_tex.texture != null
+	_bar_bg.visible = not _bar_bg_tex.visible
+	_slot_frame_tex.visible = _slot_frame_tex.texture != null
+	_slot_bg.visible = not _slot_frame_tex.visible
+	for heart in _hearts:
+		var tex := heart.get_node("Tex") as TextureRect
+		tex.texture = heart_texture
+		tex.visible = heart_texture != null
 
 
 func _refresh_hearts() -> void:
@@ -33,42 +54,13 @@ func _refresh_hearts() -> void:
 	if _player == null:
 		return
 	for i in _hearts.size():
-		(_hearts[i] as ColorRect).color = HEART_FULL if i < _player.health else HEART_EMPTY
-
-
-## One square per item in the Bag's pool (bottom-right). Rendering from the
-## pool resource means new items appear here with zero HUD changes.
-func _build_pool_slots() -> void:
-	if _player == null:
-		_player = get_tree().get_first_node_in_group("player") as Player
-	if _player == null:
-		return
-	var bag := _player.get_node_or_null("Bag") as Bag
-	if bag == null or bag.pool == null:
-		return
-	for item_data in bag.pool.items:
-		var slot := ColorRect.new()
-		slot.custom_minimum_size = Vector2(44, 44)
-		slot.color = POOL_SLOT_BG
-		var icon := _make_icon(item_data, 32.0)
-		icon.position = Vector2(6, 6)
-		slot.add_child(icon)
-		_pool_box.add_child(slot)
-
-
-## Item picture: appearance texture once art lands; graybox color until then.
-func _make_icon(item_data: MagicItemResource, icon_size: float) -> Control:
-	if item_data.appearance != null:
-		var tex := TextureRect.new()
-		tex.texture = item_data.appearance
-		tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		tex.size = Vector2(icon_size, icon_size)
-		return tex
-	var rect := ColorRect.new()
-	rect.color = item_data.graybox_color
-	rect.size = Vector2(icon_size, icon_size)
-	return rect
+		var full := i < _player.health
+		var heart := _hearts[i] as ColorRect
+		if heart_texture != null:
+			heart.color = Color(0, 0, 0, 0)
+			(heart.get_node("Tex") as TextureRect).modulate = Color.WHITE if full else heart_empty_tint
+		else:
+			heart.color = HEART_FULL if full else HEART_EMPTY
 
 
 func _clear_held() -> void:

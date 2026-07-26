@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="MagicItemResource" format=3 uid="uid://c8jooj113mk0w"]
+[gd_resource type="Resource" script_class="MagicItemResource" load_steps=6 format=3 uid="uid://c8jooj113mk0w"]
 
 [ext_resource type="Script" uid="uid://dlug5efsn6q0t" path="res://systems/magic_items/magic_item_resource.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://cgqbmw35qq01j" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="1_5ebyn"]
 [ext_resource type="Script" uid="uid://mnl3k5k7j3g4" path="res://systems/magic_items/effects/freeze_area_effect.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://cktc1fqmafrcm" path="res://systems/magic_items/spritesheet.png" id="3"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_64gc6"]
 atlas = ExtResource("1_5ebyn")
@@ -11,6 +12,10 @@ region = Rect2(192, 32, 32, 32)
 [sub_resource type="Resource" id="ursula_effect"]
 script = ExtResource("2")
 
+[sub_resource type="AtlasTexture" id="ursula_icon"]
+atlas = ExtResource("3")
+region = Rect2(200, 0, 200, 200)
+
 [resource]
 script = ExtResource("1")
 id = &"right_hand_of_ursula"
@@ -18,4 +23,5 @@ display_name = "The Right Hand of Ursula"
 graybox_color = Color(0.55, 0.85, 1, 1)
 appearance = SubResource("AtlasTexture_64gc6")
 activation_time_seconds = 4.0
+appearance = SubResource("ursula_icon")
 effect = SubResource("ursula_effect")

@@ -1,8 +1,9 @@
-[gd_resource type="Resource" script_class="MagicItemResource" format=3 uid="uid://e7oaq5gnytdj"]
+[gd_resource type="Resource" script_class="MagicItemResource" load_steps=6 format=3 uid="uid://e7oaq5gnytdj"]
 
 [ext_resource type="Script" uid="uid://dlug5efsn6q0t" path="res://systems/magic_items/magic_item_resource.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://cgqbmw35qq01j" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="1_fqwp3"]
 [ext_resource type="Script" uid="uid://bi8ncdmaeoeks" path="res://systems/magic_items/effects/area_damage_effect.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://cktc1fqmafrcm" path="res://systems/magic_items/spritesheet.png" id="3"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_7kjsx"]
 atlas = ExtResource("1_fqwp3")
@@ -10,6 +11,10 @@ region = Rect2(192, 0, 32, 32)
 
 [sub_resource type="Resource" id="fire_orb_effect"]
 script = ExtResource("2")
+
+[sub_resource type="AtlasTexture" id="fire_orb_icon"]
+atlas = ExtResource("3")
+region = Rect2(0, 0, 200, 200)
 
 [resource]
 script = ExtResource("1")

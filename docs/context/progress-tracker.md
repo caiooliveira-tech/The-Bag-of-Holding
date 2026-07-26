@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-Phases 0–4 complete and merged to main. **Phase 5 (ship) intentionally on hold** — the team will rethink the roadmap first (menu scene and other new steps to be defined).
+Phases 0–4 complete and merged to main. **Phase 4.5 (HUD trim, Spec 009) in progress on branch `feature/hud-special-slots`** — draft PR #3 open for team review. **Phase 5 (ship) intentionally on hold** — the team will rethink the roadmap first (menu scene and other new steps to be defined).
 
 ## Current Spec
 
-None (Specs 001–008 all implemented)
+Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). MVP scope implemented on the branch; awaiting team review/playtest before merge.
 
 ## Completed
 
@@ -29,7 +29,8 @@ None (Specs 001–008 all implemented)
 
 ## In Progress
 
-- Art integration: player done (animated Shoelace sprite live). Remaining: enemy sprite (velcro), item appearance textures on the .tres files (HUD picks them up automatically), room tiles via TileMapLayer when Silas's modular tiles arrive.
+- **Phase 4.5 / Spec 009 (branch `feature/hud-special-slots`, PR #3 draft):** team decided 2026-07-26 the 🔺/⭕ special slots are post-MVP; MVP HUD = hearts (left) + held-item box moved to the right (provisional layout). Implemented 2026-07-26: PoolBox bag-pool removed, HeldSlot re-anchored right, art-ready texture hooks with graybox fallback — and HUD art **integrated** same day: wooden bar + item container (`assets/ui/`), item icons via `AtlasTexture` from `systems/magic_items/spritesheet.png` (+ `.json` frame coords) on both item `.tres`. Verified via scripted screenshots (both icons render). Smoke 21/21 PASS. **Still missing: heart PNG from Design** (hearts stay graybox squares; one Inspector assign when it lands). Awaiting team review.
+- Art integration started in-editor (uncommitted): shoelace.png 4-direction spritesheet wired into an AnimatedSprite2D on player.tscn (hidden for now), concept jpegs replaced by transparent pngs.
 
 ## Next Spec
 

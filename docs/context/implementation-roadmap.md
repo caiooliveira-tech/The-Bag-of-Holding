@@ -155,6 +155,37 @@ Next Room
 
 ---
 
+# Phase 4.5 — HUD: trim to hearts + held item (special slots → post-MVP)
+
+> Added post-Phase-4 (2026-07-25); MVP scope narrowed 2026-07-26 (team). An increment on
+> the shipped HUD, not part of the original 7-phase plan. Built on its own feature branch
+> with a draft PR kept open for team review; every iteration ends on a playable build.
+
+Goal
+
+Trim the bottom HUD bar to hearts (left) + the held-item box for the MVP — drop the
+bag-pool region and shift the item box right to balance the bar (provisional layout).
+The two special-item slots (🔺/⭕) are deferred to post-MVP.
+
+Tasks
+
+- Spec 009 (HUD: Special-Item Slots) — MVP scope + retained post-MVP design
+- Remove the bottom-right bag-pool region from hud.tscn / hud.gd
+- Keep hearts + held-item box (Spec 008 behavior intact)
+- Art-ready texture hooks (hearts / bar background / slot frame) with graybox fallback,
+  so Design's PNGs drop in via the editor with zero code changes
+
+Deliverable
+
+✓ Bottom bar: hearts (left), held-item box (shifted right); no right-side region
+✓ Spec 008 behavior intact (hearts, held item)
+✓ Build stays playable
+
+Post-MVP (not this phase): the two special-item slots + the special-item gameplay system
+(equipping, cooldowns, effects).
+
+---
+
 # Phase 5 — Ship
 
 Goal
