@@ -1,29 +1,33 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene format=3 uid="uid://cxf0nmga4j2iw"]
 
-[ext_resource type="Script" path="res://ui/hud.gd" id="1"]
+[ext_resource type="Script" uid="uid://bqx5sibgblcv5" path="res://ui/hud.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://lhhyepn0ntmk" path="res://assets/ui/wooden_bg.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://cy2wad7ta1oom" path="res://assets/ui/item_container.png" id="3"]
-[ext_resource type="Texture2D" path="res://assets/ui/heart_filled.png" id="4"]
-[ext_resource type="Texture2D" path="res://assets/ui/heart_empty.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://dn6sgk3km0kld" path="res://assets/ui/heart_filled.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://cqmxtvn7nqg2p" path="res://assets/ui/heart_empty.png" id="5"]
 
-[node name="HUD" type="CanvasLayer"]
+[node name="HUD" type="CanvasLayer" unique_id=116890350]
 script = ExtResource("1")
 heart_filled_texture = ExtResource("4")
 heart_empty_texture = ExtResource("5")
 
-[node name="Bar" type="Control" parent="."]
+[node name="Bar" type="Control" parent="." unique_id=2111728316]
+layout_mode = 3
+anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_top = -64.0
 
-[node name="BarBg" type="ColorRect" parent="Bar"]
+[node name="BarBg" type="ColorRect" parent="Bar" unique_id=904081084]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.89, 0.87, 0.84, 0.92)
-visible = false
 
-[node name="BarBgTex" type="NinePatchRect" parent="Bar"]
+[node name="BarBgTex" type="NinePatchRect" parent="Bar" unique_id=1834158012]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = ExtResource("2")
@@ -32,69 +36,81 @@ patch_margin_top = 10
 patch_margin_right = 24
 patch_margin_bottom = 10
 
-[node name="Hearts" type="HBoxContainer" parent="Bar"]
+[node name="Hearts" type="HBoxContainer" parent="Bar" unique_id=763169765]
+layout_mode = 0
 offset_left = 20.0
-offset_top = 18.0
+offset_top = -10.0
 offset_right = 220.0
-offset_bottom = 46.0
+offset_bottom = 18.0
 theme_override_constants/separation = 8
 
-[node name="Heart1" type="ColorRect" parent="Bar/Hearts"]
-custom_minimum_size = Vector2(28, 28)
+[node name="Heart1" type="ColorRect" parent="Bar/Hearts" unique_id=784107677]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
 color = Color(0.9, 0.2, 0.3, 1)
 
-[node name="Heart2" type="ColorRect" parent="Bar/Hearts"]
-custom_minimum_size = Vector2(28, 28)
-color = Color(0.9, 0.2, 0.3, 1)
-
-[node name="Heart3" type="ColorRect" parent="Bar/Hearts"]
-custom_minimum_size = Vector2(28, 28)
-color = Color(0.9, 0.2, 0.3, 1)
-
-[node name="Heart4" type="ColorRect" parent="Bar/Hearts"]
-custom_minimum_size = Vector2(28, 28)
-color = Color(0.9, 0.2, 0.3, 1)
-
-[node name="Heart5" type="ColorRect" parent="Bar/Hearts"]
-custom_minimum_size = Vector2(28, 28)
-color = Color(0.9, 0.2, 0.3, 1)
-
-[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart1"]
+[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart1" unique_id=936700359]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 expand_mode = 1
 stretch_mode = 5
-visible = false
 
-[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart2"]
+[node name="Heart2" type="ColorRect" parent="Bar/Hearts" unique_id=547422316]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+color = Color(0.9, 0.2, 0.3, 1)
+
+[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart2" unique_id=1874105960]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 expand_mode = 1
 stretch_mode = 5
-visible = false
 
-[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart3"]
+[node name="Heart3" type="ColorRect" parent="Bar/Hearts" unique_id=1769684480]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+color = Color(0.9, 0.2, 0.3, 1)
+
+[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart3" unique_id=1952614958]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 expand_mode = 1
 stretch_mode = 5
-visible = false
 
-[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart4"]
+[node name="Heart4" type="ColorRect" parent="Bar/Hearts" unique_id=2057402774]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+color = Color(0.9, 0.2, 0.3, 1)
+
+[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart4" unique_id=462552083]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 expand_mode = 1
 stretch_mode = 5
-visible = false
 
-[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart5"]
+[node name="Heart5" type="ColorRect" parent="Bar/Hearts" unique_id=1595813799]
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+color = Color(0.9, 0.2, 0.3, 1)
+
+[node name="Tex" type="TextureRect" parent="Bar/Hearts/Heart5" unique_id=530391642]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 expand_mode = 1
 stretch_mode = 5
-visible = false
 
-[node name="HeldSlot" type="Control" parent="Bar"]
+[node name="HeldSlot" type="Control" parent="Bar" unique_id=585500992]
+anchors_preset = 0
 anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -102,13 +118,15 @@ offset_left = -112.0
 offset_top = -35.0
 offset_right = -20.0
 
-[node name="SlotBg" type="ColorRect" parent="Bar/HeldSlot"]
+[node name="SlotBg" type="ColorRect" parent="Bar/HeldSlot" unique_id=89529124]
+visible = false
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.22, 0.2, 0.24, 0.35)
-visible = false
 
-[node name="SlotFrameTex" type="NinePatchRect" parent="Bar/HeldSlot"]
+[node name="SlotFrameTex" type="NinePatchRect" parent="Bar/HeldSlot" unique_id=871546724]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 texture = ExtResource("3")
@@ -117,16 +135,19 @@ patch_margin_top = 10
 patch_margin_right = 10
 patch_margin_bottom = 10
 
-[node name="HeldIcon" type="ColorRect" parent="Bar/HeldSlot"]
+[node name="HeldIcon" type="ColorRect" parent="Bar/HeldSlot" unique_id=986014695]
+visible = false
+layout_mode = 0
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -22.0
 offset_top = 14.0
 offset_right = 22.0
 offset_bottom = 58.0
-visible = false
 
-[node name="HeldIconTex" type="TextureRect" parent="Bar/HeldSlot"]
+[node name="HeldIconTex" type="TextureRect" parent="Bar/HeldSlot" unique_id=1303828934]
+visible = false
+layout_mode = 0
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -22.0
@@ -135,13 +156,12 @@ offset_right = 22.0
 offset_bottom = 58.0
 expand_mode = 1
 stretch_mode = 5
-visible = false
 
-[node name="ItemName" type="Label" parent="Bar/HeldSlot"]
+[node name="ItemName" type="Label" parent="Bar/HeldSlot" unique_id=1493002991]
+layout_mode = 0
 anchor_right = 1.0
 offset_top = 62.0
 offset_bottom = 78.0
 theme_override_font_sizes/font_size = 10
 horizontal_alignment = 1
 clip_text = true
-text = ""
