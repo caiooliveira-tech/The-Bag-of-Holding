@@ -48,6 +48,13 @@ no balance drift except G3's post-hit i-frames (needs a team call).
   (from `MagicItemEffect.effect_kind()`). Smoke 21/21 PASS. Awaiting playtest.
   NOTE: new `class_name` scripts are preloaded by path in CLI-reached code (ImpactBurst)
   to dodge the global class-cache miss on headless/smoke runs.
+- **G2 (branch `fase-4.6-g2`) implemented 2026-07-26:** landing marker
+  (`systems/juice/landing_marker.gd`) draws the blast footprint at the landing spot
+  during flight (radius from `MagicItemEffect.preview_radius_tiles()`); item visual
+  hops on a parabola with squash-and-stretch + 2 decaying bounces on landing, kicked
+  items spin — all on the visual child only, real position/countdown unchanged
+  (smoke still measures 64px throw). Freeze feel: camera zoom-punch instead of shake,
+  ice-shard particles, icy thaw flash on player + enemy. Smoke 21/21 PASS.
 
 ## Next Spec
 

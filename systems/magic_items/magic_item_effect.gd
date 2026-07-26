@@ -15,3 +15,8 @@ func execute(_item: Node2D) -> Array[Node]:
 ## hardcoding item ids. Subclasses override; default is a neutral kind.
 func effect_kind() -> StringName:
 	return &"generic"
+
+
+## Blast footprint in tiles, for the landing marker (Spec 010, G2). 0 = none.
+func preview_radius_tiles() -> float:
+	return 0.0

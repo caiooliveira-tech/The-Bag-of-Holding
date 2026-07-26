@@ -43,7 +43,7 @@ func _physics_process(delta: float) -> void:
 	var was_frozen := is_frozen()
 	_freeze_timer = maxf(_freeze_timer - delta, 0.0)
 	if was_frozen and not is_frozen():
-		modulate = Color.WHITE
+		_thaw_flash()
 	if _state == State.DASH:
 		_tick_dash(delta)
 	else:
@@ -173,3 +173,10 @@ func _flash_damage() -> void:
 	_body_visual.modulate = Color(1.0, 0.35, 0.35)
 	var tween := create_tween()
 	tween.tween_property(_body_visual, "modulate", Color.WHITE, 0.25)
+
+
+## Icy overbright pop as the freeze breaks (Spec 010, G2), settling to normal.
+func _thaw_flash() -> void:
+	modulate = Color(2.0, 2.2, 2.6)
+	var tween := create_tween()
+	tween.tween_property(self, "modulate", Color.WHITE, 0.25)

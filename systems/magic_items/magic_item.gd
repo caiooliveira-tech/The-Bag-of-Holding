@@ -15,6 +15,11 @@ const FLIGHT_TIME: float = 0.18
 const BLINK_MIN_HZ: float = 2.0
 const BLINK_MAX_HZ: float = 10.0
 const GRAYBOX_RADIUS_PX: float = 10.0
+# Game feel (Spec 010, G2): cosmetic hop height and kick spin.
+const ARC_HEIGHT_PX: float = 22.0
+const KICK_SPIN_TURNS: float = 2.0
+const MARKER_PADDING_PX: float = 12.0
+const LANDING_MARKER: GDScript = preload("res://systems/juice/landing_marker.gd")
 
 var data: MagicItemResource
 var state: State = State.HELD
@@ -24,6 +29,7 @@ var _triggered: bool = false
 # Sprite2D when the resource has an appearance texture, Polygon2D graybox
 # otherwise — the blink only needs `modulate`, so CanvasItem covers both.
 var _visual: CanvasItem
+var _marker: Node2D
 
 
 func setup(item_data: MagicItemResource) -> void:
@@ -58,7 +64,7 @@ func throw(direction: Vector2) -> void:
 		return
 	state = State.THROWN
 	reparent(get_tree().current_scene)
-	_fly(direction, GameState.tiles(2.0))
+	_fly(direction, GameState.tiles(2.0), 0.0)
 
 
 ## Apprentice Boot redirect: +5 tiles, countdown untouched.
@@ -66,11 +72,14 @@ func kick(direction: Vector2) -> void:
 	if not is_kickable():
 		return
 	state = State.THROWN
-	_fly(direction, GameState.tiles(5.0))
+	_fly(direction, GameState.tiles(5.0), KICK_SPIN_TURNS)
 	item_kicked.emit(data.id, global_position)
 
 
-func _fly(direction: Vector2, distance: float) -> void:
+## The item's real position tracks a straight line to the landing spot (so the
+## countdown/effect are unchanged — no safe state). Only the visual child hops
+## on a parabola and spins; a marker previews the blast footprint mid-flight.
+func _fly(direction: Vector2, distance: float, spin_turns: float) -> void:
 	var dir := direction.normalized()
 	var target := global_position + dir * distance
 	# Stop short of walls so items never land inside geometry.
@@ -79,20 +88,60 @@ func _fly(direction: Vector2, distance: float) -> void:
 	var hit := space.intersect_ray(query)
 	if not hit.is_empty():
 		target = (hit.position as Vector2) - dir * GRAYBOX_RADIUS_PX
+	_spawn_landing_marker(target)
+	var start := global_position
 	var tween := create_tween()
-	tween.tween_property(self, "global_position", target, FLIGHT_TIME)
+	tween.tween_method(_apply_flight.bind(start, target, spin_turns), 0.0, 1.0, FLIGHT_TIME)
 	tween.tween_callback(_on_flight_finished)
+
+
+func _apply_flight(t: float, start: Vector2, target: Vector2, spin_turns: float) -> void:
+	global_position = start.lerp(target, t)
+	var arch := sin(PI * t)
+	_visual.position.y = -ARC_HEIGHT_PX * arch
+	# Slight vertical stretch at the top of the arc reads as "in the air".
+	_visual.scale = Vector2(1.0 - 0.12 * arch, 1.0 + 0.18 * arch)
+	if spin_turns != 0.0:
+		_visual.rotation = t * TAU * spin_turns
+
+
+func _spawn_landing_marker(target: Vector2) -> void:
+	if _marker != null and is_instance_valid(_marker):
+		_marker.queue_free()
+	var radius_tiles: float = data.effect.preview_radius_tiles()
+	if radius_tiles <= 0.0:
+		return
+	_marker = LANDING_MARKER.new() as Node2D
+	get_tree().current_scene.add_child(_marker)
+	_marker.global_position = target
+	_marker.setup(GameState.tiles(radius_tiles) + MARKER_PADDING_PX, data.graybox_color)
 
 
 func _on_flight_finished() -> void:
 	if _triggered:
 		return
 	state = State.LANDED
+	if _marker != null and is_instance_valid(_marker):
+		_marker.queue_free()
+	_bounce()
 	item_landed.emit(data.id, global_position)
+
+
+## Two decaying squash-and-stretch bounces on the visual when the item settles.
+func _bounce() -> void:
+	_visual.rotation = 0.0
+	_visual.position.y = 0.0
+	var tween := create_tween()
+	tween.tween_property(_visual, "scale", Vector2(1.25, 0.75), 0.05)
+	tween.tween_property(_visual, "scale", Vector2(0.9, 1.1), 0.06)
+	tween.tween_property(_visual, "scale", Vector2(1.05, 0.95), 0.05)
+	tween.tween_property(_visual, "scale", Vector2.ONE, 0.05)
 
 
 func _trigger() -> void:
 	_triggered = true
+	if _marker != null and is_instance_valid(_marker):
+		_marker.queue_free()
 	_visual.modulate = Color.WHITE
 	effect_triggered.emit(data.id, global_position)
 	EventBus.item_effect_triggered.emit(data.id, global_position, data.effect.effect_kind())

@@ -44,7 +44,7 @@ func _physics_process(delta: float) -> void:
 	var was_frozen := is_frozen()
 	_freeze_timer = maxf(_freeze_timer - delta, 0.0)
 	if was_frozen and not is_frozen():
-		modulate = Color.WHITE
+		_thaw_flash()
 	if not _active:
 		velocity = Vector2.ZERO
 		_update_animation()
@@ -143,6 +143,13 @@ func _flash_damage() -> void:
 	_body_visual.modulate = Color(3.0, 3.0, 3.0)
 	var tween := create_tween()
 	tween.tween_property(_body_visual, "modulate", _damage_tint(), 0.2)
+
+
+## Icy overbright pop as the freeze breaks (Spec 010, G2), settling to normal.
+func _thaw_flash() -> void:
+	modulate = Color(2.0, 2.2, 2.6)
+	var tween := create_tween()
+	tween.tween_property(self, "modulate", Color.WHITE, 0.25)
 
 
 ## Same mapping as the player: 4 directional walk animations, horizontal

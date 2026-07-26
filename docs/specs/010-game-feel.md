@@ -70,7 +70,7 @@ The combat-transforming trio. One sitting.
 
 **Deliverable:** hits and kills feel physical; the screen reacts to violence.
 
-### Phase G2 — Item Motion & Landing Read
+### Phase G2 — Item Motion & Landing Read — **Implemented 2026-07-26**
 
 Sells the core mechanic and friendly-fire clarity.
 

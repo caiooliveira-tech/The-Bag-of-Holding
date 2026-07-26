@@ -5,6 +5,7 @@ class_name FreezeAreaEffect
 extends MagicItemEffect
 
 const EFFECT_FLASH_SCRIPT: GDScript = preload("res://systems/magic_items/effects/effect_flash.gd")
+const IMPACT_BURST: GDScript = preload("res://systems/juice/impact_burst.gd")
 
 ## Bodies are treated as points; pad the radius so a body visually touching
 ## the circle still counts (half a graybox body).
@@ -16,6 +17,10 @@ const TARGET_PADDING_PX: float = 12.0
 
 func effect_kind() -> StringName:
 	return &"freeze_area"
+
+
+func preview_radius_tiles() -> float:
+	return radius_tiles
 
 
 func execute(item: Node2D) -> Array[Node]:
@@ -36,4 +41,9 @@ func execute(item: Node2D) -> Array[Node]:
 	item.get_tree().current_scene.add_child(flash)
 	flash.global_position = item.global_position
 	flash.setup(radius_px, Color(0.55, 0.85, 1.0, 0.45))
+	# Ice shards (Spec 010, G2) — reads as cold, distinct from a fire burst.
+	var burst := IMPACT_BURST.new() as CPUParticles2D
+	item.get_tree().current_scene.add_child(burst)
+	burst.global_position = item.global_position
+	burst.burst(Color(0.7, 0.9, 1.0), 12)
 	return affected

@@ -18,6 +18,10 @@ func effect_kind() -> StringName:
 	return &"area_damage"
 
 
+func preview_radius_tiles() -> float:
+	return radius_tiles
+
+
 func execute(item: Node2D) -> Array[Node]:
 	var zone := DamageLingerZone.new()
 	var radius_px: float = GameState.tiles(radius_tiles) + TARGET_PADDING_PX

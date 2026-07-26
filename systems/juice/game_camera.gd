@@ -14,13 +14,18 @@ extends Camera2D
 @export var explosion_trauma: float = 0.5
 @export var player_hit_trauma: float = 0.35
 @export var enemy_death_trauma: float = 0.2
+## Freeze gets a soft zoom punch instead of a shake (Spec 010, G2).
+@export var freeze_zoom_punch: float = 0.06
 
 var _trauma: float = 0.0
 var _base_offset: Vector2 = Vector2.ZERO
+var _base_zoom: Vector2 = Vector2.ONE
+var _zoom_tween: Tween
 
 
 func _ready() -> void:
 	_base_offset = offset
+	_base_zoom = zoom
 	EventBus.item_effect_triggered.connect(_on_item_effect_triggered)
 	EventBus.player_damaged.connect(_on_player_damaged)
 	EventBus.enemy_died.connect(_on_enemy_died)
@@ -43,9 +48,19 @@ func add_trauma(amount: float) -> void:
 
 
 func _on_item_effect_triggered(_id: StringName, _pos: Vector2, kind: StringName) -> void:
-	# Freeze does not shake (G2 gives it a zoom punch instead).
 	if kind == &"area_damage":
 		add_trauma(explosion_trauma)
+	elif kind == &"freeze_area":
+		# Cold, not violent: a quick zoom-in and back instead of a shake.
+		_zoom_punch()
+
+
+func _zoom_punch() -> void:
+	if _zoom_tween != null and _zoom_tween.is_valid():
+		_zoom_tween.kill()
+	_zoom_tween = create_tween()
+	_zoom_tween.tween_property(self, "zoom", _base_zoom * (1.0 + freeze_zoom_punch), 0.07)
+	_zoom_tween.tween_property(self, "zoom", _base_zoom, 0.12)
 
 
 func _on_player_damaged(_amount: int, _source: Node) -> void:
