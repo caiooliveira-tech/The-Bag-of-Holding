@@ -456,6 +456,48 @@ func _run() -> void:
 	_check(art_frames == 10, "10 frames carry art (first two are off-screen caws)")
 	_check(reading_frames == 3, "3 reading-layout frames (the letter and the Bag)")
 
+	# ---- Section 16: the 12-level run (Spec 016) ----
+	_check(RunManager.level_count() == 12, "run has 12 levels")
+	var titled := true
+	var acts := {0: 0, 1: 0, 2: 0}
+	for i in RunManager.level_count():
+		var data: LevelResource = RunManager.LEVELS[i]
+		if data.title.is_empty():
+			titled = false
+		acts[data.palette_row] = acts[data.palette_row] + 1
+	_check(titled, "every level has a title for the drop-in sign")
+	_check(acts[0] == 4 and acts[1] == 4 and acts[2] == 4,
+			"three acts of four levels (palette per act)")
+	# The maze must never wall off a door, or the run dead-ends.
+	var scratch := TileMapLayer.new()
+	scratch.tile_set = load("res://rooms/room_tileset.tres")
+	add_child(scratch)
+	var door_safe := true
+	for pattern in [WallPatterns.Pattern.PEN, WallPatterns.Pattern.CROSS,
+			WallPatterns.Pattern.TIC_TAC_TOE, WallPatterns.Pattern.RING]:
+		scratch.clear()
+		WallPatterns.stamp(scratch, pattern, 0)
+		for cell in WallPatterns.DOOR_APPROACH:
+			if scratch.get_used_cells().has(cell):
+				door_safe = false
+	_check(door_safe, "no wall pattern blocks a door approach")
+	scratch.queue_free()
+	# Enemies cycle recoloured and buffed once per act (Spec 016).
+	var tier_1: EnemyStats = load("res://entities/enemies/melee_grunt.tres")
+	var tier_3: EnemyStats = load("res://entities/enemies/melee_grunt_iii.tres")
+	_check(tier_3.max_hits > tier_1.max_hits and tier_3.move_speed > tier_1.move_speed,
+			"act III enemies are tougher than act I")
+	_check(tier_1.tint == Color.WHITE and tier_3.tint != Color.WHITE,
+			"later cycles wear their own tint")
+	# Tutorial beats live on floor 1 only (Spec 024).
+	_check(RunManager.LEVELS[0].tutorial_beats.size() == 2,
+			"floor 1 carries both tutorial beats")
+	var others_clean := true
+	for i in range(1, RunManager.level_count()):
+		if not RunManager.LEVELS[i].tutorial_beats.is_empty():
+			others_clean = false
+	_check(others_clean, "no other floor shows tutorial overlays")
+
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")
 	else:

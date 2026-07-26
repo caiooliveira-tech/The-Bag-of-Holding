@@ -32,6 +32,12 @@ const ROTATE_CW := TRANSPOSE | FLIP_H
 
 
 func _ready() -> void:
+	repaint()
+
+
+## Public so a level can set `variant_row` and repaint: child _ready() runs
+## before the parent's, so the palette would otherwise be a frame too late.
+func repaint() -> void:
 	var corner := CORNER_TILE + Vector2i(0, variant_row)
 	var wall := WALL_TILE + Vector2i(0, variant_row)
 	var floor_tile := FLOOR_TILE + Vector2i(0, variant_row)

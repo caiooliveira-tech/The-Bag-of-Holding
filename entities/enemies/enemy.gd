@@ -291,7 +291,9 @@ func _shoot(to_player: Vector2) -> void:
 ## A `modulate` multiplier, so it works the same on graybox and future sprites.
 func _damage_tint() -> Color:
 	var damage_fraction := 1.0 - float(hits_remaining) / float(stats.max_hits)
-	return Color.WHITE.lerp(Color(0.55, 0.08, 0.08), damage_fraction)
+	# Starts from the variant's tint (Spec 016) so recoloured cycles keep their
+	# identity while still darkening toward their last hit.
+	return stats.tint.lerp(Color(0.55, 0.08, 0.08), damage_fraction)
 
 
 func _flash_damage() -> void:

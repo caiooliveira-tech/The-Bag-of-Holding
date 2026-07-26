@@ -70,4 +70,4 @@ art = ExtResource("3")
 [resource]
 script = ExtResource("2")
 frames = Array[ExtResource("1")]([SubResource("frame_01"), SubResource("frame_02"), SubResource("frame_03"), SubResource("frame_04"), SubResource("frame_05"), SubResource("frame_06"), SubResource("frame_07"), SubResource("frame_08"), SubResource("frame_09"), SubResource("frame_10"), SubResource("frame_11"), SubResource("frame_12")])
-next_scene_path = "res://rooms/room_01.tscn"
+next_scene_path = "res://rooms/level.tscn"

@@ -1,6 +1,16 @@
 # Spec 016 - Run Structure: 12 Levels in 3 Acts (Phase 6 D)
 
-**Status:** Draft (2026-07-28)
+**Status:** Implemented (2026-07-28, branch `feature/levels`, PR #8)
+
+Implementation notes: enemy variety comes from **tinted, buffed cycles of the
+two existing sprites** (Rafael, 2026-07-28) — `EnemyStats` gained a `tint` and
+each act has its own variant (`melee_grunt_ii/iii`, `ranged_shooter_ii/iii`):
+Act I as authored, Act II steel-blue (+1 hit, faster), Act III violet (+2 hits,
+faster still). `palette_row` doubles as the act index, so colour and toughness
+cycle together. Act III's room palette (sheet row 2) had to be **registered in
+`room_tileset.tres`** — the art existed but no tiles referenced it. `RoomTiles`
+gained `repaint()` because a child's `_ready()` runs before its parent's, so
+the palette was being set one frame too late.
 
 **Revises:** the roadmap's "20-room run". The team's level design (Rafael,
 2026-07-28) is **12 levels in 3 acts of 4** — a tighter, fully-authored curve
@@ -17,15 +27,15 @@ complexity** — and each act introduces one archetype before mixing.
 
 | # | Act / palette | Enemies | Walls |
 | --- | --- | --- | --- |
-| 1 | **I — blue** | 1 chaser, penned (tutorial) | `PEN` (enclosure) |
+| 1 | **I — blue room / brown walls** | 1 chaser, penned (tutorial) | `PEN` (enclosure) |
 | 2 | I | 3 chasers | none |
 | 3 | I | 3 chasers | `CROSS` (simple) |
 | 4 | I | 5 chasers | `TIC_TAC_TOE` (complex) |
-| 5 | **II — pink** | 1 shooter | none |
+| 5 | **II — purple room / teal walls** | 1 shooter | none |
 | 6 | II | 3 shooters | none |
 | 7 | II | 3 shooters | `CROSS` |
 | 8 | II | 5 shooters | `RING` (complex) |
-| 9 | **III — green** | 1 chaser + 1 shooter | none |
+| 9 | **III — red room / green walls** | 1 chaser + 1 shooter | none |
 | 10 | III | 2 chasers + 2 shooters | `CROSS` |
 | 11 | III | 3 chasers + 2 shooters | `RING` |
 | 12 | III | 3 chasers + 3 shooters | `TIC_TAC_TOE` (tightest) |
@@ -55,8 +65,11 @@ Rules the generator must respect:
 - Never block a door: keep the cells in front of each of the 3 doors clear.
 - Never seal the player's spawn or an enemy spawn inside walls (`PEN` is the
   deliberate exception — it pens the *enemy*).
-- Patterns are stamped from the room's palette wall tiles (sheet cols 0–5,
-  rows 5–7 = one row per palette), so a level's maze matches its act's colors.
+- Patterns are stamped from the act's wall tiles (sheet cols 0–5, rows 5–7 =
+  brown / teal / green), so a maze always matches its act.
+- Note on colours: the sheet's three *room* palettes are blue, purple and red
+  (not the roadmap's "green" — green is a wall colour). Act III's red palette
+  existed in the art but was never registered in the tileset; this spec adds it.
 
 ## Architecture
 
@@ -76,6 +89,20 @@ Rules the generator must respect:
 
 Palette also drives the door textures (each palette row has its own
 closed/open door tiles), which rooms currently hardcode per scene.
+
+## Enemy Cycles (implemented)
+
+Two sprites, three cycles — recoloured and buffed per act, so a veteran enemy
+reads at a glance without new art:
+
+| Act | Tint | Chaser | Shooter |
+| --- | --- | --- | --- |
+| I | as authored | 2 hits, 100 speed | 2 hits, 1.6 s shots |
+| II | steel-blue | 3 hits, 112 speed | 3 hits, 1.28 s shots |
+| III | violet | 4 hits, 125 speed | 4 hits, ~1 s shots |
+
+Damage darkening now starts from the variant's tint, so a wounded elite still
+darkens toward its last hit.
 
 ## Interaction With Existing Systems
 
