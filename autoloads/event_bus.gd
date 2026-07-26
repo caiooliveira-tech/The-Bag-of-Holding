@@ -34,3 +34,6 @@ signal door_opened
 ## A character's freeze wore off (thaw) — used for the un-freeze SFX.
 @warning_ignore("unused_signal")
 signal freeze_ended
+## A ranged enemy fired a projectile (Spec 014).
+@warning_ignore("unused_signal")
+signal enemy_shot

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://entities/enemies/enemy_stats.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+move_speed = 85.0
+detection_radius_tiles = 6.0
+attack_range_tiles = 1.0
+attack_cooldown = 0.8
+damage = 1
+max_hits = 2
+is_ranged = true
+preferred_distance_tiles = 4.0
+shoot_cooldown = 1.6

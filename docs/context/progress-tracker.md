@@ -54,6 +54,14 @@ D(RunManager/20 rooms)→E(door item unlock).
   the test now clears painted walls at start for predictable positions. 31/31 PASS.
   NOTE: wall palette rows (brown/teal/green) will be paired to room floor palettes
   in sub-phase D (RunManager).
+- **B — Ranged enemy + projectile (Spec 014, done):** `entities/projectiles/
+  enemy_projectile` (Area2D, sheet 160,0) flies straight, damages the player,
+  despawns on walls (mask 1+2); in group `projectiles` so dash/i-frames treat it
+  as enemy damage. `EnemyStats` gains `is_ranged`/`preferred_distance_tiles`/
+  `shoot_cooldown`; `enemy.gd` branches to kite+shoot vs. chase+melee (`enemy2`
+  → `ranged_shooter.tres`, `enemy1` stays melee). Firing plays shot.mp3 via
+  `EventBus.enemy_shot`. Smoke +2 (ranged shot damages in the open; projectile
+  stopped by a wall), 33/33 PASS.
 
 ## Death screen, pause-key control, web audio, hit-sound trim — 2026-07-26
 

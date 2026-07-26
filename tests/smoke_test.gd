@@ -13,6 +13,8 @@ const TROY: MagicItemResource = preload("res://systems/magic_items/troy_wooden_h
 const ROOM_SCRIPT: GDScript = preload("res://rooms/room.gd")
 const DOOR_SCRIPT: GDScript = preload("res://rooms/door.gd")
 const AREA_DAMAGE: GDScript = preload("res://systems/magic_items/effects/area_damage_effect.gd")
+const RANGED_SCENE: PackedScene = preload("res://entities/enemies/enemy2.tscn")
+const PROJECTILE_SCENE: PackedScene = preload("res://entities/projectiles/enemy_projectile.tscn")
 
 var _room: ROOM_SCRIPT
 var _failures: int = 0
@@ -232,6 +234,31 @@ func _run() -> void:
 		await get_tree().physics_frame
 	_check(absf(blind.global_position.x - blind_x0) < 6.0,
 			"enemy behind a wall does not chase (no line of sight)")
+
+	# ---- Section 9: ranged enemy + projectile (Spec 014) ----
+	await _reset_arena(player)
+	wall_tiles.clear()
+	player.global_position = Vector2(200, 208)
+	var shooter := RANGED_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(shooter)
+	shooter.global_position = Vector2(360, 208)  # in sight, no wall
+	var ranged_hp := player.health
+	await _wait(2.5)  # it holds distance and fires; the shot reaches the player
+	_check(player.health < ranged_hp, "ranged enemy's shot damaged the player")
+
+	# A projectile is stopped by a wall before reaching the player behind it.
+	await _reset_arena(player)
+	wall_tiles.set_cell(Vector2i(10, 6), 0, Vector2i(5, 5))  # wall x 320..352
+	await get_tree().physics_frame
+	player.global_position = Vector2(280, 208)  # left of the wall
+	var wall_hp := player.health
+	var proj := PROJECTILE_SCENE.instantiate() as Area2D
+	get_tree().current_scene.add_child(proj)
+	proj.global_position = Vector2(400, 208)  # right of the wall
+	proj.call("launch", Vector2.LEFT)  # flies left, toward the player through the wall
+	for i in 44:
+		await get_tree().physics_frame
+	_check(player.health == wall_hp, "projectile stopped by a wall before the player")
 
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")

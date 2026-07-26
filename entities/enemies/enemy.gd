@@ -7,6 +7,7 @@ signal damage_taken(amount: int)
 ## Preloaded by path (not the class_name) so CLI/smoke runs don't depend on
 ## the editor's global class cache having scanned this fresh script.
 const IMPACT_BURST: GDScript = preload("res://systems/juice/impact_burst.gd")
+const PROJECTILE: PackedScene = preload("res://entities/projectiles/enemy_projectile.tscn")
 
 @export var stats: EnemyStats
 ## Burst colour on death (Spec 010, G1); tune per archetype in the editor.
@@ -24,6 +25,7 @@ var _knockback: Vector2 = Vector2.ZERO
 var _facing: Vector2 = Vector2.DOWN
 var _player: Player
 var _attack_timer: float = 0.0
+var _shoot_timer: float = 0.0
 var _freeze_timer: float = 0.0
 
 @onready var _collision: CollisionShape2D = $CollisionShape2D
@@ -46,6 +48,7 @@ func _physics_process(delta: float) -> void:
 	if _dying:
 		return
 	_attack_timer = maxf(_attack_timer - delta, 0.0)
+	_shoot_timer = maxf(_shoot_timer - delta, 0.0)
 	var was_frozen := is_frozen()
 	_freeze_timer = maxf(_freeze_timer - delta, 0.0)
 	if was_frozen and not is_frozen():
@@ -65,11 +68,10 @@ func _physics_process(delta: float) -> void:
 	var distance := to_player.length()
 	# Vision is blocked by walls (Phase 6A): no line of sight, no chase/attack.
 	if distance <= GameState.tiles(stats.detection_radius_tiles) and _can_see_player():
-		if distance > GameState.tiles(stats.attack_range_tiles):
-			if not is_frozen():
-				velocity = to_player.normalized() * stats.move_speed
-		elif _attack_timer <= 0.0:
-			_attack()
+		if stats.is_ranged:
+			_ranged_behavior(to_player, distance)
+		else:
+			_melee_behavior(to_player, distance)
 	if velocity != Vector2.ZERO:
 		_facing = velocity.normalized()
 	# Knockback rides on top of intended movement, then decays (Spec 011).
@@ -144,6 +146,39 @@ func _spawn_burst() -> void:
 	get_tree().current_scene.add_child(burst)
 	burst.global_position = global_position
 	burst.burst(death_particle_color)
+
+
+## Chaser (melee): close in, then hit on cooldown when in range.
+func _melee_behavior(to_player: Vector2, distance: float) -> void:
+	if distance > GameState.tiles(stats.attack_range_tiles):
+		if not is_frozen():
+			velocity = to_player.normalized() * stats.move_speed
+	elif _attack_timer <= 0.0:
+		_attack()
+
+
+## Ranged (kiter): hold a preferred distance and fire on cooldown.
+func _ranged_behavior(to_player: Vector2, distance: float) -> void:
+	var preferred := GameState.tiles(stats.preferred_distance_tiles)
+	var band := GameState.tiles(0.75)
+	if not is_frozen():
+		if distance > preferred + band:
+			velocity = to_player.normalized() * stats.move_speed  # approach
+		elif distance < preferred - band:
+			velocity = -to_player.normalized() * stats.move_speed  # back off
+		# otherwise hold position and shoot
+		_facing = to_player.normalized()
+	if _shoot_timer <= 0.0 and not is_frozen():
+		_shoot(to_player)
+		_shoot_timer = stats.shoot_cooldown
+
+
+func _shoot(to_player: Vector2) -> void:
+	var projectile := PROJECTILE.instantiate() as Area2D
+	get_tree().current_scene.add_child(projectile)
+	projectile.global_position = global_position
+	projectile.launch(to_player.normalized())
+	EventBus.enemy_shot.emit()
 
 
 func _attack() -> void:

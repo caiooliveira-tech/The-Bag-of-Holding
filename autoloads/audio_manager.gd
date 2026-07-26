@@ -33,6 +33,7 @@ const SFX := {
 	&"room_cleared": preload("res://assets/sounds/room_cleared.mp3"),
 	&"player_death": preload("res://assets/sounds/player_death.mp3"),
 	&"game_over": preload("res://assets/sounds/game_over.mp3"),
+	&"shot": preload("res://assets/sounds/shot.mp3"),
 }
 
 ## Seconds to skip at the start of an SFX to cut a silent lead-in.
@@ -95,6 +96,7 @@ func _ready() -> void:
 	EventBus.door_opened.connect(func(): play_sfx(&"door_open"))
 	EventBus.freeze_ended.connect(func(): play_sfx(&"freeze_explosion"))
 	EventBus.room_cleared.connect(func(): play_sfx(&"room_cleared"))
+	EventBus.enemy_shot.connect(func(): play_sfx(&"shot"))
 
 	_music_locked = OS.has_feature("web")
 

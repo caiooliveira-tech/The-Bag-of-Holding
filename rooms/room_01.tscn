@@ -36,7 +36,6 @@ script = ExtResource("7")
 
 [node name="WallTiles" type="TileMapLayer" parent="." unique_id=407389326]
 texture_filter = 1
-tile_map_data = PackedByteArray(0, 0, 7, 0, 4, 0, 0, 0, 0, 0, 5, 0, 0, 0, 7, 0, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 7, 0, 6, 0, 0, 0, 0, 0, 5, 0, 0, 0)
 tile_set = ExtResource("6")
 
 [node name="Walls" type="StaticBody2D" parent="." unique_id=1217475720]

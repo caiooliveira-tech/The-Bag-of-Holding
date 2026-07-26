@@ -110,7 +110,10 @@ func apply_knockback(impulse: Vector2) -> void:
 
 
 func take_damage(amount: int, source: Node) -> void:
-	var from_enemy := source != null and source.is_in_group("enemies")
+	# Enemies and their projectiles both count as enemy damage (dash/i-frames
+	# block them); the player's own items never do (pillar 4).
+	var from_enemy := source != null \
+			and (source.is_in_group("enemies") or source.is_in_group("projectiles"))
 	# Dash and post-hit i-frames block enemy damage only — never the player's
 	# own item effects (Spec 010, G3 / pillar 4).
 	if from_enemy and _is_enemy_invulnerable():

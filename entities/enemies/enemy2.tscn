@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://entities/enemies/enemy.gd" id="1"]
-[ext_resource type="Resource" path="res://entities/enemies/melee_grunt.tres" id="2"]
+[ext_resource type="Resource" path="res://entities/enemies/ranged_shooter.tres" id="2"]
 [ext_resource type="Texture2D" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="3"]
 
 [sub_resource type="CircleShape2D" id="body_shape"]
