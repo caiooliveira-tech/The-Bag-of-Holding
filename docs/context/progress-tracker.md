@@ -47,7 +47,11 @@ D(RunManager/20 rooms)→E(door item unlock).
   right-cap / corner / center, 3 palettes) with a physics layer (full-tile
   collision, collision_layer 1). Empty **`WallTiles` TileMapLayer** added to
   room_01/02 for designers to paint mazes in-editor; collision is automatic from
-  the tileset. Smoke +1 check (player blocked by a painted wall tile), 28/28 PASS.
+  the tileset. **Walls block movement, area effects, and enemy vision** — added
+  a raycast line-of-sight gate (mask 1) to the three area effects + DamageLingerZone
+  (`MagicItemEffect.wall_blocks`) and to enemy detection (`_can_see_player`). Smoke
+  +4 checks (wall collision, explosion in-open vs. behind-wall, no-LoS no-chase);
+  the test now clears painted walls at start for predictable positions. 31/31 PASS.
   NOTE: wall palette rows (brown/teal/green) will be paired to room floor palettes
   in sub-phase D (RunManager).
 

@@ -20,3 +20,11 @@ func effect_kind() -> StringName:
 ## Blast footprint in tiles, for the landing marker (Spec 010, G2). 0 = none.
 func preview_radius_tiles() -> float:
 	return 0.0
+
+
+## True if a wall (collision layer 1) sits between the blast and the target —
+## area effects don't reach through walls (Phase 6A).
+func wall_blocks(item: Node2D, target: Vector2) -> bool:
+	var space := item.get_world_2d().direct_space_state
+	var query := PhysicsRayQueryParameters2D.create(item.global_position, target, 1)
+	return not space.intersect_ray(query).is_empty()

@@ -32,6 +32,8 @@ func execute(item: Node2D) -> Array[Node]:
 		var body := target as Node2D
 		if body == null or body.global_position.distance_to(item.global_position) > radius_px:
 			continue
+		if wall_blocks(item, body.global_position):
+			continue
 		var away := (body.global_position - item.global_position)
 		var dir := away.normalized() if away.length() > 1.0 else Vector2.DOWN
 		affected.append(target)

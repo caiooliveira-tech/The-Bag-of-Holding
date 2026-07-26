@@ -63,7 +63,8 @@ func _physics_process(delta: float) -> void:
 	velocity = Vector2.ZERO
 	var to_player := _player.global_position - global_position
 	var distance := to_player.length()
-	if distance <= GameState.tiles(stats.detection_radius_tiles):
+	# Vision is blocked by walls (Phase 6A): no line of sight, no chase/attack.
+	if distance <= GameState.tiles(stats.detection_radius_tiles) and _can_see_player():
 		if distance > GameState.tiles(stats.attack_range_tiles):
 			if not is_frozen():
 				velocity = to_player.normalized() * stats.move_speed
@@ -88,6 +89,14 @@ func set_active(value: bool) -> void:
 ## Shove impulse (Spec 011, Left Hand of Ursula), decays in movement.
 func apply_knockback(impulse: Vector2) -> void:
 	_knockback = impulse
+
+
+## Clear line of sight to the player — no wall (layer 1) in between (Phase 6A).
+func _can_see_player() -> bool:
+	var space := get_world_2d().direct_space_state
+	var query := PhysicsRayQueryParameters2D.create(
+			global_position, _player.global_position, 1)
+	return space.intersect_ray(query).is_empty()
 
 
 func is_frozen() -> bool:

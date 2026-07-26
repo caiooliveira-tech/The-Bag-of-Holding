@@ -32,6 +32,8 @@ func execute(item: Node2D) -> Array[Node]:
 		var body := target as Node2D
 		if body == null or body.global_position.distance_to(item.global_position) > radius_px:
 			continue
+		if wall_blocks(item, body.global_position):
+			continue
 		affected.append(target)
 		if target.is_in_group("enemies"):
 			(target as Enemy).freeze(freeze_duration_seconds)

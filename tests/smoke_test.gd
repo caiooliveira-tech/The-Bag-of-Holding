@@ -12,6 +12,7 @@ const LEFT_HAND: MagicItemResource = preload("res://systems/magic_items/left_han
 const TROY: MagicItemResource = preload("res://systems/magic_items/troy_wooden_horse.tres")
 const ROOM_SCRIPT: GDScript = preload("res://rooms/room.gd")
 const DOOR_SCRIPT: GDScript = preload("res://rooms/door.gd")
+const AREA_DAMAGE: GDScript = preload("res://systems/magic_items/effects/area_damage_effect.gd")
 
 var _room: ROOM_SCRIPT
 var _failures: int = 0
@@ -29,6 +30,9 @@ func _ready() -> void:
 func _run() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
+	# Run in a predictable empty room: drop any designer-painted interior walls
+	# (they'd sit between the test's hardcoded blast/target positions).
+	(_room.get_node("WallTiles") as TileMapLayer).clear()
 	var player := get_tree().get_first_node_in_group("player") as Player
 	var enemy := get_tree().get_first_node_in_group("enemies") as Enemy
 	_check(player != null, "player exists")
@@ -186,6 +190,48 @@ func _run() -> void:
 	Input.action_release("move_right")
 	_check(player.global_position.x < wall_x - 12.0,
 			"player blocked by interior wall tile (x=%.0f, wall=%.0f)" % [player.global_position.x, wall_x])
+
+	# ---- Section 8: walls block explosions and enemy vision (Phase 6A) ----
+	await _reset_arena(player)
+	# One solid wall column at cell (10,6): world x 320..352, y 192..224.
+	wall_tiles.set_cell(Vector2i(10, 6), 0, Vector2i(5, 5))
+	await get_tree().physics_frame
+	player.global_position = Vector2(240, 208)  # far from the blast, unaffected
+	# Blast left of the wall; near enemy same side (hit), far enemy behind it (safe).
+	var near := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(near)
+	near.freeze(30.0)
+	near.global_position = Vector2(300, 208)
+	var near_hp := near.hits_remaining
+	var far := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(far)
+	far.freeze(30.0)
+	far.global_position = Vector2(376, 208)  # right of the wall
+	var far_hp := far.hits_remaining
+	var blast := Node2D.new()
+	get_tree().current_scene.add_child(blast)
+	blast.global_position = Vector2(292, 208)
+	var fx := AREA_DAMAGE.new() as MagicItemEffect
+	fx.set("radius_tiles", 3.0)
+	fx.set("damage_tier", 2)
+	fx.set("linger_seconds", 0.05)
+	fx.execute(blast)
+	await get_tree().physics_frame
+	_check(near.hits_remaining < near_hp, "explosion hits an enemy in the open")
+	_check(is_instance_valid(far) and far.hits_remaining == far_hp,
+			"explosion does NOT reach an enemy behind a wall")
+
+	# Vision: an active enemy behind the wall can't see the player, so no chase.
+	var blind := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(blind)
+	blind.global_position = Vector2(400, 208)  # right of the wall
+	player.global_position = Vector2(250, 208)  # left of the wall, within 5 tiles
+	blind.set_active(true)
+	var blind_x0 := blind.global_position.x
+	for i in 14:
+		await get_tree().physics_frame
+	_check(absf(blind.global_position.x - blind_x0) < 6.0,
+			"enemy behind a wall does not chase (no line of sight)")
 
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")

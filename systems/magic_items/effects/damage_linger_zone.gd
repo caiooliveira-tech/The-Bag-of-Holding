@@ -28,6 +28,14 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
+## Explosions don't reach through walls (Phase 6A): a wall on layer 1 between
+## the blast centre and the target blocks the hit.
+func _wall_blocks(target: Vector2) -> bool:
+	var space := get_world_2d().direct_space_state
+	var query := PhysicsRayQueryParameters2D.create(global_position, target, 1)
+	return not space.intersect_ray(query).is_empty()
+
+
 func apply_hits() -> Array[Node]:
 	var affected: Array[Node] = []
 	var targets: Array[Node] = get_tree().get_nodes_in_group("enemies")
@@ -38,6 +46,8 @@ func apply_hits() -> Array[Node]:
 		var body := target as Node2D
 		if body == null or body.global_position.distance_to(global_position) > _radius_px:
 			continue
+		if _wall_blocks(body.global_position):
+			continue  # not added to _already_hit: can still be hit if it steps out
 		_already_hit.append(target)
 		affected.append(target)
 		if target.is_in_group("enemies"):
