@@ -8,7 +8,8 @@ const PANEL_SIZE := Vector2(520, 210)
 
 var _open: bool = false
 ## Beats already shown this run, so dying and retrying floor 1 doesn't lecture
-## the player twice. Cleared by GameState.reset_run() through the run flag.
+## the player twice. Cleared on EventBus.run_reset — this autoload outlives every
+## scene change, so without that a fresh New Game would teach nobody.
 var _seen: Array[TutorialBeatResource] = []
 
 var _root: Control
@@ -22,6 +23,17 @@ func _ready() -> void:
 	_build()
 	EventBus.level_entered.connect(_on_level_entered)
 	EventBus.room_cleared.connect(_on_room_cleared)
+	EventBus.run_reset.connect(_on_run_reset)
+
+
+## A new run gets the lessons again. Also drops any beat left open if the run was
+## abandoned mid-lesson (quit to menu from the pause screen), so the panel can't
+## reappear over floor 1 still believing it owns the pause.
+func _on_run_reset() -> void:
+	_seen.clear()
+	if _open:
+		_open = false
+		_root.visible = false
 
 
 func _build() -> void:

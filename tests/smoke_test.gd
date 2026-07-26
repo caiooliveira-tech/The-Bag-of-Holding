@@ -27,6 +27,12 @@ func _ready() -> void:
 	# Hitstop scales Engine.time_scale; disable it so it can't skew the test's
 	# own wait timers (a slowed clock would make _wait() take real minutes).
 	Juice.hitstop_enabled = false
+	# The tutorial overlay (Spec 024) pauses the tree whenever a floor announces
+	# itself, and the fixture rooms fire level_entered like any real floor. Its
+	# SceneTreeTimers ignore pause, so every timed check below would run against
+	# a frozen game. Detach it — the run flow is covered by Section 16 instead.
+	EventBus.level_entered.disconnect(TutorialOverlay._on_level_entered)
+	EventBus.room_cleared.disconnect(TutorialOverlay._on_room_cleared)
 	_room = ROOM_SCENE.instantiate() as ROOM_SCRIPT
 	add_child(_room)
 	_run()
@@ -477,8 +483,8 @@ func _run() -> void:
 			WallPatterns.Pattern.TIC_TAC_TOE, WallPatterns.Pattern.RING]:
 		scratch.clear()
 		WallPatterns.stamp(scratch, pattern, 0)
-		for cell in WallPatterns.DOOR_APPROACH:
-			if scratch.get_used_cells().has(cell):
+		for approach_cell in WallPatterns.DOOR_APPROACH:
+			if scratch.get_used_cells().has(approach_cell):
 				door_safe = false
 	_check(door_safe, "no wall pattern blocks a door approach")
 	scratch.queue_free()
@@ -497,6 +503,22 @@ func _run() -> void:
 		if not RunManager.LEVELS[i].tutorial_beats.is_empty():
 			others_clean = false
 	_check(others_clean, "no other floor shows tutorial overlays")
+
+	# ---- Section 17: a new run really starts over ----
+	# Both of these shipped broken: the win screen restarted into the room_01/02
+	# smoke fixtures, and the tutorial's seen-list was never cleared, so an
+	# autoload that outlives the scene taught the first player only.
+	var win := (load("res://ui/win_screen.tscn") as PackedScene).instantiate()
+	add_child(win)
+	var restart: String = win.call("restart_target")
+	_check(restart == RunManager.LEVEL_SCENE,
+			"win screen climbs again into the real run, not a fixture (%s)" % restart)
+	win.queue_free()
+	var beat: TutorialBeatResource = RunManager.LEVELS[0].tutorial_beats[0]
+	TutorialOverlay._seen.assign([beat] as Array[TutorialBeatResource])
+	GameState.reset_run()
+	_check(TutorialOverlay._seen.is_empty(),
+			"reset_run() clears the tutorial's seen beats (a new run re-teaches)")
 
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")

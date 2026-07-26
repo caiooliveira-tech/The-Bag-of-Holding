@@ -548,3 +548,132 @@ a two-beat tutorial on floor 1.
 ### References
 
 - Godot docs: TileMapLayer.set_cell, TileSet atlas coords, Node lifecycle order.
+
+---
+
+## Session 2026-07-28 — merges that lie, and tests that never ran
+
+### What happened
+
+Spec 016/024 read "done" in the tracker, but none of the code was on `main`. The
+merge was real; it just happened to the wrong commit. Then the suite that should
+have caught it turned out never to have run at all.
+
+### Git: a merged PR is not the same as merged work
+
+`feature/levels` was merged as PR #8 — four Markdown files. The implementation was
+pushed to the same branch *after* the merge, so it sat on a branch whose PR was
+already closed. Nothing was lost and nothing conflicted; the work simply had no
+route to `main`.
+
+The cheap check is to ask about files, not about branches:
+
+```bash
+git cat-file -e origin/main:autoloads/run_manager.gd  # exit 1 = not there
+```
+
+Two more things this session leaned on:
+
+- **`git patch-id`** proved the local and remote `FEAT Phases` commits were the same
+  change on different bases (identical patch-id, different SHA). "Diverged 7 and 1"
+  looked alarming and was really one duplicated commit.
+- **Fresh worktrees need `--import` before headless runs.** A first baseline attempt
+  reported *every* `class_name` as unresolved — `Enemy`, `Player`, `CutsceneResource`.
+  Nothing was broken: `.godot/` is gitignored, so a new worktree has no global class
+  cache. `godot --headless --import` first, then run. Without that step the "baseline"
+  would have been pure noise, and the comparison it fed would have been worthless.
+
+### GDScript: `for` variables are function-scoped
+
+```gdscript
+var cell := Vector2i(10, 6)      # line 199
+...
+for cell in WallPatterns.DOOR_APPROACH:   # line 480 — Parse Error
+```
+
+Unlike C or Python-with-a-linter, GDScript treats the loop variable as a declaration
+in the *enclosing function*, so this is a redeclaration. It is a parse error, not a
+runtime one — meaning the whole script fails to load and the suite reports nothing.
+
+**A test suite that fails to load is indistinguishable from one that passes** if you
+only check for the word FAIL. Assert on the expected number of checks.
+
+### Pause is global state, and autoloads make it sticky
+
+`TutorialOverlay` pauses the tree so the player can read a parchment beat. Correct in
+game. In the harness it froze the world, because the fixture rooms emit
+`level_entered` exactly like a real floor — and `SceneTreeTimer` ignores pause by
+default (`process_always` defaults to true), so the *test* kept advancing while the
+*game* stood still.
+
+The failure signature is worth memorising: every positive assertion ("item landed",
+"enemy died") failed while every negative one ("took no damage", "does not chase")
+passed. Negative assertions pass trivially in a frozen world. When passes and
+failures split along that line, suspect time, not logic.
+
+There are now four independent owners of `get_tree().paused` (tutorial, item-acquired,
+death, pause menu), each setting `false` on close. Global mutable state with four
+writers and no coordination — a counter or a single owner is the standard fix.
+
+### Autoload lifetime outlives the run
+
+`TutorialOverlay._seen` remembers which beats were shown. Autoloads live for the whole
+process, so "once per run" quietly became "once per app launch": the comment claimed
+`reset_run()` cleared it, but `reset_run()` never touched it. Whenever an autoload
+holds per-run state, something must reset it — and the reset belongs next to the other
+run state, not in the UI.
+
+### Common mistakes
+
+- Trusting a tracker entry over the filesystem. The tracker said "implemented on
+  branch X"; the branch was merged; both true, and the code still wasn't on main.
+- Reading a smoke test's exit code instead of its output. Exit 0 meant "Godot quit
+  cleanly", not "the checks ran".
+- Nearly reporting a fresh-worktree class-cache miss as a main-branch regression.
+  When a baseline reports that *everything* is broken, distrust the baseline.
+
+### Suggested exercises
+
+- Break a `class_name` reference on purpose, run the suite headless, and note that the
+  output looks identical to a suite with no failures.
+- Add a `_check(_total == EXPECTED_CHECKS, ...)` guard so a partly-loaded suite fails
+  loudly instead of passing quietly.
+- Give level 12 a seventh enemy and watch it never spawn — then add the
+  `push_warning` that would have told you.
+
+### References
+
+- Godot docs: SceneTree.paused, SceneTreeTimer (`process_always`), Node.PROCESS_MODE_ALWAYS.
+- `git patch-id`, `git cat-file -e`, `git worktree add`.
+
+### Follow-up same session — fixing the two player-facing bugs
+
+**Routing a reset through the bus instead of pushing it.** The tutorial's
+`_seen` list had to be cleared when a run restarts. The tempting fix is
+`GameState.reset_run()` calling `TutorialOverlay._seen.clear()` — one line, done.
+But game-architecture.md says to prefer an `EventBus` signal over autoloads
+calling each other, and the reason shows up immediately: `GameState` would have to
+know that a *UI* autoload caches run state, and the next autoload that caches
+something would need another line in `reset_run()`. With `EventBus.run_reset`,
+`reset_run()` announces a fact and anything that cares cleans up after itself.
+Signals flow outward; direct calls flow inward.
+
+**Resisting the fifth pause writer.** The reset handler also hides a beat left
+open when a run is abandoned mid-lesson. The obvious companion line —
+`get_tree().paused = false` — is wrong: every caller of `reset_run()` already
+manages pause (the death screen and the pause menu both unpause before calling
+it), so adding one more writer would deepen the exact bug listed as finding 4.
+Clearing `_open` is enough, because that's what stops `_input` from calling
+`_close()` and unpausing on someone else's behalf.
+
+**Making a destination testable without navigating to it.** Asserting the win
+screen restarts correctly is awkward: `change_scene_to_file` would tear down the
+test container. Extracting the one-line `restart_target()` made the decision
+inspectable while leaving the navigation where it was — the general trick is to
+split *what* from *do*, then assert on the *what*.
+
+**Check your new check can fail.** The first draft asserted
+`RunManager.next_scene_path()` wasn't a fixture — which it never is, whatever
+`win_screen.gd` says. A check that cannot fail is worse than no check: it makes a
+suite look thorough while covering nothing. Ask, of every assertion: what edit
+would turn this red?

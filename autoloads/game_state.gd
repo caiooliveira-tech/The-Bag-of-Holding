@@ -50,6 +50,10 @@ func reset_run() -> void:
 	current_room = 0
 	player_health = -1
 	run_pool = [ITEM_CATALOG[0]]  # Fire Orb: the starter
+	# Announced rather than pushed: other autoloads cache their own per-run
+	# state (the tutorial's shown beats) and clear it themselves, so GameState
+	# never needs to know who is listening.
+	EventBus.run_reset.emit()
 
 
 func tiles(count: float) -> float:
