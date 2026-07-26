@@ -33,6 +33,24 @@ Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). M
 - 2026-07-26 — Heart art integrated: Design delivered `assets/ui/heart_filled.png` + `heart_empty.png`; hud.gd now takes both textures (filled/empty swap per health point, tint fallback if only filled is set), assigned in hud.tscn. HUD art is complete for the MVP layout.
 - 2026-07-26 — **Room tiles integrated via TileMapLayer**: `rooms/room_tileset.tres` (32px atlas) + `rooms/room_tiles.gd` paints at runtime (`variant_row` 0 = blue/room 1, 1 = pink/room 2). Final template (region px, row 1 y=0 / row 2 y=32): closed door x224, open door x256, corner x288, wall x320, floor x352. Border = wall tile (sides rotated 90° so the inner face points into the room), corner tile only at the 4 corners, interior + door gaps = floor tile. **3 single-tile doors per room** (top x336, left/right at mid-height via ±90° node rotation); room.gd opens/listens to all doors under `Doors/` — all lead to next_scene_path (pick-a-door choice stays post-MVP). Collision split per gap (StaticBody2D, unchanged layer). Verified via `tests/screenshot_rooms.tscn`; smoke 21/21 PASS (includes 3-door check).
 
+## Roguelike progression (Phase 6) — plan set, sub-phase A done — 2026-07-26
+
+Plan in implementation-roadmap.md (Phase 6): a designed 20-room run (3 palette
+acts: tutorial/escalation/mastery), smarter chaser + ranged shooter, maze walls,
+per-run item unlocks. Team decisions: **hybrid authoring** (walls painted
+per-room in scene; enemies/palette/order as RunManager data) + **item choice at
+the door**. Sub-phases A(walls)→B(ranged+projectile)→C(smart chaser)→
+D(RunManager/20 rooms)→E(door item unlock).
+
+- **A — Interior walls + collision (done):** wall tiles added to
+  `room_tileset.tres` (sheet cols 0–5 × rows 5–7 = closed / left-cap / h-middle /
+  right-cap / corner / center, 3 palettes) with a physics layer (full-tile
+  collision, collision_layer 1). Empty **`WallTiles` TileMapLayer** added to
+  room_01/02 for designers to paint mazes in-editor; collision is automatic from
+  the tileset. Smoke +1 check (player blocked by a painted wall tile), 28/28 PASS.
+  NOTE: wall palette rows (brown/teal/green) will be paired to room floor palettes
+  in sub-phase D (RunManager).
+
 ## Death screen, pause-key control, web audio, hit-sound trim — 2026-07-26
 
 - **Death screen** (`ui/menu/death_screen.gd`, autoload `DeathScreen`): on

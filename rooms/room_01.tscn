@@ -35,6 +35,10 @@ tile_set = ExtResource("6")
 script = ExtResource("7")
 variant_row = 0
 
+[node name="WallTiles" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_set = ExtResource("6")
+
 [node name="Walls" type="StaticBody2D" parent="."]
 collision_layer = 1
 collision_mask = 0

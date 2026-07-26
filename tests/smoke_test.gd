@@ -172,6 +172,21 @@ func _run() -> void:
 	_check(get_tree().get_nodes_in_group("magic_items").is_empty(),
 			"troy exploded (despawned) on reaching a wall")
 
+	# ---- Section 7: interior wall-tile collision (Phase 6A) ----
+	await _reset_arena(player)
+	var wall_tiles := _room.get_node("WallTiles") as TileMapLayer
+	var cell := Vector2i(10, 6)
+	wall_tiles.set_cell(cell, 0, Vector2i(5, 5))  # solid center wall tile
+	await get_tree().physics_frame
+	var wall_x := float(cell.x * 32 + 16)  # cell centre (layer sits at origin)
+	player.global_position = Vector2(wall_x - 60.0, float(cell.y * 32 + 16))
+	Input.action_press("move_right")
+	for i in 24:
+		await get_tree().physics_frame
+	Input.action_release("move_right")
+	_check(player.global_position.x < wall_x - 12.0,
+			"player blocked by interior wall tile (x=%.0f, wall=%.0f)" % [player.global_position.x, wall_x])
+
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")
 	else:

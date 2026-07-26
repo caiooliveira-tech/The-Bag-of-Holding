@@ -212,6 +212,55 @@ Tasks (see Spec 010 for detail; ordered by impact-per-effort)
   dash ghost trail.
 - **G5 Atmosphere (stretch):** idle bob, door dust, room-clear flourish, rumble.
 
+---
+
+# Phase 6 — Roguelike Progression (challenge & content)
+
+> Added 2026-07-26 (team). Turns two dumb rooms into a designed 20-room run with
+> a tutorial, escalating difficulty, smarter enemies, ranged combat, maze walls,
+> and per-run item unlocks. Team decisions: **hybrid authoring** (walls painted
+> per-room in a scene; enemies/palette/order as data in a RunManager) and
+> **item choice at the door** (each open door offers an item added to the pool).
+> Built in sub-phases (A–E), each ending on a playable build + green smoke test.
+
+Goal
+
+A continuous, flow-tuned 20-room MVP: teach one mechanic/enemy at a time, ramp
+up, and let the player build an arsenal across the run.
+
+Level structure (3 acts by palette)
+
+- **Tutorial (rooms 1–4, blue):** one lesson each — move→draw→throw→countdown
+  (1 weak chaser), friendly fire, wall-as-cover, introduce the chaser.
+- **Escalation (5–13, pink):** introduce the ranged shooter isolated, then
+  chaser+ranged combos, mazes, bigger groups.
+- **Mastery (14–20, green):** dense mixes, tight mazes, full arsenal; room 20 =
+  arena/finale.
+
+Sub-phases
+
+- **A — Interior walls + collision:** wall tiles (sheet y=160, 3 colour rows —
+  closed / left-cap / right-cap / corner / center) added to a TileSet with
+  physics; a paintable `Walls` TileMapLayer per room. Foundation for maze design.
+- **B — Projectile + ranged enemy (Spec 014):** enemy projectile (sheet 160,0)
+  that flies, damages the player, despawns on walls/range; enemy type 2 kites to
+  a preferred distance and shoots on cooldown.
+- **C — Smarter chaser (Spec 015):** replace the magnet — separation (no
+  clumping), strafe/flank, wall-aware steering, telegraphed lunge. Parameterized.
+- **D — Run structure (Spec 016):** `RunManager` sequences the 20 rooms (data:
+  palette + enemy spawns + wall-layout ref per room), advances on clear+door,
+  cycles the 3 palettes, encodes the difficulty curve.
+- **E — Item unlock at doors (Spec 017):** on clear, each open door shows an
+  item; walking through picks it into the run's pool. Pool starts at Fire Orb
+  and grows; persists across rooms via GameState.
+
+Deliverable
+
+✓ A 20-room run that teaches, escalates, and holds flow
+✓ Two distinct enemy behaviours (smart chaser + ranged kiter) + projectiles
+✓ Maze walls with collision; 3 room palettes
+✓ Per-run item unlocks via door choice; smoke test green after each sub-phase
+
 Deliverable
 
 ✓ Hits, kills, throws, and explosions read and feel physical
