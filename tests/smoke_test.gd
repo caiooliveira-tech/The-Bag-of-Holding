@@ -5,7 +5,7 @@
 extends Node
 
 const ROOM_SCENE: PackedScene = preload("res://rooms/room_01.tscn")
-const ENEMY_SCENE: PackedScene = preload("res://entities/enemies/enemy.tscn")
+const ENEMY_SCENE: PackedScene = preload("res://entities/enemies/enemy1.tscn")
 const FIRE_ORB: MagicItemResource = preload("res://systems/magic_items/fire_orb.tres")
 const URSULA: MagicItemResource = preload("res://systems/magic_items/right_hand_of_ursula.tres")
 const ROOM_SCRIPT: GDScript = preload("res://rooms/room.gd")

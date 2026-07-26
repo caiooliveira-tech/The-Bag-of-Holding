@@ -9,6 +9,7 @@ signal damage_taken(amount: int)
 var hits_remaining: int = 0
 
 var _active: bool = true
+var _facing: Vector2 = Vector2.DOWN
 var _player: Player
 var _attack_timer: float = 0.0
 var _freeze_timer: float = 0.0
@@ -17,6 +18,8 @@ var _freeze_timer: float = 0.0
 # AnimatedSprite2D in Phase 4) can be dropped in as "Body" with no code change.
 # All feedback goes through `modulate`, which every CanvasItem has.
 @onready var _body_visual: Node2D = $Body
+# Null when Body is still a graybox polygon; guarded in _update_animation().
+@onready var _body_sprite: AnimatedSprite2D = $Body as AnimatedSprite2D
 
 
 func _ready() -> void:
@@ -33,6 +36,7 @@ func _physics_process(delta: float) -> void:
 		modulate = Color.WHITE
 	if not _active:
 		velocity = Vector2.ZERO
+		_update_animation()
 		return
 	if _player == null:
 		# Player may enter the tree after us; resolve once, then keep the cache.
@@ -48,7 +52,10 @@ func _physics_process(delta: float) -> void:
 				velocity = to_player.normalized() * stats.move_speed
 		elif _attack_timer <= 0.0:
 			_attack()
+	if velocity != Vector2.ZERO:
+		_facing = velocity.normalized()
 	move_and_slide()
+	_update_animation()
 
 
 ## Room state machine gates this: inactive during the WAITING telegraph.
@@ -80,6 +87,7 @@ func take_damage(amount: int) -> void:
 
 func _attack() -> void:
 	_attack_timer = stats.attack_cooldown
+	_facing = (_player.global_position - global_position).normalized()
 	_player.take_damage(stats.damage, self)
 	# Telegraph: quick scale punch toward readability without extra sprites.
 	_body_visual.scale = Vector2(1.3, 1.3)
@@ -99,3 +107,20 @@ func _flash_damage() -> void:
 	_body_visual.modulate = Color(3.0, 3.0, 3.0)
 	var tween := create_tween()
 	tween.tween_property(_body_visual, "modulate", _damage_tint(), 0.2)
+
+
+## Same mapping as the player: 4 directional walk animations, horizontal
+## wins on diagonals; standing (or frozen/inactive) holds the idle pose.
+func _update_animation() -> void:
+	if _body_sprite == null:
+		return
+	var anim: StringName
+	if absf(_facing.x) > absf(_facing.y):
+		anim = &"walk_right" if _facing.x > 0.0 else &"walk_left"
+	else:
+		anim = &"walk_front" if _facing.y > 0.0 else &"walk_back"
+	if velocity != Vector2.ZERO:
+		_body_sprite.play(anim)
+	else:
+		_body_sprite.animation = anim
+		_body_sprite.stop()

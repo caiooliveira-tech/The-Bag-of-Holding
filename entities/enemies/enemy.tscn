@@ -1,20 +1,77 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene format=3 uid="uid://dvm8fflwr3tlj"]
 
-[ext_resource type="Script" path="res://entities/enemies/enemy.gd" id="1"]
+[ext_resource type="Script" uid="uid://ddg581cxt4u6i" path="res://entities/enemies/enemy.gd" id="1"]
 [ext_resource type="Resource" path="res://entities/enemies/melee_grunt.tres" id="2"]
+[ext_resource type="Texture2D" uid="uid://cgqbmw35qq01j" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="3_5lf1o"]
 
 [sub_resource type="CircleShape2D" id="body_shape"]
 radius = 12.0
 
-[node name="Enemy" type="CharacterBody2D"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_msovg"]
+atlas = ExtResource("3_5lf1o")
+region = Rect2(96, 32, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_twyc1"]
+atlas = ExtResource("3_5lf1o")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w4yt1"]
+atlas = ExtResource("3_5lf1o")
+region = Rect2(96, 96, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ipr6v"]
+atlas = ExtResource("3_5lf1o")
+region = Rect2(96, 64, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_xuxey"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_msovg")
+}],
+"loop": 1,
+"name": &"walk_back",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_twyc1")
+}],
+"loop": 1,
+"name": &"walk_front",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w4yt1")
+}],
+"loop": 1,
+"name": &"walk_left",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ipr6v")
+}],
+"loop": 1,
+"name": &"walk_right",
+"speed": 5.0
+}]
+
+[node name="Enemy" type="CharacterBody2D" unique_id=777953538]
 collision_layer = 4
 collision_mask = 7
 script = ExtResource("1")
 stats = ExtResource("2")
 
-[node name="Body" type="Polygon2D" parent="."]
+[node name="Body" type="Polygon2D" parent="." unique_id=1956777188]
 color = Color(0.85, 0.3, 0.3, 1)
 polygon = PackedVector2Array(-12, -12, 12, -12, 12, 12, -12, 12)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2082471784]
 shape = SubResource("body_shape")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=302611651]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_xuxey")
+animation = &"walk_right"

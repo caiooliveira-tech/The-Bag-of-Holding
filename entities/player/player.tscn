@@ -140,11 +140,9 @@ polygon = PackedVector2Array(12, -4, 20, 0, 12, 4)
 position = Vector2(20, 0)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1978409074]
-visible = false
 shape = SubResource("body_shape")
 
 [node name="Hurtbox" type="Area2D" parent="." unique_id=1841114615]
-visible = false
 collision_layer = 16
 collision_mask = 0
 monitoring = false
