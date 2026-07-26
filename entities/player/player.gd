@@ -128,9 +128,11 @@ func take_damage(amount: int, source: Node) -> void:
 	else:
 		_flash_damage()
 	if health <= 0:
+		health = 0
 		GameState.player_health = -1
+		AudioManager.play_sfx(&"player_death")
+		# DeathScreen shows the overlay and returns to the menu (no reload).
 		EventBus.player_died.emit()
-		get_tree().reload_current_scene.call_deferred()
 
 
 ## Post-hit invulnerability blink (Spec 010, G3). The looping alpha tween is

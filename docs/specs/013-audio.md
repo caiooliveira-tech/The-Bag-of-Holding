@@ -30,7 +30,10 @@ SFX by event:
   right_hand → **freeze** (the freeze cue), left_hand → hand_explosions,
   troy → horse_explosion
 - `freeze_ended` (new, thaw) → **freeze-explosion** (the un-freeze cue)
-- `player_damaged` → player_hit · `enemy_damaged` (new) → enemy_hit
+- `player_damaged` → player_hit (starts 0.08 s in, `SFX_SKIP`, to cut a silent
+  lead-in) · `enemy_damaged` (new) → enemy_hit
+- `room_cleared` → room_cleared · player death → player_death (on the hit) +
+  game_over (on the YOU DIED screen)
 - `player_dashed` (new) → dash · `player_kicked` (new) → kick
 - `door_opened` (new) → door_open
 - **clock_ticking** loops while ≥1 item is counting down (started on
@@ -40,6 +43,12 @@ SFX by event:
 
 New EventBus signals added for the hooks that had none: `enemy_damaged`,
 `player_dashed`, `player_kicked`, `door_opened`, `freeze_ended`.
+
+## Web audio
+
+Browsers block audio until a user gesture, so on web (`OS.has_feature("web")`)
+the background track is held until the first key/click, then started cleanly —
+music comes in on the first menu interaction instead of being silently skipped.
 
 ## Not yet wired (reserved for later, per team)
 

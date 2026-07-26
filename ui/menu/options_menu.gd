@@ -59,6 +59,7 @@ func _build() -> void:
 		["DRAW / THROW ITEM", _keys_for("attack")],
 		["DODGE", _keys_for("dash")],
 		["KICK", _keys_for("special")],
+		["PAUSE", "ESC"],
 	]
 	for i in rows.size():
 		var y := 378.0 + i * 34.0

@@ -30,10 +30,21 @@ const SFX := {
 	&"freeze_explosion": preload("res://assets/sounds/freeze-explosion.mp3"),
 	&"hand_explosions": preload("res://assets/sounds/hand_explosions.mp3"),
 	&"horse_explosion": preload("res://assets/sounds/horse_explosion.mp3"),
+	&"room_cleared": preload("res://assets/sounds/room_cleared.mp3"),
+	&"player_death": preload("res://assets/sounds/player_death.mp3"),
+	&"game_over": preload("res://assets/sounds/game_over.mp3"),
+}
+
+## Seconds to skip at the start of an SFX to cut a silent lead-in.
+const SFX_SKIP := {
+	&"player_hit": 0.08,
 }
 
 # Not const: we flip its `loop` flag in _ready (can't mutate a const member).
 var _tick_stream: AudioStreamMP3 = preload("res://assets/sounds/clock_ticking.mp3")
+## On the web, audio can't start until the first user gesture — hold music
+## until then so it starts cleanly on the first menu interaction.
+var _music_locked: bool = false
 
 ## Explosion/trigger SFX per item. Right Hand plays the freeze cue on trigger;
 ## the un-freeze cue (freeze-explosion) fires later on freeze_ended.
@@ -83,6 +94,20 @@ func _ready() -> void:
 	EventBus.player_kicked.connect(func(): play_sfx(&"kick"))
 	EventBus.door_opened.connect(func(): play_sfx(&"door_open"))
 	EventBus.freeze_ended.connect(func(): play_sfx(&"freeze_explosion"))
+	EventBus.room_cleared.connect(func(): play_sfx(&"room_cleared"))
+
+	_music_locked = OS.has_feature("web")
+
+
+## Browsers block audio until a user gesture — start the pending track on the
+## first key/click so web builds get music from the first menu interaction.
+func _input(event: InputEvent) -> void:
+	if not _music_locked:
+		return
+	if (event is InputEventKey or event is InputEventMouseButton) and event.pressed:
+		_music_locked = false
+		if _current_music != &"":
+			_start_music()
 
 
 ## Switch the looping background track. Also resets the countdown tick, so a
@@ -92,8 +117,13 @@ func play_music(track: StringName) -> void:
 	if _current_music == track or not MUSIC.has(track):
 		return
 	_current_music = track
-	var stream := MUSIC[track] as AudioStreamMP3
-	var skip: float = MUSIC_SKIP.get(track, 0.0)
+	if not _music_locked:
+		_start_music()
+
+
+func _start_music() -> void:
+	var stream := MUSIC[_current_music] as AudioStreamMP3
+	var skip: float = MUSIC_SKIP.get(_current_music, 0.0)
 	stream.loop_offset = skip
 	_music.stream = stream
 	_music.play(skip)
@@ -105,7 +135,7 @@ func play_sfx(name: StringName) -> void:
 	var player := _sfx[_next_voice]
 	_next_voice = (_next_voice + 1) % _sfx.size()
 	player.stream = SFX[name]
-	player.play()
+	player.play(SFX_SKIP.get(name, 0.0))
 
 
 func _on_item_drawn(_data: MagicItemResource) -> void:
