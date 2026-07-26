@@ -50,6 +50,21 @@ Damage classification.
 - Medium
 - Heavy
 
+### I-Frames (Invincibility Frames)
+
+A short window in which a character cannot take damage. Shoelace gets them
+during a dash and after taking an enemy hit (Spec 010 G3). They block **enemy
+damage only** — the player's own item effects always connect (Friendly Fire
+pillar). The post-hit window length is a difficulty knob (Spec 018).
+
+### Difficulty Level
+
+One of three selectable pressure settings (Spec 018): **Apprentice** (easy),
+**Wizard** (baseline = the game's designed balance), **Archmage** (hard).
+Scales enemy speed/cooldowns/detection and player health/i-frames. Item
+countdown timers never scale — the countdown puzzle is identical on every
+level.
+
 ### EventBus
 
 Central event dispatcher used to reduce coupling.
