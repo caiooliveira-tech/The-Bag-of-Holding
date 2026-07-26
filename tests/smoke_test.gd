@@ -117,6 +117,18 @@ func _run() -> void:
 	_check(doors.size() == 3 and open_count == 3,
 			"all 3 doors opened on room clear (%d of %d)" % [open_count, doors.size()])
 
+	# ---- Section 4: post-hit i-frames (Spec 010, G3) ----
+	var jailer := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(jailer)
+	jailer.global_position = player.global_position + Vector2(2000, 0)  # inert, far away
+	var hp0 := player.health
+	player.take_damage(1, jailer)
+	_check(player.health == hp0 - 1, "enemy hit lands (health %d)" % player.health)
+	player.take_damage(1, jailer)  # immediate second hit, same window
+	_check(player.health == hp0 - 1, "second enemy hit blocked by i-frames")
+	player.take_damage(1, player)  # own item source is not in "enemies"
+	_check(player.health == hp0 - 2, "own damage ignores i-frames (health %d)" % player.health)
+
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")
 	else:

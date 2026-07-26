@@ -86,7 +86,7 @@ Sells the core mechanic and friendly-fire clarity.
 
 **Deliverable:** throws and kicks arc and land readably; freeze reads as cold, not force.
 
-### Phase G3 — Player Survivability Feedback (contains a design decision)
+### Phase G3 — Player Survivability Feedback (contains a design decision) — **Implemented 2026-07-26 (i-frames = 0.5s, tunable)**
 
 - **Post-hit i-frames (~0.5 s)** with the sprite blinking in alpha, applied to
   ENEMY damage only — the player's own item effects always connect (pillar 4).

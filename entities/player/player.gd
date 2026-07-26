@@ -20,6 +20,8 @@ var _dash_cooldown_timer: float = 0.0
 var _dash_direction: Vector2 = Vector2.ZERO
 var _freeze_timer: float = 0.0
 var _knockback: Vector2 = Vector2.ZERO
+var _iframe_timer: float = 0.0
+var _iframe_tween: Tween
 
 @onready var _facing_pivot: Node2D = $FacingPivot
 @onready var _facing_marker: Marker2D = $FacingPivot/FacingMarker
@@ -44,6 +46,10 @@ func _physics_process(delta: float) -> void:
 	_freeze_timer = maxf(_freeze_timer - delta, 0.0)
 	if was_frozen and not is_frozen():
 		_thaw_flash()
+	if _iframe_timer > 0.0:
+		_iframe_timer = maxf(_iframe_timer - delta, 0.0)
+		if _iframe_timer == 0.0:
+			_end_iframes()
 	if _state == State.DASH:
 		_tick_dash(delta)
 	else:
@@ -67,6 +73,12 @@ func is_dashing() -> bool:
 	return _state == State.DASH
 
 
+## Invulnerable to ENEMY attacks — during a dash or the post-hit window.
+## Never applies to the player's own item effects (Spec 010, G3 / pillar 4).
+func _is_enemy_invulnerable() -> bool:
+	return is_dashing() or _iframe_timer > 0.0
+
+
 func is_frozen() -> bool:
 	return _freeze_timer > 0.0
 
@@ -83,22 +95,46 @@ func throw_origin() -> Vector2:
 
 
 func take_damage(amount: int, source: Node) -> void:
-	# Dash i-frames block enemy damage only — never the player's own item effects.
-	if is_dashing() and source != null and source.is_in_group("enemies"):
+	var from_enemy := source != null and source.is_in_group("enemies")
+	# Dash and post-hit i-frames block enemy damage only — never the player's
+	# own item effects (Spec 010, G3 / pillar 4).
+	if from_enemy and _is_enemy_invulnerable():
 		return
 	health -= amount
 	damage_taken.emit(amount, source)
 	EventBus.player_damaged.emit(amount, source)
-	_flash_damage()
-	# Game feel (Spec 010, G1): shove away from the hit + a beat of hitstop.
-	if source is Node2D:
-		var away := (global_position - (source as Node2D).global_position).normalized()
-		_knockback = away * stats.hit_knockback_speed
 	Juice.hitstop(0.05)
+	if from_enemy:
+		# Shove away from the hit, then blink through the invulnerability window.
+		if source is Node2D:
+			var away := (global_position - (source as Node2D).global_position).normalized()
+			_knockback = away * stats.hit_knockback_speed
+		_start_iframes()
+	else:
+		_flash_damage()
 	if health <= 0:
 		GameState.player_health = -1
 		EventBus.player_died.emit()
 		get_tree().reload_current_scene.call_deferred()
+
+
+## Post-hit invulnerability blink (Spec 010, G3). The looping alpha tween is
+## the "I'm invulnerable" tell; _end_iframes restores full opacity.
+func _start_iframes() -> void:
+	if stats.hit_iframe_duration <= 0.0:
+		return
+	_iframe_timer = stats.hit_iframe_duration
+	if _iframe_tween != null and _iframe_tween.is_valid():
+		_iframe_tween.kill()
+	_iframe_tween = create_tween().set_loops()
+	_iframe_tween.tween_property(_body_visual, "modulate:a", 0.25, 0.08)
+	_iframe_tween.tween_property(_body_visual, "modulate:a", 1.0, 0.08)
+
+
+func _end_iframes() -> void:
+	if _iframe_tween != null and _iframe_tween.is_valid():
+		_iframe_tween.kill()
+	_body_visual.modulate.a = 1.0
 
 
 func _tick_move() -> void:

@@ -48,6 +48,12 @@ no balance drift except G3's post-hit i-frames (needs a team call).
   (from `MagicItemEffect.effect_kind()`). Smoke 21/21 PASS. Awaiting playtest.
   NOTE: new `class_name` scripts are preloaded by path in CLI-reached code (ImpactBurst)
   to dodge the global class-cache miss on headless/smoke runs.
+- **G3 (branch `fase-4.6-g3`) implemented 2026-07-26:** post-hit i-frames
+  (`PlayerStats.hit_iframe_duration` = 0.5s, set 0 to disable) blocking ENEMY damage
+  only — unified with dash i-frames via `_is_enemy_invulnerable()`; own item effects
+  always connect (pillar 4). Sprite alpha-blinks through the window. **Difficulty
+  change — team approved 2026-07-26; tune the duration if too easy.** Smoke test +3
+  checks (hit lands, second hit blocked, own damage ignores i-frames), 24/24 PASS.
 - **G2 (branch `fase-4.6-g2`) implemented 2026-07-26:** landing marker
   (`systems/juice/landing_marker.gd`) draws the blast footprint at the landing spot
   during flight (radius from `MagicItemEffect.preview_radius_tiles()`); item visual
