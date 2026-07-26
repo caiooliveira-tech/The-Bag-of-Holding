@@ -1,7 +1,7 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene format=3 uid="uid://blhxlvlf8ko6"]
 
-[ext_resource type="Script" path="res://rooms/room.gd" id="1"]
-[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="2"]
+[ext_resource type="Script" uid="uid://bj0vxeb2sppsx" path="res://rooms/room.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://buetenuvqyf1f" path="res://entities/player/player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://entities/enemies/enemy1.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://rooms/door.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://ui/hud.tscn" id="5"]
@@ -15,78 +15,77 @@ size = Vector2(640, 32)
 [sub_resource type="RectangleShape2D" id="wall_vertical"]
 size = Vector2(32, 360)
 
-[node name="Room01" type="Node2D"]
+[node name="Room01" type="Node2D" unique_id=14787398]
 script = ExtResource("1")
 next_scene_path = "res://rooms/room_02.tscn"
 
-[node name="Floor" type="ColorRect" parent="."]
+[node name="Floor" type="ColorRect" parent="." unique_id=1309360284]
 offset_right = 640.0
 offset_bottom = 360.0
 color = Color(0.13, 0.13, 0.16, 1)
 
-[node name="WallTopLeftVisual" type="ColorRect" parent="."]
+[node name="WallTopLeftVisual" type="ColorRect" parent="." unique_id=2039580594]
 offset_right = 288.0
 offset_bottom = 32.0
 color = Color(0.32, 0.3, 0.38, 1)
 
-[node name="WallTopRightVisual" type="ColorRect" parent="."]
+[node name="WallTopRightVisual" type="ColorRect" parent="." unique_id=2072389850]
 offset_left = 352.0
 offset_right = 640.0
 offset_bottom = 32.0
 color = Color(0.32, 0.3, 0.38, 1)
 
-[node name="WallBottomVisual" type="ColorRect" parent="."]
+[node name="WallBottomVisual" type="ColorRect" parent="." unique_id=1968260545]
 offset_top = 328.0
 offset_right = 640.0
 offset_bottom = 360.0
 color = Color(0.32, 0.3, 0.38, 1)
 
-[node name="WallLeftVisual" type="ColorRect" parent="."]
+[node name="WallLeftVisual" type="ColorRect" parent="." unique_id=1282174459]
 offset_right = 32.0
 offset_bottom = 360.0
 color = Color(0.32, 0.3, 0.38, 1)
 
-[node name="WallRightVisual" type="ColorRect" parent="."]
+[node name="WallRightVisual" type="ColorRect" parent="." unique_id=2031480913]
 offset_left = 608.0
 offset_right = 640.0
 offset_bottom = 360.0
 color = Color(0.32, 0.3, 0.38, 1)
 
-[node name="Walls" type="StaticBody2D" parent="."]
-collision_layer = 1
+[node name="Walls" type="StaticBody2D" parent="." unique_id=1919635891]
 collision_mask = 0
 
-[node name="TopLeft" type="CollisionShape2D" parent="Walls"]
+[node name="TopLeft" type="CollisionShape2D" parent="Walls" unique_id=197566265]
 position = Vector2(144, 16)
 shape = SubResource("wall_top_segment")
 
-[node name="TopRight" type="CollisionShape2D" parent="Walls"]
+[node name="TopRight" type="CollisionShape2D" parent="Walls" unique_id=1704072379]
 position = Vector2(496, 16)
 shape = SubResource("wall_top_segment")
 
-[node name="Bottom" type="CollisionShape2D" parent="Walls"]
+[node name="Bottom" type="CollisionShape2D" parent="Walls" unique_id=402771316]
 position = Vector2(320, 344)
 shape = SubResource("wall_horizontal")
 
-[node name="Left" type="CollisionShape2D" parent="Walls"]
+[node name="Left" type="CollisionShape2D" parent="Walls" unique_id=732515695]
 position = Vector2(16, 180)
 shape = SubResource("wall_vertical")
 
-[node name="Right" type="CollisionShape2D" parent="Walls"]
+[node name="Right" type="CollisionShape2D" parent="Walls" unique_id=1198547629]
 position = Vector2(624, 180)
 shape = SubResource("wall_vertical")
 
-[node name="Door" parent="." instance=ExtResource("4")]
+[node name="Door" parent="." unique_id=1103989575 instance=ExtResource("4")]
 position = Vector2(320, 16)
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1531418230]
 position = Vector2(320, 180)
 zoom = Vector2(2, 2)
 
-[node name="Player" parent="." instance=ExtResource("2")]
+[node name="Player" parent="." unique_id=1523448403 instance=ExtResource("2")]
 position = Vector2(200, 180)
 
-[node name="Enemy" parent="." instance=ExtResource("3")]
+[node name="Enemy" parent="." unique_id=461426992 instance=ExtResource("3")]
 position = Vector2(480, 120)
 
-[node name="HUD" parent="." instance=ExtResource("5")]
+[node name="HUD" parent="." unique_id=30286408 instance=ExtResource("5")]

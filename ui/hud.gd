@@ -9,9 +9,10 @@ extends CanvasLayer
 const HEART_FULL := Color(0.9, 0.2, 0.3)
 const HEART_EMPTY := Color(0.14, 0.1, 0.12)
 
-## Heart sprite from Design (applied to all 5 hearts); graybox squares until set.
-@export var heart_texture: Texture2D
-## Tint for lost hearts when heart_texture is set (full hearts render as authored).
+## Heart sprites from Design (applied to all 5 hearts); graybox squares until set.
+@export var heart_filled_texture: Texture2D
+@export var heart_empty_texture: Texture2D
+## Fallback tint for lost hearts if only the filled texture is assigned.
 @export var heart_empty_tint := Color(0.3, 0.3, 0.3, 0.8)
 
 var _player: Player
@@ -44,8 +45,8 @@ func _apply_art() -> void:
 	_slot_bg.visible = not _slot_frame_tex.visible
 	for heart in _hearts:
 		var tex := heart.get_node("Tex") as TextureRect
-		tex.texture = heart_texture
-		tex.visible = heart_texture != null
+		tex.texture = heart_filled_texture
+		tex.visible = heart_filled_texture != null
 
 
 func _refresh_hearts() -> void:
@@ -56,9 +57,18 @@ func _refresh_hearts() -> void:
 	for i in _hearts.size():
 		var full := i < _player.health
 		var heart := _hearts[i] as ColorRect
-		if heart_texture != null:
+		if heart_filled_texture != null:
 			heart.color = Color(0, 0, 0, 0)
-			(heart.get_node("Tex") as TextureRect).modulate = Color.WHITE if full else heart_empty_tint
+			var tex := heart.get_node("Tex") as TextureRect
+			if full:
+				tex.texture = heart_filled_texture
+				tex.modulate = Color.WHITE
+			elif heart_empty_texture != null:
+				tex.texture = heart_empty_texture
+				tex.modulate = Color.WHITE
+			else:
+				tex.texture = heart_filled_texture
+				tex.modulate = heart_empty_tint
 		else:
 			heart.color = HEART_FULL if full else HEART_EMPTY
 

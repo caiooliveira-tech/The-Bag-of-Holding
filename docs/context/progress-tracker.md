@@ -29,8 +29,8 @@ Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). M
 
 ## In Progress
 
-- **Phase 4.5 / Spec 009 (branch `feature/hud-special-slots`, PR #3 draft):** team decided 2026-07-26 the 🔺/⭕ special slots are post-MVP; MVP HUD = hearts (left) + held-item box moved to the right (provisional layout). Implemented 2026-07-26: PoolBox bag-pool removed, HeldSlot re-anchored right, art-ready texture hooks with graybox fallback — and HUD art **integrated** same day: wooden bar + item container (`assets/ui/`), item icons via `AtlasTexture` from `systems/magic_items/spritesheet.png` (+ `.json` frame coords) on both item `.tres`. Verified via scripted screenshots (both icons render). Smoke 21/21 PASS. **Still missing: heart PNG from Design** (hearts stay graybox squares; one Inspector assign when it lands). Awaiting team review.
-- Art integration started in-editor (uncommitted): shoelace.png 4-direction spritesheet wired into an AnimatedSprite2D on player.tscn (hidden for now), concept jpegs replaced by transparent pngs.
+- **Phase 4.5 / Spec 009 (branch `feature/hud-special-slots`, PR #3 draft):** team decided 2026-07-26 the 🔺/⭕ special slots are post-MVP; MVP HUD = hearts (left) + held-item box moved to the right (provisional layout). Implemented 2026-07-26: PoolBox bag-pool removed, HeldSlot re-anchored right, art-ready texture hooks with graybox fallback — and HUD art **integrated** same day: wooden bar + item container (`assets/ui/`), item icons via `AtlasTexture` from `systems/magic_items/spritesheet.png` (+ `.json` frame coords) on both item `.tres`. Verified via scripted screenshots (both icons render). Smoke 21/21 PASS. Awaiting team review.
+- 2026-07-26 — Heart art integrated: Design delivered `assets/ui/heart_filled.png` + `heart_empty.png`; hud.gd now takes both textures (filled/empty swap per health point, tint fallback if only filled is set), assigned in hud.tscn. HUD art is complete for the MVP layout.
 
 ## Next Spec
 
