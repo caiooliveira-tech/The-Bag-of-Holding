@@ -60,6 +60,11 @@ func _refresh_hearts() -> void:
 		if heart_filled_texture != null:
 			heart.color = Color(0, 0, 0, 0)
 			var tex := heart.get_node("Tex") as TextureRect
+			# Empty hearts sit centered in the bar; full ones float up half a
+			# heart, so active lives read as raised above the empty sockets.
+			var raise := heart.custom_minimum_size.y * 0.5 if full else 0.0
+			tex.offset_top = -raise
+			tex.offset_bottom = -raise
 			if full:
 				tex.texture = heart_filled_texture
 				tex.modulate = Color.WHITE
