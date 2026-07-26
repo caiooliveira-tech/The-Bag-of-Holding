@@ -50,6 +50,9 @@ func add_trauma(amount: float) -> void:
 func _on_item_effect_triggered(_id: StringName, _pos: Vector2, kind: StringName) -> void:
 	if kind == &"area_damage":
 		add_trauma(explosion_trauma)
+	elif kind == &"knockback_area":
+		# Forceful shove — a medium shake, below a full explosion.
+		add_trauma(explosion_trauma * 0.7)
 	elif kind == &"freeze_area":
 		# Cold, not violent: a quick zoom-in and back instead of a shake.
 		_zoom_punch()

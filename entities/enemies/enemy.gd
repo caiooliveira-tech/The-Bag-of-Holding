@@ -14,9 +14,13 @@ const IMPACT_BURST: GDScript = preload("res://systems/juice/impact_burst.gd")
 
 var hits_remaining: int = 0
 
+## Knockback decay (Spec 011): shared feel with the player's hit-knockback.
+const KNOCKBACK_DECAY: float = 900.0
+
 var _active: bool = true
 var _dying: bool = false
 var _bob_time: float = 0.0
+var _knockback: Vector2 = Vector2.ZERO
 var _facing: Vector2 = Vector2.DOWN
 var _player: Player
 var _attack_timer: float = 0.0
@@ -67,6 +71,9 @@ func _physics_process(delta: float) -> void:
 			_attack()
 	if velocity != Vector2.ZERO:
 		_facing = velocity.normalized()
+	# Knockback rides on top of intended movement, then decays (Spec 011).
+	velocity += _knockback
+	_knockback = _knockback.move_toward(Vector2.ZERO, KNOCKBACK_DECAY * delta)
 	move_and_slide()
 	_update_animation()
 	_update_idle_bob(delta)
@@ -76,6 +83,11 @@ func _physics_process(delta: float) -> void:
 ## Inactive enemies still take damage — only behavior is paused.
 func set_active(value: bool) -> void:
 	_active = value
+
+
+## Shove impulse (Spec 011, Left Hand of Ursula), decays in movement.
+func apply_knockback(impulse: Vector2) -> void:
+	_knockback = impulse
 
 
 func is_frozen() -> bool:

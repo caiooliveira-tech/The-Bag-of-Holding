@@ -20,6 +20,11 @@ const ARC_HEIGHT_PX: float = 22.0
 const KICK_SPIN_TURNS: float = 2.0
 const MARKER_PADDING_PX: float = 12.0
 const LANDING_MARKER: GDScript = preload("res://systems/juice/landing_marker.gd")
+# Troy the Wooden Horse (Spec 012): L-charge on throw.
+const CHARGE_SPEED: float = 340.0
+const CHARGE_CONTACT_PX: float = 18.0
+const CHARGE_DAMAGE: int = 1
+const CHARGE_TURN_PROBE_PX: float = 20.0
 
 var data: MagicItemResource
 var state: State = State.HELD
@@ -30,6 +35,11 @@ var _triggered: bool = false
 # otherwise — the blink only needs `modulate`, so CanvasItem covers both.
 var _visual: CanvasItem
 var _marker: Node2D
+var _charging: bool = false
+var _charge_dir: Vector2 = Vector2.ZERO
+var _charge_turns_left: int = 1
+var _charge_hit: Array[Node] = []
+var _charge_start: Vector2 = Vector2.ZERO
 
 
 func setup(item_data: MagicItemResource) -> void:
@@ -66,7 +76,12 @@ func time_remaining() -> float:
 
 
 func is_kickable() -> bool:
-	return state != State.HELD and not _triggered
+	return state != State.HELD and not _triggered and not _charging
+
+
+func _physics_process(delta: float) -> void:
+	if _charging and not _triggered:
+		_charge_step(delta)
 
 
 func throw(direction: Vector2) -> void:
@@ -74,7 +89,12 @@ func throw(direction: Vector2) -> void:
 		return
 	state = State.THROWN
 	reparent(get_tree().current_scene)
-	_fly(direction, GameState.tiles(2.0), 0.0)
+	if data.charge_on_throw:
+		_charging = true
+		_charge_dir = direction.normalized()
+		_charge_start = global_position
+	else:
+		_fly(direction, GameState.tiles(2.0), 0.0)
 
 
 ## Apprentice Boot redirect: +5 tiles, countdown untouched.
@@ -115,9 +135,62 @@ func _apply_flight(t: float, start: Vector2, target: Vector2, spin_turns: float)
 		_visual.rotation = t * TAU * spin_turns
 
 
+## Troy's L-charge (Spec 012): move in the throw direction, turn 90° toward
+## open space at the first wall, stop at the second. Damages on contact; the
+## countdown still destroys it on time (handled in _process/_trigger).
+func _charge_step(delta: float) -> void:
+	var step := CHARGE_SPEED * delta
+	var space := get_world_2d().direct_space_state
+	var ahead := global_position + _charge_dir * (step + GRAYBOX_RADIUS_PX)
+	var query := PhysicsRayQueryParameters2D.create(global_position, ahead, 1)
+	if space.intersect_ray(query).is_empty():
+		global_position += _charge_dir * step
+	elif _charge_turns_left > 0:
+		_charge_turns_left -= 1
+		_charge_dir = _perpendicular_open(_charge_dir)
+	else:
+		_charging = false
+		state = State.LANDED
+	_charge_contact_damage()
+
+
+func _perpendicular_open(dir: Vector2) -> Vector2:
+	var space := get_world_2d().direct_space_state
+	var options: Array[Vector2] = [dir.orthogonal(), -dir.orthogonal()]
+	for option in options:
+		var probe := global_position + option * CHARGE_TURN_PROBE_PX
+		var query := PhysicsRayQueryParameters2D.create(global_position, probe, 1)
+		if space.intersect_ray(query).is_empty():
+			return option
+	return dir.orthogonal()
+
+
+func _charge_contact_damage() -> void:
+	var reach := CHARGE_CONTACT_PX + GRAYBOX_RADIUS_PX
+	var targets: Array[Node] = get_tree().get_nodes_in_group("enemies")
+	targets.append_array(get_tree().get_nodes_in_group("player"))
+	for target in targets:
+		if target in _charge_hit:
+			continue
+		var body := target as Node2D
+		if body == null or body.global_position.distance_to(global_position) > reach:
+			continue
+		if target.is_in_group("enemies"):
+			_charge_hit.append(target)
+			(target as Enemy).take_damage(CHARGE_DAMAGE)
+		# Launch grace: Troy leaving the thrower's hand doesn't hurt them, but
+		# if the L-path crosses back it does (pillar 4). Bypasses i-frames —
+		# it's the player's own item.
+		elif global_position.distance_to(_charge_start) > GameState.tiles(1.5):
+			_charge_hit.append(target)
+			(target as Player).take_damage(CHARGE_DAMAGE, self)
+
+
 func _spawn_landing_marker(target: Vector2) -> void:
 	if _marker != null and is_instance_valid(_marker):
 		_marker.queue_free()
+	if data.effect == null:
+		return
 	var radius_tiles: float = data.effect.preview_radius_tiles()
 	if radius_tiles <= 0.0:
 		return
@@ -150,12 +223,17 @@ func _bounce() -> void:
 
 func _trigger() -> void:
 	_triggered = true
+	_charging = false
 	if _marker != null and is_instance_valid(_marker):
 		_marker.queue_free()
 	_visual.modulate = Color.WHITE
 	effect_triggered.emit(data.id, global_position)
-	EventBus.item_effect_triggered.emit(data.id, global_position, data.effect.effect_kind())
-	var affected: Array[Node] = data.effect.execute(self)
+	# Troy has no end-of-countdown area effect — it just despawns (Spec 012).
+	var kind: StringName = data.effect.effect_kind() if data.effect != null else &"none"
+	EventBus.item_effect_triggered.emit(data.id, global_position, kind)
+	var affected: Array[Node] = []
+	if data.effect != null:
+		affected = data.effect.execute(self)
 	effect_resolved.emit(data.id, affected)
 	queue_free()
 

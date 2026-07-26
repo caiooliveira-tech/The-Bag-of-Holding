@@ -101,6 +101,11 @@ func throw_origin() -> Vector2:
 	return _facing_marker.global_position
 
 
+## Shove impulse (Spec 011, Left Hand of Ursula), decays in movement.
+func apply_knockback(impulse: Vector2) -> void:
+	_knockback = impulse
+
+
 func take_damage(amount: int, source: Node) -> void:
 	var from_enemy := source != null and source.is_in_group("enemies")
 	# Dash and post-hit i-frames block enemy damage only — never the player's

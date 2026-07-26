@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MagicItemResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://systems/magic_items/magic_item_resource.gd" id="1"]
+[ext_resource type="Texture2D" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="troy_icon"]
+atlas = ExtResource("2")
+region = Rect2(192, 96, 32, 32)
+
+[resource]
+script = ExtResource("1")
+id = &"troy_wooden_horse"
+display_name = "Troy the Wooden Horse"
+graybox_color = Color(0.8, 0.6, 0.3, 1)
+appearance = SubResource("troy_icon")
+activation_time_seconds = 4.0
+charge_on_throw = true

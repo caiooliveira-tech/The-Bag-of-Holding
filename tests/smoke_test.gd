@@ -8,6 +8,8 @@ const ROOM_SCENE: PackedScene = preload("res://rooms/room_01.tscn")
 const ENEMY_SCENE: PackedScene = preload("res://entities/enemies/enemy1.tscn")
 const FIRE_ORB: MagicItemResource = preload("res://systems/magic_items/fire_orb.tres")
 const URSULA: MagicItemResource = preload("res://systems/magic_items/right_hand_of_ursula.tres")
+const LEFT_HAND: MagicItemResource = preload("res://systems/magic_items/left_hand_of_ursula.tres")
+const TROY: MagicItemResource = preload("res://systems/magic_items/troy_wooden_horse.tres")
 const ROOM_SCRIPT: GDScript = preload("res://rooms/room.gd")
 const DOOR_SCRIPT: GDScript = preload("res://rooms/door.gd")
 
@@ -128,6 +130,40 @@ func _run() -> void:
 	_check(player.health == hp0 - 1, "second enemy hit blocked by i-frames")
 	player.take_damage(1, player)  # own item source is not in "enemies"
 	_check(player.health == hp0 - 2, "own damage ignores i-frames (health %d)" % player.health)
+
+	# ---- Section 5: Left Hand of Ursula knockback (Spec 011) ----
+	bag.pool = _pool_with(LEFT_HAND)
+	player.global_position = Vector2(320, 180)
+	var shoved := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(shoved)
+	shoved.freeze(30.0)  # no chase; knockback still applies while frozen
+	# Sits just right of where the item lands (2 tiles right of center).
+	shoved.global_position = Vector2(400, 180)
+	await _tap("move_right")
+	await _tap("attack")  # draw
+	await _tap("attack")  # throw right → lands ~384,180
+	var shoved_x0 := shoved.global_position.x
+	await _wait(3.3)  # Left Hand activation = 3 s
+	await _wait(0.2)
+	_check(shoved.global_position.x > shoved_x0 + 8.0,
+			"left hand shoved enemy outward (%.0f → %.0f)" % [shoved_x0, shoved.global_position.x])
+
+	# ---- Section 6: Troy the Wooden Horse L-charge (Spec 012) ----
+	bag.pool = _pool_with(TROY)
+	player.global_position = Vector2(320, 180)
+	var trampled := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(trampled)
+	trampled.freeze(30.0)
+	trampled.global_position = Vector2(500, 180)  # in the rightward charge path
+	var trampled_hp := trampled.hits_remaining
+	await _tap("move_right")
+	await _tap("attack")  # draw Troy
+	await _tap("attack")  # throw → charges right
+	var troy := get_tree().get_first_node_in_group("magic_items") as MagicItem
+	await _wait(0.7)
+	_check(trampled.hits_remaining < trampled_hp, "troy damaged an enemy in its charge path")
+	_check(troy != null and troy.global_position.distance_to(Vector2(320, 180)) > 100.0,
+			"troy charged well past a normal 2-tile throw")
 
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")
