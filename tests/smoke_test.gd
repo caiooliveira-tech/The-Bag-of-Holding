@@ -437,6 +437,25 @@ func _run() -> void:
 	magnet_point.queue_free()
 	await get_tree().process_frame
 
+	# ---- Section 15: intro cutscene data (Spec 023) ----
+	var intro: CutsceneResource = load("res://systems/cutscenes/intro.tres")
+	_check(intro != null and intro.frames.size() == 12, "intro cutscene has 12 frames")
+	_check(intro != null and ResourceLoader.exists(intro.next_scene_path),
+			"cutscene next_scene_path points at a real scene")
+	var art_frames := 0
+	var reading_frames := 0
+	for frame in intro.frames:
+		if frame.text.is_empty():
+			_failures += 1
+			printerr("  FAIL - cutscene frame with empty text")
+			break
+		if frame.art != null:
+			art_frames += 1
+		if frame.layout != CutsceneFrameResource.Layout.DIALOGUE:
+			reading_frames += 1
+	_check(art_frames == 10, "10 frames carry art (first two are off-screen caws)")
+	_check(reading_frames == 3, "3 reading-layout frames (the letter and the Bag)")
+
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")
 	else:

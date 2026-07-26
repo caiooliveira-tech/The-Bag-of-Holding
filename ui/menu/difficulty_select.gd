@@ -6,6 +6,7 @@
 extends Control
 
 const ROOM_01 := "res://rooms/room_01.tscn"
+const INTRO_CUTSCENE := "res://ui/cutscene/intro_cutscene.tscn"
 const MAIN_MENU := "res://ui/menu/main_menu.tscn"
 
 # Flavor text: placeholder in the intro's tone of voice — Design to bless
@@ -119,4 +120,6 @@ func _activate(index: int) -> void:
 	AudioManager.play_sfx(&"button_clicked")
 	GameState.difficulty = ITEMS[index]["resource"]
 	GameState.reset_run()
-	get_tree().change_scene_to_file(ROOM_01)
+	# The story beat is the last thing before play (Spec 023); once per launch,
+	# so replaying a run drops you straight into the tower.
+	get_tree().change_scene_to_file(ROOM_01 if GameState.intro_seen else INTRO_CUTSCENE)
