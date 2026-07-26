@@ -226,6 +226,8 @@ Phase 6 C — Spec 015 (smart chaser), then D (Spec 016, RunManager 20-room run)
 
 ## Technical Debt
 
+- **Stale logo asset (found 2026-07-28):** `assets/logo-jogo.png` is still the OLD wordmark ("THE BAG OF NO BOTTOM"); the current logo is "THE BAG OF HOLDING". Verified by screenshotting the live title screen. It is preloaded once as `MenuUI.LOGO` and reused by the Title screen, main-menu header and Credits — so **replacing that one file fixes all three with zero code changes**. Blocked on Design delivering the new PNG (not in the repo or Downloads).
+
 - Smoke test / headless boot report a few "ObjectDB instances leaked at exit" warnings — **pre-existing** (verified present on main without the Spec 018 changes, 2026-07-27); harmless force-quit artifacts, but worth a `--verbose` look before Phase 5 ship.
 - Player death just reloads the scene (fine for jam; revisit for a real game-over in Phase 4/5).
 - Kick targets enemies via group iteration (O(n)); fine for jam room sizes.
