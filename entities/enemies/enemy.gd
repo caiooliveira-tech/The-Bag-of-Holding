@@ -4,15 +4,24 @@ extends CharacterBody2D
 signal died
 signal damage_taken(amount: int)
 
+## Preloaded by path (not the class_name) so CLI/smoke runs don't depend on
+## the editor's global class cache having scanned this fresh script.
+const IMPACT_BURST: GDScript = preload("res://systems/juice/impact_burst.gd")
+
 @export var stats: EnemyStats
+## Burst colour on death (Spec 010, G1); tune per archetype in the editor.
+@export var death_particle_color: Color = Color(0.95, 0.35, 0.3)
 
 var hits_remaining: int = 0
 
 var _active: bool = true
+var _dying: bool = false
 var _facing: Vector2 = Vector2.DOWN
 var _player: Player
 var _attack_timer: float = 0.0
 var _freeze_timer: float = 0.0
+
+@onready var _collision: CollisionShape2D = $CollisionShape2D
 
 # Typed loosely on purpose: any Node2D visual (Polygon2D graybox today,
 # AnimatedSprite2D in Phase 4) can be dropped in as "Body" with no code change.
@@ -29,6 +38,8 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	if _dying:
+		return
 	_attack_timer = maxf(_attack_timer - delta, 0.0)
 	var was_frozen := is_frozen()
 	_freeze_timer = maxf(_freeze_timer - delta, 0.0)
@@ -75,14 +86,39 @@ func freeze(duration: float) -> void:
 
 
 func take_damage(amount: int) -> void:
+	if _dying:
+		return
 	hits_remaining -= amount
 	damage_taken.emit(amount)
 	if hits_remaining <= 0:
-		died.emit()
-		EventBus.enemy_died.emit(self)
-		queue_free()
+		_die()
 		return
 	_flash_damage()
+
+
+## Death pop (Spec 010, G1): announce the death now (so the room's clear
+## logic runs on time), then play a brief flash/scale/particle burst before
+## freeing. The enemy is inert during the pop — no behaviour, no collision.
+func _die() -> void:
+	_dying = true
+	died.emit()
+	EventBus.enemy_died.emit(self)
+	_collision.set_deferred("disabled", true)
+	_spawn_burst()
+	Juice.hitstop(0.03)
+	_body_visual.modulate = Color(3.0, 3.0, 3.0)
+	var tween := create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(_body_visual, "scale", Vector2(1.3, 1.3), 0.09)
+	tween.tween_property(_body_visual, "modulate:a", 0.0, 0.11)
+	tween.chain().tween_callback(queue_free)
+
+
+func _spawn_burst() -> void:
+	var burst := IMPACT_BURST.new() as CPUParticles2D
+	get_tree().current_scene.add_child(burst)
+	burst.global_position = global_position
+	burst.burst(death_particle_color)
 
 
 func _attack() -> void:

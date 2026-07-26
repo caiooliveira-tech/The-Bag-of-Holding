@@ -14,6 +14,10 @@ const TARGET_PADDING_PX: float = 12.0
 @export var freeze_duration_seconds: float = 5.0
 
 
+func effect_kind() -> StringName:
+	return &"freeze_area"
+
+
 func execute(item: Node2D) -> Array[Node]:
 	var radius_px: float = GameState.tiles(radius_tiles) + TARGET_PADDING_PX
 	var affected: Array[Node] = []

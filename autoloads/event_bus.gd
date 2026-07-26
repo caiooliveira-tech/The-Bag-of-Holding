@@ -18,5 +18,7 @@ signal room_cleared
 signal item_drawn(item_data: MagicItemResource)
 @warning_ignore("unused_signal")
 signal item_thrown(item_id: StringName, position: Vector2, direction: Vector2)
+# effect_kind ("area_damage" / "freeze_area") lets feedback pick a profile
+# (shake vs. zoom punch) without hardcoding item ids.
 @warning_ignore("unused_signal")
-signal item_effect_triggered(item_id: StringName, position: Vector2)
+signal item_effect_triggered(item_id: StringName, position: Vector2, effect_kind: StringName)

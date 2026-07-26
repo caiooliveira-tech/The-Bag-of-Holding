@@ -97,5 +97,5 @@ func _on_item_thrown(_item_id: StringName, _position: Vector2, _direction: Vecto
 
 
 ## Covers the held-until-it-blew case; harmless no-op after a throw.
-func _on_item_effect_triggered(_item_id: StringName, _position: Vector2) -> void:
+func _on_item_effect_triggered(_item_id: StringName, _position: Vector2, _kind: StringName) -> void:
 	_clear_held()

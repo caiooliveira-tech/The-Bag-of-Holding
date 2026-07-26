@@ -51,7 +51,7 @@ Ordered by impact-per-effort. Each phase ends on a playable build and a green
 smoke test (juice must never break the core loop). Phases are independent —
 any can be cut without blocking the others.
 
-### Phase G1 — Impact Core (highest priority)
+### Phase G1 — Impact Core (highest priority) — **Implemented 2026-07-26**
 
 The combat-transforming trio. One sitting.
 

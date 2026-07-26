@@ -95,7 +95,7 @@ func _trigger() -> void:
 	_triggered = true
 	_visual.modulate = Color.WHITE
 	effect_triggered.emit(data.id, global_position)
-	EventBus.item_effect_triggered.emit(data.id, global_position)
+	EventBus.item_effect_triggered.emit(data.id, global_position, data.effect.effect_kind())
 	var affected: Array[Node] = data.effect.execute(self)
 	effect_resolved.emit(data.id, affected)
 	queue_free()

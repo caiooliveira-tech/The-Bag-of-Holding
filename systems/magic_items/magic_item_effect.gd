@@ -9,3 +9,9 @@ extends Resource
 func execute(_item: Node2D) -> Array[Node]:
 	push_warning("MagicItemEffect.execute() not overridden")
 	return []
+
+
+## Stable identifier so feedback (camera, VFX) picks a profile without
+## hardcoding item ids. Subclasses override; default is a neutral kind.
+func effect_kind() -> StringName:
+	return &"generic"

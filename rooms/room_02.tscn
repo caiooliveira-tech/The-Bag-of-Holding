@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3]
+[gd_scene load_steps=17 format=3]
 
 [ext_resource type="Script" path="res://rooms/room.gd" id="1"]
 [ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="2"]
@@ -8,6 +8,8 @@
 [ext_resource type="TileSet" path="res://rooms/room_tileset.tres" id="6"]
 [ext_resource type="Script" path="res://rooms/room_tiles.gd" id="7"]
 [ext_resource type="Texture2D" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="8"]
+[ext_resource type="Script" path="res://systems/juice/game_camera.gd" id="9"]
+[ext_resource type="PackedScene" path="res://ui/screen_fx.tscn" id="10"]
 
 [sub_resource type="RectangleShape2D" id="wall_top_left"]
 size = Vector2(320, 32)
@@ -96,6 +98,7 @@ open_texture = SubResource("door_open_row2")
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(320, 180)
 zoom = Vector2(2, 2)
+script = ExtResource("9")
 
 [node name="Player" parent="." instance=ExtResource("2")]
 position = Vector2(320, 290)
@@ -110,3 +113,5 @@ position = Vector2(480, 100)
 position = Vector2(320, 150)
 
 [node name="HUD" parent="." instance=ExtResource("5")]
+
+[node name="ScreenFX" parent="." instance=ExtResource("10")]

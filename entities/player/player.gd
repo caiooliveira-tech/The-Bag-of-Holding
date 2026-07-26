@@ -19,6 +19,7 @@ var _dash_timer: float = 0.0
 var _dash_cooldown_timer: float = 0.0
 var _dash_direction: Vector2 = Vector2.ZERO
 var _freeze_timer: float = 0.0
+var _knockback: Vector2 = Vector2.ZERO
 
 @onready var _facing_pivot: Node2D = $FacingPivot
 @onready var _facing_marker: Marker2D = $FacingPivot/FacingMarker
@@ -47,6 +48,10 @@ func _physics_process(delta: float) -> void:
 		_tick_dash(delta)
 	else:
 		_tick_move()
+	# Knockback rides on top of intended movement, then decays — so a hit
+	# shoves the player even while frozen (movement-locked) or idle.
+	velocity += _knockback
+	_knockback = _knockback.move_toward(Vector2.ZERO, stats.hit_knockback_decay * delta)
 	move_and_slide()
 	_facing_pivot.rotation = facing.angle()
 	_update_animation()
@@ -85,6 +90,11 @@ func take_damage(amount: int, source: Node) -> void:
 	damage_taken.emit(amount, source)
 	EventBus.player_damaged.emit(amount, source)
 	_flash_damage()
+	# Game feel (Spec 010, G1): shove away from the hit + a beat of hitstop.
+	if source is Node2D:
+		var away := (global_position - (source as Node2D).global_position).normalized()
+		_knockback = away * stats.hit_knockback_speed
+	Juice.hitstop(0.05)
 	if health <= 0:
 		GameState.player_health = -1
 		EventBus.player_died.emit()

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://rooms/room.gd" id="1"]
 [ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="2"]
@@ -7,6 +7,8 @@
 [ext_resource type="PackedScene" path="res://ui/hud.tscn" id="5"]
 [ext_resource type="TileSet" path="res://rooms/room_tileset.tres" id="6"]
 [ext_resource type="Script" path="res://rooms/room_tiles.gd" id="7"]
+[ext_resource type="Script" path="res://systems/juice/game_camera.gd" id="8"]
+[ext_resource type="PackedScene" path="res://ui/screen_fx.tscn" id="9"]
 
 [sub_resource type="RectangleShape2D" id="wall_top_left"]
 size = Vector2(320, 32)
@@ -81,6 +83,7 @@ rotation = 1.5707964
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(320, 180)
 zoom = Vector2(2, 2)
+script = ExtResource("8")
 
 [node name="Player" parent="." instance=ExtResource("2")]
 position = Vector2(200, 180)
@@ -89,3 +92,5 @@ position = Vector2(200, 180)
 position = Vector2(480, 120)
 
 [node name="HUD" parent="." instance=ExtResource("5")]
+
+[node name="ScreenFX" parent="." instance=ExtResource("9")]

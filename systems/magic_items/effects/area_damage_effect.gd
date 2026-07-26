@@ -14,6 +14,10 @@ const TARGET_PADDING_PX: float = 12.0
 @export var linger_seconds: float = 1.0
 
 
+func effect_kind() -> StringName:
+	return &"area_damage"
+
+
 func execute(item: Node2D) -> Array[Node]:
 	var zone := DamageLingerZone.new()
 	var radius_px: float = GameState.tiles(radius_tiles) + TARGET_PADDING_PX
