@@ -318,3 +318,67 @@ scaling enemy pressure and player durability — never the item countdowns.
 ### References
 
 - Godot docs: Resource (caching), Node.duplicate, SceneTree.quit.
+
+---
+
+## Session 2026-07-27 (later) — Spec 022 (Screen Redesign + Title + Level Title)
+
+### Feature
+
+Art pass over the whole front-end using the delivered `assets/screens/` set,
+plus two new screens: a Title Screen (after a blank black boot splash) and a
+drop-in Level Title sign on room entry.
+
+### What was implemented
+
+- `ui/menu/menu_ui.gd` (`class_name MenuUI`): a static-only presentation helper
+  — design tokens (fonts, textures, ink/light colors) + builders (brick backdrop,
+  parchment/panel, image, label, wooden button row). Every menu composes it, so
+  the look lives in one file instead of being copy-pasted across five screens.
+- Title Screen (`title_screen.tscn/.gd`), now the `main_scene`: logo on a scroll
+  with a soft-pulsing "PRESS ANY BUTTON TO START"; any key/pad/click → menu.
+  Boot splash set to black with `show_image=false` so the game "arrives" on the
+  Title fade-in.
+- Main menu / Options / Credits / Pause / Difficulty select rebuilt on MenuUI
+  (brick wall + parchment + logo + crow). Behavior unchanged — same options,
+  controls list, difficulty flow, pause actions, ESC routes.
+- Level Title: `EventBus.level_entered(title)` + a `LevelTitle` autoload
+  (CanvasLayer, layer 15) that drops `bg2.png` from the top, holds, and lifts.
+  `Room` gained `@export var level_title`; each room announces on `_ready`.
+- Asset note: the crow art first shipped with an opaque white box. As an interim
+  I chroma-keyed it to transparent via a LockBits pass — a mechanical cut-out, not
+  generative (ADR-001 stays satisfied). Design then delivered a proper transparent
+  `img-main-menu.png`, so the interim cut-out was removed and the helper points at
+  the delivered asset. (The LockBits technique is still logged below — it's a
+  useful trick when a delivery needs a quick, non-destructive fix.)
+
+### Why this architecture?
+
+- A shared static helper beats a base scene here: the screens are code-driven
+  already, and static builders keep each screen's layout readable in one place
+  while removing the art duplication. No inheritance, no scene coupling.
+- LevelTitle as an EventBus-driven autoload mirrors DeathScreen/Pause: the room
+  announces a fact, the UI reacts — no room→UI hard reference, works for every
+  future room without editing the sign.
+
+### Godot concepts learned
+
+- `TextureRect` stretch modes matter: `KEEP_ASPECT_CENTERED` fits a texture
+  *inside* a rect keeping aspect (so a wide rect over a 1.82:1 banner only fills
+  ~273 px — long titles overflowed); `STRETCH_SCALE` (via `MenuUI.panel`) fills
+  the rect exactly. Pick per case: keep-aspect for logos, fill for sign panels.
+- Boot splash: `boot_splash/show_image=false` + black `bg_color` = a clean blank
+  splash; the first real frame is then your own Title scene.
+- Chroma-key at scale in PowerShell: `Bitmap.LockBits` + `Marshal.Copy` to a byte
+  array (BGRA) processes 1.5 M pixels in a blink; `GetPixel/SetPixel` would crawl.
+
+### Common mistakes
+
+- `var x := a is Type and a.pressed` infers Variant under the CLI's warning-as-
+  error — annotate `var x: bool = ...` (bit the Title input handler).
+- A new asset needs `--import` to generate its `.import` before any `preload`
+  resolves; the cut-out PNG failed to load until re-imported.
+
+### References
+
+- Godot docs: TextureRect.stretch_mode, ProjectSettings boot_splash, CanvasLayer.

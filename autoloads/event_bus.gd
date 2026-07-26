@@ -37,3 +37,6 @@ signal freeze_ended
 ## A ranged enemy fired a projectile (Spec 014).
 @warning_ignore("unused_signal")
 signal enemy_shot
+## Entered a new room/level — carries the title for the drop-in sign (Spec 022).
+@warning_ignore("unused_signal")
+signal level_entered(title: String)

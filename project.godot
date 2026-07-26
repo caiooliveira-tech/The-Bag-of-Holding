@@ -11,12 +11,12 @@ config_version=5
 [application]
 
 config/name="The Bag of Holding"
-run/main_scene="res://ui/menu/main_menu.tscn"
+run/main_scene="res://ui/menu/title_screen.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
-boot_splash/bg_color=Color(1, 1, 1, 1)
-boot_splash/image="uid://kekiwmoor015"
+boot_splash/show_image=false
+boot_splash/bg_color=Color(0, 0, 0, 1)
 config/icon="res://icon.svg"
-boot_splash/minimum_display_time=2000
+boot_splash/minimum_display_time=0
 
 [autoload]
 
@@ -26,6 +26,7 @@ Juice="*res://autoloads/juice.gd"
 AudioManager="*res://autoloads/audio_manager.gd"
 Pause="*res://ui/menu/pause_menu.gd"
 DeathScreen="*res://ui/menu/death_screen.gd"
+LevelTitle="*res://ui/level_title.gd"
 
 [display]
 

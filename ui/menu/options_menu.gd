@@ -1,16 +1,9 @@
-## Options screen (new scene): resolution + fullscreen, and a read-only view of
-## the control bindings (pulled from the live InputMap). ESC returns to the menu.
+## Options screen (Spec 022 redesign): resolution + fullscreen, and a read-only
+## view of the control bindings (pulled from the live InputMap). ESC returns to
+## the menu. Brick backdrop + parchment panels; logic unchanged from Spec 013.
 extends Control
 
-const FONT_BOLD: FontFile = preload("res://assets/fonts/Dellas-Bold.otf")
-const FONT_REG: FontFile = preload("res://assets/fonts/Dellas-Regular.otf")
-
 const MAIN_MENU := "res://ui/menu/main_menu.tscn"
-
-const BG := Color(0.08, 0.07, 0.12)
-const PANEL := Color(0.14, 0.12, 0.2)
-const TEXT := Color(0.93, 0.92, 0.95)
-const MUTED := Color(0.62, 0.6, 0.66)
 
 const RESOLUTIONS: Array[Vector2i] = [
 	Vector2i(1280, 720), Vector2i(1600, 900), Vector2i(1920, 1080),
@@ -23,37 +16,32 @@ func _ready() -> void:
 
 
 func _build() -> void:
-	var bg := ColorRect.new()
-	bg.color = BG
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
+	MenuUI.brick(self)
 
-	var title := _label("OPTIONS", FONT_BOLD, 30, TEXT)
-	title.position = Vector2(80, 70)
-	add_child(title)
+	MenuUI.label_at(self, "OPTIONS", MenuUI.FONT_BOLD, 34, MenuUI.LIGHT, Vector2(80, 48))
 
 	# --- Resolution panel ---
-	_panel(Vector2(80, 150), Vector2(560, 150))
-	_label_at("RESOLUTION", FONT_BOLD, 18, TEXT, Vector2(100, 168))
-	_label_at("SCREEN_RESOLUTION_RATIO", FONT_REG, 12, MUTED, Vector2(100, 205))
+	MenuUI.panel(self, MenuUI.BANNER, Vector2(80, 118), Vector2(600, 190))
+	MenuUI.label_at(self, "RESOLUTION", MenuUI.FONT_BOLD, 20, MenuUI.INK, Vector2(120, 148))
+	MenuUI.label_at(self, "SCREEN RESOLUTION (16:9)", MenuUI.FONT_REG, 12, MenuUI.INK_MUTED, Vector2(120, 186))
 	var res := OptionButton.new()
-	res.position = Vector2(100, 224)
-	res.custom_minimum_size = Vector2(520, 28)
+	res.position = Vector2(120, 210)
+	res.custom_minimum_size = Vector2(520, 30)
 	for r in RESOLUTIONS:
-		res.add_item("%d X %d [16:9]" % [r.x, r.y])
-	res.add_theme_font_override("font", FONT_REG)
+		res.add_item("%d X %d" % [r.x, r.y])
+	res.add_theme_font_override("font", MenuUI.FONT_REG)
 	res.item_selected.connect(_on_resolution_selected)
 	add_child(res)
-	_label_at("FULLSCREEN_DISPLAY", FONT_REG, 12, MUTED, Vector2(100, 262))
+	MenuUI.label_at(self, "FULLSCREEN", MenuUI.FONT_REG, 13, MenuUI.INK, Vector2(120, 258))
 	var fs := CheckButton.new()
-	fs.position = Vector2(480, 252)
+	fs.position = Vector2(560, 248)
 	fs.button_pressed = DisplayServer.window_get_mode() == DisplayServer.WINDOW_MODE_FULLSCREEN
 	fs.toggled.connect(_on_fullscreen_toggled)
 	add_child(fs)
 
 	# --- Controls panel ---
-	_panel(Vector2(80, 320), Vector2(560, 210))
-	_label_at("CONTROLS", FONT_BOLD, 18, TEXT, Vector2(100, 338))
+	MenuUI.panel(self, MenuUI.BANNER, Vector2(80, 330), Vector2(600, 300))
+	MenuUI.label_at(self, "CONTROLS", MenuUI.FONT_BOLD, 20, MenuUI.INK, Vector2(120, 356))
 	var rows := [
 		["MOVEMENT", "W / A / S / D"],
 		["DRAW / THROW ITEM", _keys_for("attack")],
@@ -62,11 +50,11 @@ func _build() -> void:
 		["PAUSE", "ESC"],
 	]
 	for i in rows.size():
-		var y := 378.0 + i * 34.0
-		_label_at(rows[i][0], FONT_REG, 13, MUTED, Vector2(100, y))
-		_label_at(rows[i][1], FONT_REG, 13, TEXT, Vector2(460, y))
+		var y := 400.0 + i * 40.0
+		MenuUI.label_at(self, rows[i][0], MenuUI.FONT_REG, 14, MenuUI.INK_MUTED, Vector2(120, y))
+		MenuUI.label_at(self, rows[i][1], MenuUI.FONT_SEMI, 14, MenuUI.INK, Vector2(420, y))
 
-	_label_at("[ESC] BACK", FONT_REG, 12, MUTED, Vector2(80, 688))
+	MenuUI.label_at(self, "[ESC] BACK", MenuUI.FONT_REG, 12, MenuUI.LIGHT_MUTED, Vector2(80, 688))
 
 
 func _on_resolution_selected(index: int) -> void:
@@ -91,26 +79,3 @@ func _keys_for(action: String) -> String:
 		if ev is InputEventKey:
 			parts.append(OS.get_keycode_string((ev as InputEventKey).physical_keycode))
 	return " / ".join(parts)
-
-
-func _panel(pos: Vector2, sz: Vector2) -> void:
-	var p := ColorRect.new()
-	p.color = PANEL
-	p.position = pos
-	p.size = sz
-	add_child(p)
-
-
-func _label(text: String, font: FontFile, size: int, color: Color) -> Label:
-	var label := Label.new()
-	label.text = text
-	label.add_theme_font_override("font", font)
-	label.add_theme_font_size_override("font_size", size)
-	label.add_theme_color_override("font_color", color)
-	return label
-
-
-func _label_at(text: String, font: FontFile, size: int, color: Color, pos: Vector2) -> void:
-	var label := _label(text, font, size, color)
-	label.position = pos
-	add_child(label)

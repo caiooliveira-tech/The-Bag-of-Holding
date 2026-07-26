@@ -2,19 +2,11 @@
 ## wooden-button pattern as the main menu: W/S or arrows to move, Enter/Space
 ## to select, or a level's number directly; ESC returns to the main menu.
 ## Wizard (the baseline = pre-difficulty balance) starts selected.
+## Spec 022 redesign: brick backdrop + banner, built on the MenuUI helper.
 extends Control
-
-const FONT_BOLD: FontFile = preload("res://assets/fonts/Dellas-Bold.otf")
-const FONT_REG: FontFile = preload("res://assets/fonts/Dellas-Regular.otf")
-const BTN_ACTIVE: Texture2D = preload("res://assets/ui/btn_active.png")
-const BTN_INACTIVE: Texture2D = preload("res://assets/ui/btn_inactive.png")
 
 const ROOM_01 := "res://rooms/room_01.tscn"
 const MAIN_MENU := "res://ui/menu/main_menu.tscn"
-
-const BG := Color(0.09, 0.08, 0.11)
-const TEXT := Color(0.93, 0.92, 0.95)
-const MUTED := Color(0.62, 0.6, 0.66)
 
 # Flavor text: placeholder in the intro's tone of voice — Design to bless
 # (Spec 018 open question). Every desc restates that countdowns never change.
@@ -41,50 +33,48 @@ const ITEMS: Array[Dictionary] = [
 
 var _selected: int = 1  # Wizard: the baseline is the default
 var _rows: Array[TextureRect] = []
+var _keys: Array[Label] = []
 var _desc: Label
 
 
 func _ready() -> void:
+	AudioManager.play_music(&"menu")
 	_build()
 	_refresh()
 
 
 func _build() -> void:
-	var bg := ColorRect.new()
-	bg.color = BG
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
+	MenuUI.brick(self)
+	MenuUI.image(self, MenuUI.CROW, Vector2(760, 150), Vector2(440, 440))
 
-	var title := _label("CHOOSE YOUR CHALLENGE", FONT_BOLD, 30, TEXT)
-	title.position = Vector2(80, 52)
+	# panel() (fill) not parchment() (keep-aspect) so the sign is wide enough
+	# for the long title without the torn edges clipping the text.
+	MenuUI.panel(self, MenuUI.BANNER, Vector2(40, 22), Vector2(560, 150))
+	var title := MenuUI.label("CHOOSE YOUR CHALLENGE", MenuUI.FONT_BOLD, 22, MenuUI.INK)
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.size.x = 560.0
+	title.position = Vector2(40, 84)
 	add_child(title)
 
 	for i in ITEMS.size():
-		var row := TextureRect.new()
-		row.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		row.stretch_mode = TextureRect.STRETCH_SCALE
-		row.position = Vector2(80, 132 + i * 52)
-		row.custom_minimum_size = Vector2(360, 44)
-		add_child(row)
-		var name_label := _label(ITEMS[i]["label"], FONT_BOLD, 16, TEXT)
-		name_label.position = Vector2(24, 12)
-		row.add_child(name_label)
-		var key_label := _label("[%s]" % ITEMS[i]["hotkey"], FONT_REG, 14, MUTED)
-		key_label.position = Vector2(250, 13)
+		var row := MenuUI.button_row(self, ITEMS[i]["label"], Vector2(80, 210 + i * 58))
+		var key_label := MenuUI.label("[%s]" % ITEMS[i]["hotkey"], MenuUI.FONT_REG, 14, MenuUI.LIGHT_MUTED)
+		key_label.position = Vector2(258, 13)
 		row.add_child(key_label)
 		_rows.append(row)
+		_keys.append(key_label)
 
-	_desc = _label("", FONT_REG, 16, MUTED)
-	_desc.position = Vector2(470, 140)
-	_desc.custom_minimum_size = Vector2(280, 0)
-	_desc.size.x = 280.0
+	# Description beside the buttons, its top aligned to the first button.
+	_desc = MenuUI.label("", MenuUI.FONT_REG, 16, MenuUI.LIGHT_MUTED)
+	_desc.position = Vector2(470, 214)
+	_desc.size.x = 260.0
+	_desc.custom_minimum_size = Vector2(260, 0)
 	_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(_desc)
 
-	var nav := _label("[W/S] / [UP/DOWN] NAVIGATE MENU", FONT_REG, 12, MUTED)
-	nav.position = Vector2(80, 688)
-	add_child(nav)
-	var sel := _label("[SPACE/ENTER] START  [ESC] BACK", FONT_REG, 12, MUTED)
+	MenuUI.label_at(self, "[W/S] / [UP/DOWN] NAVIGATE MENU", MenuUI.FONT_REG, 12,
+			MenuUI.LIGHT_MUTED, Vector2(80, 688))
+	var sel := MenuUI.label("[SPACE/ENTER] START  [ESC] BACK", MenuUI.FONT_REG, 12, MenuUI.LIGHT_MUTED)
 	sel.position = Vector2(980, 688)
 	add_child(sel)
 
@@ -92,9 +82,8 @@ func _build() -> void:
 func _refresh() -> void:
 	for i in _rows.size():
 		var active := i == _selected
-		_rows[i].texture = BTN_ACTIVE if active else BTN_INACTIVE
-		_rows[i].custom_minimum_size.x = 360.0 if active else 320.0
-		_rows[i].size.x = _rows[i].custom_minimum_size.x
+		MenuUI.select_button(_rows[i], active)
+		_keys[i].position.x = 298.0 if active else 258.0
 	_desc.text = ITEMS[_selected]["desc"]
 
 
@@ -131,12 +120,3 @@ func _activate(index: int) -> void:
 	GameState.difficulty = ITEMS[index]["resource"]
 	GameState.reset_run()
 	get_tree().change_scene_to_file(ROOM_01)
-
-
-func _label(text: String, font: FontFile, size: int, color: Color) -> Label:
-	var label := Label.new()
-	label.text = text
-	label.add_theme_font_override("font", font)
-	label.add_theme_font_size_override("font_size", size)
-	label.add_theme_color_override("font_color", color)
-	return label

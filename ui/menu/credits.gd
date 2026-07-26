@@ -1,14 +1,8 @@
-## Credits screen (new scene). ESC returns to the menu.
+## Credits screen (Spec 022 redesign). Brick backdrop, credits list on the left,
+## the logo on a big scroll to the right. ESC returns to the menu.
 extends Control
 
-const FONT_BOLD: FontFile = preload("res://assets/fonts/Dellas-Bold.otf")
-const FONT_REG: FontFile = preload("res://assets/fonts/Dellas-Regular.otf")
-
 const MAIN_MENU := "res://ui/menu/main_menu.tscn"
-
-const BG := Color(0.08, 0.07, 0.12)
-const TEXT := Color(0.93, 0.92, 0.95)
-const MUTED := Color(0.62, 0.6, 0.66)
 
 # Names as the team wrote them in the mock; roles filled from their fronts.
 const ENTRIES: Array[Dictionary] = [
@@ -23,38 +17,22 @@ const ENTRIES: Array[Dictionary] = [
 
 func _ready() -> void:
 	AudioManager.play_music(&"menu")
-	var bg := ColorRect.new()
-	bg.color = BG
-	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
-	add_child(bg)
+	MenuUI.brick(self)
 
-	var title := _label("CREDITS", FONT_BOLD, 30, TEXT)
-	title.position = Vector2(80, 60)
-	add_child(title)
+	# Big scroll with the logo, right side.
+	MenuUI.parchment(self, MenuUI.SCROLL, Vector2(720, 100), Vector2(500, 500))
+	MenuUI.image(self, MenuUI.LOGO, Vector2(800, 260), Vector2(340, 200))
+
+	MenuUI.label_at(self, "CREDITS", MenuUI.FONT_BOLD, 34, MenuUI.LIGHT, Vector2(80, 60))
 
 	for i in ENTRIES.size():
-		var y := 140.0 + i * 58.0
-		var name_label := _label(ENTRIES[i]["name"], FONT_BOLD, 15, TEXT)
-		name_label.position = Vector2(80, y)
-		add_child(name_label)
-		var role_label := _label(ENTRIES[i]["role"], FONT_REG, 13, MUTED)
-		role_label.position = Vector2(80, y + 22)
-		add_child(role_label)
+		var y := 150.0 + i * 62.0
+		MenuUI.label_at(self, ENTRIES[i]["name"], MenuUI.FONT_BOLD, 16, MenuUI.LIGHT, Vector2(80, y))
+		MenuUI.label_at(self, ENTRIES[i]["role"], MenuUI.FONT_REG, 13, MenuUI.LIGHT_MUTED, Vector2(80, y + 24))
 
-	var back := _label("[ESC] BACK", FONT_REG, 12, MUTED)
-	back.position = Vector2(1120, 688)
-	add_child(back)
+	MenuUI.label_at(self, "[ESC] BACK", MenuUI.FONT_REG, 12, MenuUI.LIGHT_MUTED, Vector2(80, 688))
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and (event as InputEventKey).keycode == KEY_ESCAPE:
 		get_tree().change_scene_to_file(MAIN_MENU)
-
-
-func _label(text: String, font: FontFile, size: int, color: Color) -> Label:
-	var label := Label.new()
-	label.text = text
-	label.add_theme_font_override("font", font)
-	label.add_theme_font_size_override("font_size", size)
-	label.add_theme_color_override("font_color", color)
-	return label
