@@ -1,11 +1,10 @@
-[gd_resource type="Resource" script_class="LevelResource" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="LevelResource" format=3 uid="uid://dpenmi5aydhg8"]
 
-[ext_resource type="Script" path="res://systems/run/level_resource.gd" id="1"]
+[ext_resource type="Script" uid="uid://bovx6nmc6lddh" path="res://systems/run/level_resource.gd" id="1"]
+[ext_resource type="Script" uid="uid://dfbbsclxvkije" path="res://systems/tutorial/tutorial_beat_resource.gd" id="2_rgr0g"]
 
 [resource]
 script = ExtResource("1")
 title = "5th Floor - Far Shot"
 palette_row = 1
-chaser_count = 0
 shooter_count = 1
-wall_pattern = 0
