@@ -16,6 +16,7 @@ const HEART_EMPTY := Color(0.14, 0.1, 0.12)
 @export var heart_empty_tint := Color(0.3, 0.3, 0.3, 0.8)
 
 var _player: Player
+var _heart_tweens: Array[Tween] = []
 
 @onready var _hearts: Array[Node] = $Bar/Hearts.get_children()
 @onready var _bar_bg: ColorRect = $Bar/BarBg
@@ -54,17 +55,14 @@ func _refresh_hearts() -> void:
 		_player = get_tree().get_first_node_in_group("player") as Player
 	if _player == null:
 		return
+	if _heart_tweens.is_empty():
+		_heart_tweens.resize(_hearts.size())
 	for i in _hearts.size():
 		var full := i < _player.health
 		var heart := _hearts[i] as ColorRect
 		if heart_filled_texture != null:
 			heart.color = Color(0, 0, 0, 0)
 			var tex := heart.get_node("Tex") as TextureRect
-			# Empty hearts sit centered in the bar; full ones float up half a
-			# heart, so active lives read as raised above the empty sockets.
-			var raise := heart.custom_minimum_size.y * 0.5 if full else 0.0
-			tex.offset_top = -raise
-			tex.offset_bottom = -raise
 			if full:
 				tex.texture = heart_filled_texture
 				tex.modulate = Color.WHITE
@@ -74,8 +72,26 @@ func _refresh_hearts() -> void:
 			else:
 				tex.texture = heart_filled_texture
 				tex.modulate = heart_empty_tint
+			# Empty hearts sit centered in the bar; full ones float up half a
+			# heart, so active lives read as raised above the empty sockets.
+			var target := -heart.custom_minimum_size.y * 0.5 if full else 0.0
+			_animate_heart(i, tex, target)
 		else:
 			heart.color = HEART_FULL if full else HEART_EMPTY
+
+
+## Tween a heart to its raised (full) or centered (empty) offset, so losing a
+## life visibly drops it into the socket and gaining one pops it up.
+func _animate_heart(index: int, tex: TextureRect, target: float) -> void:
+	if is_equal_approx(tex.offset_top, target):
+		return
+	var previous := _heart_tweens[index]
+	if previous != null and previous.is_valid():
+		previous.kill()
+	var tween := create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	tween.parallel().tween_property(tex, "offset_top", target, 0.22)
+	tween.parallel().tween_property(tex, "offset_bottom", target, 0.22)
+	_heart_tweens[index] = tween
 
 
 func _clear_held() -> void:

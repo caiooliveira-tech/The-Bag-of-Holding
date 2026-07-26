@@ -24,6 +24,7 @@ EventBus="*res://autoloads/event_bus.gd"
 GameState="*res://autoloads/game_state.gd"
 Juice="*res://autoloads/juice.gd"
 AudioManager="*res://autoloads/audio_manager.gd"
+Pause="*res://ui/menu/pause_menu.gd"
 
 [display]
 

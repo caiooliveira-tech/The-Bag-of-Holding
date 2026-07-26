@@ -8,6 +8,13 @@ const MUSIC := {
 	&"in_game": preload("res://assets/sounds/in_game_soundtrack.mp3"),
 }
 
+## Seconds to skip at the start of a track to cut a built-in fade-in. Applied
+## both to the initial play and the loop point, so the intro never plays.
+## Tune per track if the fade length differs.
+const MUSIC_SKIP := {
+	&"menu": 3.0,
+}
+
 const SFX := {
 	&"button_change": preload("res://assets/sounds/button_change.mp3"),
 	&"button_clicked": preload("res://assets/sounds/button_clicked.mp3"),
@@ -49,6 +56,8 @@ var _active_items: int = 0
 
 
 func _ready() -> void:
+	# Keep music and menu-click SFX alive while the tree is paused.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_music = AudioStreamPlayer.new()
 	_music.bus = &"Master"
 	_music.volume_db = -9.0
@@ -83,8 +92,11 @@ func play_music(track: StringName) -> void:
 	if _current_music == track or not MUSIC.has(track):
 		return
 	_current_music = track
-	_music.stream = MUSIC[track]
-	_music.play()
+	var stream := MUSIC[track] as AudioStreamMP3
+	var skip: float = MUSIC_SKIP.get(track, 0.0)
+	stream.loop_offset = skip
+	_music.stream = stream
+	_music.play(skip)
 
 
 func play_sfx(name: StringName) -> void:

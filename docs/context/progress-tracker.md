@@ -33,6 +33,21 @@ Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). M
 - 2026-07-26 — Heart art integrated: Design delivered `assets/ui/heart_filled.png` + `heart_empty.png`; hud.gd now takes both textures (filled/empty swap per health point, tint fallback if only filled is set), assigned in hud.tscn. HUD art is complete for the MVP layout.
 - 2026-07-26 — **Room tiles integrated via TileMapLayer**: `rooms/room_tileset.tres` (32px atlas) + `rooms/room_tiles.gd` paints at runtime (`variant_row` 0 = blue/room 1, 1 = pink/room 2). Final template (region px, row 1 y=0 / row 2 y=32): closed door x224, open door x256, corner x288, wall x320, floor x352. Border = wall tile (sides rotated 90° so the inner face points into the room), corner tile only at the 4 corners, interior + door gaps = floor tile. **3 single-tile doors per room** (top x336, left/right at mid-height via ±90° node rotation); room.gd opens/listens to all doors under `Doors/` — all lead to next_scene_path (pick-a-door choice stays post-MVP). Collision split per gap (StaticBody2D, unchanged layer). Verified via `tests/screenshot_rooms.tscn`; smoke 21/21 PASS (includes 3-door check).
 
+## Pause menu, HUD heart animation, menu music fade-cut — 2026-07-26
+
+- **Pause menu** (`ui/menu/pause_menu.gd`, autoload `Pause`): ESC during
+  gameplay pauses (get_tree().paused) and shows a wooden-button menu in the
+  main-menu style — RESTART LEVEL / OPTIONS / QUIT TO MAIN MENU / EXIT GAME,
+  keyboard nav, ESC resumes. Gated to gameplay (a `player` node exists), so it
+  never fires in menus. AudioManager set to PROCESS_MODE_ALWAYS so music/clicks
+  survive the pause. (OPTIONS routes to the options scene, whose ESC returns to
+  the main menu — losing the run; refine to an overlay later if wanted.)
+- **HUD hearts:** full hearts float up half a heart, empty ones sit centered in
+  the bar; the swap is now **tweened** (a lost life drops into its socket, a
+  gained one pops up). Only visible at partial health — at 5/5 all are raised.
+- **Menu music:** starts 3 s in (via `loop_offset`) to cut the track's fade-in,
+  on the first play and every loop. Tunable in AudioManager.MUSIC_SKIP.
+
 ## Polish pass (branch `feature/main-menu`) — 2026-07-26
 
 - **Menu:** Load Game button hidden (no save system yet); the description beside
