@@ -186,6 +186,40 @@ Post-MVP (not this phase): the two special-item slots + the special-item gamepla
 
 ---
 
+# Phase 4.6 — Game Feel (Juice)
+
+> Added 2026-07-26 (team) after art integration. Spec 010. Polish pass over the
+> functional combat loop: impact, motion, readability. No balance changes (except
+> the flagged post-hit i-frames). Built on its own branch; each sub-phase (G1–G5)
+> ends on a playable build with a green smoke test. Sub-phases are independent and
+> individually cuttable.
+
+Goal
+
+Make combat *feel* good — camera shake, hitstop, tweened reactions, particles —
+reinforcing readability, friendly-fire clarity, and fast combat, without touching
+gameplay values.
+
+Tasks (see Spec 010 for detail; ordered by impact-per-effort)
+
+- **G1 Impact Core:** trauma-based camera shake, enemy death pop (flash/scale/
+  particles/hitstop), player damage pack (hitstop + knockback + red vignette).
+- **G2 Item Motion:** landing marker, visual arc + bounce (world position/timing
+  unchanged), distinct freeze feel (zoom punch + frost, not shake).
+- **G3 Survivability:** post-hit i-frames (enemy damage only) — **contains a
+  difficulty decision, needs a team call**; unify with dash i-frames.
+- **G4 Action Personality:** draw overshoot, explosion ring, urgency pulse,
+  dash ghost trail.
+- **G5 Atmosphere (stretch):** idle bob, door dust, room-clear flourish, rumble.
+
+Deliverable
+
+✓ Hits, kills, throws, and explosions read and feel physical
+✓ Freeze feels cold, not violent; self-damage never blocked by i-frames
+✓ Smoke test green after every sub-phase; no balance drift (except G3, decided)
+
+---
+
 # Phase 5 — Ship
 
 Goal
