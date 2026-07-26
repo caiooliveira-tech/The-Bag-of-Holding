@@ -645,3 +645,35 @@ run state, not in the UI.
 
 - Godot docs: SceneTree.paused, SceneTreeTimer (`process_always`), Node.PROCESS_MODE_ALWAYS.
 - `git patch-id`, `git cat-file -e`, `git worktree add`.
+
+### Follow-up same session — fixing the two player-facing bugs
+
+**Routing a reset through the bus instead of pushing it.** The tutorial's
+`_seen` list had to be cleared when a run restarts. The tempting fix is
+`GameState.reset_run()` calling `TutorialOverlay._seen.clear()` — one line, done.
+But game-architecture.md says to prefer an `EventBus` signal over autoloads
+calling each other, and the reason shows up immediately: `GameState` would have to
+know that a *UI* autoload caches run state, and the next autoload that caches
+something would need another line in `reset_run()`. With `EventBus.run_reset`,
+`reset_run()` announces a fact and anything that cares cleans up after itself.
+Signals flow outward; direct calls flow inward.
+
+**Resisting the fifth pause writer.** The reset handler also hides a beat left
+open when a run is abandoned mid-lesson. The obvious companion line —
+`get_tree().paused = false` — is wrong: every caller of `reset_run()` already
+manages pause (the death screen and the pause menu both unpause before calling
+it), so adding one more writer would deepen the exact bug listed as finding 4.
+Clearing `_open` is enough, because that's what stops `_input` from calling
+`_close()` and unpausing on someone else's behalf.
+
+**Making a destination testable without navigating to it.** Asserting the win
+screen restarts correctly is awkward: `change_scene_to_file` would tear down the
+test container. Extracting the one-line `restart_target()` made the decision
+inspectable while leaving the navigation where it was — the general trick is to
+split *what* from *do*, then assert on the *what*.
+
+**Check your new check can fail.** The first draft asserted
+`RunManager.next_scene_path()` wasn't a fixture — which it never is, whatever
+`win_screen.gd` says. A check that cannot fail is worse than no check: it makes a
+suite look thorough while covering nothing. Ask, of every assertion: what edit
+would turn this red?

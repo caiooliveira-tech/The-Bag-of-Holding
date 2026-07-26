@@ -504,6 +504,22 @@ func _run() -> void:
 			others_clean = false
 	_check(others_clean, "no other floor shows tutorial overlays")
 
+	# ---- Section 17: a new run really starts over ----
+	# Both of these shipped broken: the win screen restarted into the room_01/02
+	# smoke fixtures, and the tutorial's seen-list was never cleared, so an
+	# autoload that outlives the scene taught the first player only.
+	var win := (load("res://ui/win_screen.tscn") as PackedScene).instantiate()
+	add_child(win)
+	var restart: String = win.call("restart_target")
+	_check(restart == RunManager.LEVEL_SCENE,
+			"win screen climbs again into the real run, not a fixture (%s)" % restart)
+	win.queue_free()
+	var beat: TutorialBeatResource = RunManager.LEVELS[0].tutorial_beats[0]
+	TutorialOverlay._seen.assign([beat] as Array[TutorialBeatResource])
+	GameState.reset_run()
+	_check(TutorialOverlay._seen.is_empty(),
+			"reset_run() clears the tutorial's seen beats (a new run re-teaches)")
+
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")
 	else:

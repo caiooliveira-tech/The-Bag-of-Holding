@@ -26,20 +26,27 @@ Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–D (walls, ranged enemy
 
 ## Audit — 2026-07-28 (post-merge review of main)
 
-Full read-through of the run/tutorial code after the PR #9 merge. Ranked; nothing
-here is fixed yet except the smoke suite.
+Full read-through of the run/tutorial code after the PR #9 merge. Ranked. Items 1–2
+are **fixed** (2026-07-28, smoke-guarded); 3–7 remain open.
 
-1. **Win screen restarts the wrong game.** `ui/win_screen.gd:22` sends "play again"
-   to `res://rooms/room_01.tscn` — the two-room smoke fixture, whose own
-   `next_scene_path` points at `room_02` — instead of `RunManager.LEVEL_SCENE`. After
-   finishing the 12 floors the player is dropped into the old prototype loop and can
-   never re-enter the real run without relaunching. Highest-value fix in the list.
-2. **The tutorial only ever plays once per app launch.** `TutorialOverlay._seen`
-   accumulates beats and is never cleared; its own comment claims "Cleared by
-   `GameState.reset_run()`", but `reset_run()` only touches `current_room`,
-   `player_health` and `run_pool`. Because the overlay is an autoload it outlives every
-   scene change, so New Game after a death or a win teaches nobody. Fix by clearing
-   `_seen` from `reset_run()` — the behaviour the comment already promises.
+1. ~~**Win screen restarts the wrong game.**~~ **FIXED.** `ui/win_screen.gd` sent
+   "climb again" to `res://rooms/room_01.tscn` — the two-room smoke fixture, whose own
+   `next_scene_path` points at `room_02` — so finishing all 12 floors dropped the
+   player into the old prototype loop with no route back into the real run short of
+   relaunching. Now returns `RunManager.LEVEL_SCENE`, exposed as `restart_target()` so
+   the suite can assert the destination without triggering a scene change (which would
+   tear down the test container).
+2. ~~**The tutorial only ever plays once per app launch.**~~ **FIXED.**
+   `TutorialOverlay._seen` accumulated beats and was never cleared; its own comment
+   claimed `GameState.reset_run()` did it, but `reset_run()` only touched
+   `current_room`, `player_health` and `run_pool`. As an autoload it outlives every
+   scene change, so New Game after a death or a win taught nobody. Fixed with a new
+   `EventBus.run_reset` signal that `reset_run()` emits and the overlay listens for —
+   routed through the bus rather than having `GameState` call a UI autoload directly
+   (game-architecture.md: prefer EventBus over autoloads calling each other). The
+   handler also drops any beat left open when a run is abandoned mid-lesson, and
+   deliberately does **not** touch `paused` — every `reset_run()` caller already
+   manages pause, and a fifth writer is exactly finding 4.
 3. **Level 12 sits at exactly zero spawn headroom.** `SPAWN_CELLS` offers 10 cells;
    `TIC_TAC_TOE` blocks 4 of them, leaving 6, and level 12 wants 3 chasers + 3
    shooters = 6. Verified by script across all 12 floors (levels 4 and 11 have 1–2

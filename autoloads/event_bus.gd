@@ -44,3 +44,8 @@ signal item_unlocked(item_data: MagicItemResource)
 ## Entered a new room/level — carries the title for the drop-in sign (Spec 022).
 @warning_ignore("unused_signal")
 signal level_entered(title: String)
+## A fresh run began (New Game, restart after death, or climbing again after a
+## win). Autoloads caching per-run state must clear it here: they outlive every
+## scene change, so nothing else will do it for them.
+@warning_ignore("unused_signal")
+signal run_reset
