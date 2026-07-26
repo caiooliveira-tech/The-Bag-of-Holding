@@ -1,7 +1,15 @@
 # Spec 020 - Magnetic Horseshoe
 
-**Status:** Draft v2 (2026-07-27 — redesigned per Rafael's clarification; v1's
-"pin two enemies in place" is dead)
+**Status:** Implemented (2026-07-28, branch `feature/item-pickup`, PR #6) — v2
+design (agglutination cluster); v1's "pin two enemies in place" is dead.
+
+Implementation notes: `MagnetAreaEffect` + `MagnetCluster` node (centroid pull
+via the existing knockback channel, re-applied per physics frame — zero changes
+to player/enemy movement code). The horseshoe icon rides the blob's centroid.
+Icon = SHEETS (256, 96); audio reuses `hand_explosions` for now. Gameplay note
+from verification: with the 6 s fuse, targets can drift out of the radius
+before trigger — the landing marker is the tell; kiting enemies over it is the
+skill.
 
 ## Goal
 

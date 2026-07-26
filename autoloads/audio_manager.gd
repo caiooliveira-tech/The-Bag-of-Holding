@@ -54,6 +54,9 @@ const EXPLOSION_BY_ITEM := {
 	&"right_hand_of_ursula": &"freeze",
 	&"left_hand_of_ursula": &"hand_explosions",
 	&"troy_wooden_horse": &"horse_explosion",
+	# Placeholder cues until Design delivers dedicated sounds (Specs 020/021).
+	&"atomic_orb": &"fireball_explosion",
+	&"magnetic_horseshoe": &"hand_explosions",
 }
 
 const SFX_VOICES := 10
@@ -97,6 +100,8 @@ func _ready() -> void:
 	EventBus.freeze_ended.connect(func(): play_sfx(&"freeze_explosion"))
 	EventBus.room_cleared.connect(func(): play_sfx(&"room_cleared"))
 	EventBus.enemy_shot.connect(func(): play_sfx(&"shot"))
+	# Door pickup added a new item to the run pool (Spec 017).
+	EventBus.item_unlocked.connect(func(_d): play_sfx(&"draw_item"))
 
 	_music_locked = OS.has_feature("web")
 

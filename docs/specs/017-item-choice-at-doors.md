@@ -1,6 +1,12 @@
 # Spec 017 - Item Choice at Doors (Phase 6 E)
 
-**Status:** Draft (2026-07-27)
+**Status:** Implemented (2026-07-28, branch `feature/item-pickup`, PR #6)
+
+Implementation notes: run pool + `ITEM_CATALOG` + `unlock_item()` live on
+GameState (empty pool = no run = Bag falls back to its `.tres`, keeping dev
+runs and smoke injection working); `Room.pick_offers()` is static so the smoke
+test exercises the sampling; door offers float on the door's local +Y (points
+room-inward on all three doors); `EventBus.item_unlocked` plays the draw cue.
 
 **Depends on:** Specs 020 (Magnetic Horseshoe) + 021 (Atomic Orb) — the full
 6-item catalog exists before doors start distributing it.

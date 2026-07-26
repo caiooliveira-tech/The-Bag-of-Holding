@@ -1,6 +1,10 @@
 # Spec 021 - Atomic Orb
 
-**Status:** Draft (2026-07-27)
+**Status:** Implemented (2026-07-28, branch `feature/item-pickup`, PR #6)
+
+Implementation notes: pure data as planned — `atomic_orb.tres` on the existing
+`AreaDamageEffect` (tier 3 / radius 3 / linger 2), icon = SHEETS (224, 96).
+Audio reuses `fireball_explosion` until Design ships a dedicated cue.
 
 ## Goal
 

@@ -6,7 +6,12 @@ Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–B (walls, ranged enemy
 
 ## Current Spec
 
-**Active (2026-07-28): Specs 017 + 020 + 021 (Phase 6 E — item pickup + full catalog)** on branch `feature/item-pickup` — alignment landed, PR #6 reopened. Order: Spec 021 Atomic Orb → Spec 020 Magnetic Horseshoe (agglutination cluster, v2) → Spec 017 item choice at doors. Sheet icons for all 6 items confirmed on SHEETS (atomic 224,96; horseshoe 256,96).
+**Active (2026-07-28): Specs 017 + 020 + 021 implemented** on branch `feature/item-pickup` (PR #6) — awaiting Rafael's playtest + team review.
+
+- **Spec 021 Atomic Orb:** pure data on AreaDamageEffect (5 s / heavy 3 hits / 3 tiles / 2 s linger), icon SHEETS (224,96). Placeholder SFX (fireball).
+- **Spec 020 Magnetic Horseshoe (v2 cluster):** `MagnetAreaEffect` + `MagnetCluster` — everyone in 3 tiles (player included, LoS) yanked to the point and glued 5 s via per-frame centroid pull on the knockback channel (zero movement-code changes); horseshoe icon rides the blob. Icon (256,96); placeholder SFX (hand_explosions).
+- **Spec 017 door pickups:** `GameState.run_pool` starts [fire_orb] on reset_run (empty = fallback to the Bag's .tres, so dev/smoke flows unchanged); on clear each door gets a distinct random offer from the 6-item `ITEM_CATALOG` (floating icon on the door's room-inward axis); walk-through = pickup (owned duplicate = silent no-op, the "no thanks" door); `EventBus.item_unlocked` → draw SFX. Item pool .tres now lists all 6 (fallback/reference).
+- Smoke +12 checks (atomic kill/radius/data, magnet gather/outsider/cohesion/release, run-pool start/draws/unlock/no-op/distinct-offers), **55/55 PASS**. Door-offer placement verified by scripted screenshots.
 
 Parked:
 - **Spec 019 (Phase 6.6 — floor-based difficulty):** draft on branch `feature/floor-difficulty`; **PR #5 closed pending team alignment** (tier values, bonus-hits, .tres renames). No code written. Reopen when the design is settled.
