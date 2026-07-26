@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://c0dbphvjihlel"]
+[gd_scene format=3 uid="uid://c0dbphvjihlel"]
 
 [ext_resource type="Script" uid="uid://bj0vxeb2sppsx" path="res://rooms/room.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://buetenuvqyf1f" path="res://entities/player/player.tscn" id="2"]
@@ -47,7 +47,6 @@ variant_row = 1
 
 [node name="WallTiles" type="TileMapLayer" parent="." unique_id=176438792]
 texture_filter = 1
-tile_map_data = PackedByteArray("AAAMAAQAAAAAAAUAAAAMAAUAAAAAAAUAAAAMAAYAAAAAAAUAAAAMAAcAAAAAAAUAAAAIAAYAAAABAAUAAAAJAAYAAAACAAUAAAAKAAYAAAACAAUAAAA=")
 tile_set = ExtResource("6")
 
 [node name="Walls" type="StaticBody2D" parent="." unique_id=242993571]
