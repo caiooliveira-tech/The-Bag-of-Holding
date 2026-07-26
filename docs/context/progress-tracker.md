@@ -33,6 +33,19 @@ Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). M
 - 2026-07-26 — Heart art integrated: Design delivered `assets/ui/heart_filled.png` + `heart_empty.png`; hud.gd now takes both textures (filled/empty swap per health point, tint fallback if only filled is set), assigned in hud.tscn. HUD art is complete for the MVP layout.
 - 2026-07-26 — **Room tiles integrated via TileMapLayer**: `rooms/room_tileset.tres` (32px atlas) + `rooms/room_tiles.gd` paints at runtime (`variant_row` 0 = blue/room 1, 1 = pink/room 2). Final template (region px, row 1 y=0 / row 2 y=32): closed door x224, open door x256, corner x288, wall x320, floor x352. Border = wall tile (sides rotated 90° so the inner face points into the room), corner tile only at the 4 corners, interior + door gaps = floor tile. **3 single-tile doors per room** (top x336, left/right at mid-height via ±90° node rotation); room.gd opens/listens to all doors under `Doors/` — all lead to next_scene_path (pick-a-door choice stays post-MVP). Collision split per gap (StaticBody2D, unchanged layer). Verified via `tests/screenshot_rooms.tscn`; smoke 21/21 PASS (includes 3-door check).
 
+## Main menu (branch `feature/main-menu`) — implemented 2026-07-26
+
+New front-end scenes under `ui/menu/` (code-driven, Dellas font + wooden button art):
+- **main_menu**: title + wooden buttons (New Game / Load Game / Options / Credits /
+  Exit Game), keyboard nav (W/S or ↑/↓, Enter/Space, or the hotkey letter). New Game →
+  room_01, Options/Credits → their scenes, Exit → quit. Load Game is a no-op (no save
+  system yet). `project.godot` main scene is now the menu.
+- **options_menu**: resolution dropdown (720/900/1080 16:9) + fullscreen toggle (both
+  functional via DisplayServer); CONTROLS list read **live from the InputMap** (auto-
+  reflects the team's control remap). ESC → menu.
+- **credits**: contributor list (mock names + real roles). ESC → menu.
+Screens verified against the design mocks by screenshot. Smoke 27/27 still PASS.
+
 ## New items (Specs 011 + 012, branch `feature/items-left-hand-troy`) — implemented 2026-07-26
 
 Two catalog items pulled forward from the post-MVP cut list:
