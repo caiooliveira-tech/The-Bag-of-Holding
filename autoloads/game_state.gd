@@ -10,6 +10,12 @@ var current_room: int = 0
 ## Carries player health across room transitions; -1 means "full health".
 var player_health: int = -1
 
+## Active difficulty (Spec 018). Defaults to Wizard = today's exact balance,
+## so every entry path that skips the select screen (smoke test, direct scene
+## runs) behaves identically to before. Set by the difficulty select screen;
+## survives reset_run() so death/restart keeps the player's choice.
+var difficulty: DifficultyResource = preload("res://systems/difficulty/wizard.tres")
+
 
 func reset_run() -> void:
 	current_room = 0

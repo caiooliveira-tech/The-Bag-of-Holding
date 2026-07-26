@@ -2,11 +2,13 @@
 
 ## Current Phase
 
-Phases 0–4 complete and merged to main. **Phase 4.5 (HUD trim, Spec 009) in progress on branch `feature/hud-special-slots`** — draft PR #3 open for team review. **Phase 5 (ship) intentionally on hold** — the team will rethink the roadmap first (menu scene and other new steps to be defined).
+Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5) and 6 A–B (walls, ranged enemy) complete and merged to main, plus menus/audio/death screen and items Specs 011–012. **Phase 6.5 (Difficulty Levels, Spec 018) implemented on branch `feature/difficulty-levels`** — draft PR #4 open for team review. Next: Phase 6 C–E (smart chaser, RunManager 20-room run, item-choice doors), then Phase 5 (ship).
 
 ## Current Spec
 
-Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). MVP scope implemented on the branch; awaiting team review/playtest before merge.
+Spec 018 — Difficulty Levels (Phase 6.5) — **implemented** on branch `feature/difficulty-levels` (PR #4 draft), 2026-07-27. Awaiting team review/playtest. Phase 6 C–E (smart chaser, RunManager, door unlocks) remain queued.
+
+- **Implementation:** `systems/difficulty/` (DifficultyResource + apprentice/wizard/archmage .tres); `GameState.difficulty` (defaults Wizard = today's balance; survives reset_run). Enemies compute `applied_*` stats at spawn (speed/cooldowns/detection; base .tres never mutated); player takes max health + G3 i-frame duration from the difficulty (`Player.max_health()`); HUD heart bar syncs its count to max health (clones the template heart — Apprentice shows 7). New `ui/menu/difficulty_select` (wooden-button style, hotkeys 1/2/3, Wizard pre-selected, ESC backs out); main menu NEW GAME routes there. Smoke +7 checks (zero-drift, multipliers, countdown-invariant, 7-heart spawn), **41/41 PASS**. Flavor text = placeholder pending Design. Tune 2026-07-27 (Rafael playtest): Apprentice enemy speed 0.85 → 0.7 (±15% was unreadable in play).
 
 ## Completed
 
@@ -170,14 +172,16 @@ no balance drift except G3's post-hit i-frames (needs a team call).
 
 ## Next Spec
 
-Roadmap revision (team): add menu scene and other new steps, then decide when Phase 5 (export/itch.io) happens.
+Phase 6 C — Spec 015 (smart chaser), then D (Spec 016, RunManager 20-room run) and E (Spec 017, item-choice doors). Phase 5 (ship/itch.io) after Phase 6 lands.
 
 ## Open Questions
 
-None — all resolved as of 2026-07-25.
+- Difficulty select flavor text — placeholder shipping; Design (Silas/Flavio) to bless or rewrite (`ui/menu/difficulty_select.gd`).
+- Archmage enemy speed (×1.15) — does it read in play? Apprentice was tuned to 0.7 after Rafael's playtest; Archmage awaits the same scrutiny.
 
 ## Technical Debt
 
+- Smoke test / headless boot report a few "ObjectDB instances leaked at exit" warnings — **pre-existing** (verified present on main without the Spec 018 changes, 2026-07-27); harmless force-quit artifacts, but worth a `--verbose` look before Phase 5 ship.
 - Player death just reloads the scene (fine for jam; revisit for a real game-over in Phase 4/5).
 - Kick targets enemies via group iteration (O(n)); fine for jam room sizes.
 - ~~Enemy visuals mixed Polygon2D `color` and `modulate`~~ — resolved 2026-07-25: all feedback (flash, damage tint, freeze) is `modulate`-based and `Body` is typed as Node2D, so swapping graybox for Sprite2D/AnimatedSprite2D in Phase 4 requires zero code changes (keep the node named "Body").
@@ -190,7 +194,7 @@ None — all resolved as of 2026-07-25.
 
 ## Learning Summary
 
-See learning-journal.md — session 2026-07-25 covers autoloads, Resources as tunables, enum FSM vs node FSM, and group-based decoupling.
+See learning-journal.md — sessions 2026-07-25 → 2026-07-27 cover autoloads, Resources as tunables, enum FSM vs node FSM, group-based decoupling, HUD anchor/NinePatch/AtlasTexture patterns, resource-caching pitfalls, and the difficulty-as-data design.
 
 ## Reminders — Shoelace spritesheet: DONE (2026-07-25)
 
@@ -198,6 +202,7 @@ Both steps completed: `Body` is now the AnimatedSprite2D (32x32 frames from SHEE
 
 ## Resume Notes
 
-- Branch `fase-4`: full loop playable — telegraph beat, combat, clear, green door, room_02 (3 enemies), win screen (Attack restarts). Hearts top-left, held item top-right. Health persists between rooms; death restarts the current room at full HP.
-- Smoke test: `Godot.exe --path . res://tests/smoke_test.tscn` (21 checks). Door-crossing/scene-change is playtest-only (change_scene would kill the test container).
-- After playtest approval: merge `fase-4` → main, branch `fase-5`: balance pass, Web export preset, itch.io upload before the July 26 deadline.
+- Main is fully playable: menu → difficulty select → room_01 → room_02 → win; pause (ESC), death screen, audio, juice all live. 4 items in the pool; melee + ranged enemies; walls with LoS.
+- Branch `feature/difficulty-levels` (PR #4 draft): Spec 018 implemented + Apprentice speed tune. Merge after team review.
+- Smoke test: `godot --headless --path . res://tests/smoke_test.tscn` (41 checks). Door-crossing/scene-change is playtest-only (change_scene would kill the test container).
+- Known pre-existing: a few ObjectDB exit-leak warnings on headless runs (tech debt, check before ship).

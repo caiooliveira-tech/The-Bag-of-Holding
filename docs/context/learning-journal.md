@@ -253,3 +253,68 @@ caught that a reported "sprite not showing" was actually the box clearing on thr
 ### References
 
 - Godot docs: Control anchors & offsets, NinePatchRect, TextureRect stretch modes, AtlasTexture.
+
+---
+
+## Session 2026-07-27 — Phase 6.5 (Spec 018: Difficulty Levels)
+
+### Feature
+
+Three difficulty levels (Apprentice / Wizard / Archmage) selected after New Game,
+scaling enemy pressure and player durability — never the item countdowns.
+
+### What was implemented
+
+- `systems/difficulty/difficulty_resource.gd` + three `.tres` (data-only knobs).
+- `GameState.difficulty` defaulting to a preloaded Wizard (= exact prior balance).
+- `enemy.gd` computes `applied_move_speed/attack_cooldown/shoot_cooldown/
+  detection_tiles` once in `_ready()`; behaviors read those instead of raw stats.
+- `player.gd` `max_health()` + i-frame duration from the difficulty (PlayerStats
+  keeps base values as fallback/documentation).
+- `hud.gd` `_sync_heart_count()` clones the scene's template heart to match max
+  health (7 hearts on Apprentice) — art/animation carry over via duplicate().
+- `ui/menu/difficulty_select` — same code-driven wooden-button pattern as the
+  main menu; hotkeys [1]/[2]/[3]; Wizard pre-selected; ESC backs out.
+
+### Why this architecture?
+
+- **Consumers apply multipliers; shared .tres never mutated.** Godot caches
+  loaded resources — writing `stats.move_speed *= x` at spawn would compound
+  across every enemy and leak between difficulty changes within a session.
+- **Default-Wizard-preload makes difficulty invisible** to every entry path that
+  skips the menu (smoke test, direct scene runs) — zero-drift by construction,
+  and the smoke test asserts it.
+- **A "baseline level" equal to old values** turns a risky balance change into a
+  pure addition: normal players literally cannot notice the feature landed.
+
+### Alternatives considered
+
+- Three .tres per *enemy* (easy/normal/hard variants): zero code but a data
+  explosion that triples every future enemy's authoring cost.
+- Scaling item countdown timers: rejected as a design stance (the countdown is
+  the identity; mastery must transfer). Recorded in technical-decisions.md.
+
+### Godot concepts learned
+
+- Resource caching semantics: why runtime mutation of a shared .tres is a trap.
+- `preload` in an autoload for a default resource value.
+- `Node.duplicate()` clones children + current property state — a scene node as
+  a runtime template (HUD hearts).
+- `queue_free()` right before `get_tree().quit()` reports as leaked — give the
+  tree one frame to process frees in tests.
+
+### Common mistakes
+
+- Letter hotkeys colliding with W/S menu navigation (Wizard's "W") — numbers.
+- Forgetting ranged enemies when scaling "attack cooldown" (shoot_cooldown is a
+  separate stat; both get the cooldown multiplier).
+
+### Suggested exercises
+
+- Add a fourth "Nightmare" .tres in the editor only (no code) and see it work
+  end-to-end by pointing a select row at it — proof the system is data-driven.
+- Tune Archmage's multipliers in the Inspector and feel the difference.
+
+### References
+
+- Godot docs: Resource (caching), Node.duplicate, SceneTree.quit.

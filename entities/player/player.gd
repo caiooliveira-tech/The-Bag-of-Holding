@@ -43,7 +43,14 @@ var _bob_time: float = 0.0
 func _ready() -> void:
 	add_to_group("player")
 	# Health persists across room transitions via GameState (-1 = full).
-	health = GameState.player_health if GameState.player_health > 0 else stats.max_health
+	health = GameState.player_health if GameState.player_health > 0 else max_health()
+
+
+## Difficulty owns durability (Spec 018); PlayerStats keeps the base value as
+## documentation + fallback. Public so the HUD can size the heart bar.
+func max_health() -> int:
+	var difficulty := GameState.difficulty
+	return difficulty.player_max_health if difficulty != null else stats.max_health
 
 
 func _physics_process(delta: float) -> void:
@@ -140,10 +147,14 @@ func take_damage(amount: int, source: Node) -> void:
 
 ## Post-hit invulnerability blink (Spec 010, G3). The looping alpha tween is
 ## the "I'm invulnerable" tell; _end_iframes restores full opacity.
+## Duration comes from the difficulty (Spec 018); Wizard = the G3 value.
 func _start_iframes() -> void:
-	if stats.hit_iframe_duration <= 0.0:
+	var difficulty := GameState.difficulty
+	var duration := difficulty.hit_iframe_duration if difficulty != null \
+			else stats.hit_iframe_duration
+	if duration <= 0.0:
 		return
-	_iframe_timer = stats.hit_iframe_duration
+	_iframe_timer = duration
 	if _iframe_tween != null and _iframe_tween.is_valid():
 		_iframe_tween.kill()
 	_iframe_tween = create_tween().set_loops()
