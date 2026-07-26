@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="LevelResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://systems/run/level_resource.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+title = "6th Floor - Crossfire"
+palette_row = 1
+chaser_count = 0
+shooter_count = 3
+wall_pattern = 0

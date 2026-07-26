@@ -22,3 +22,8 @@ extends Resource
 @export var lunge_speed: float = 340.0
 @export var lunge_duration: float = 0.2
 @export var lunge_recover: float = 0.5
+
+## Body tint for this variant (Spec 016). The same two sprites cycle through
+## the acts recoloured and buffed, so a tougher enemy reads at a glance.
+## White = the sprite as authored. Damage darkening multiplies on top.
+@export var tint: Color = Color.WHITE

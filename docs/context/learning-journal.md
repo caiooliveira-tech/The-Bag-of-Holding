@@ -493,3 +493,58 @@ Euclidus's letter and the Bag, and Shoelace resolves to climb the tower.
 ### References
 
 - Godot docs: Label.visible_characters, Tween.tween_callback, Control anchors.
+
+---
+
+## Session 2026-07-28 — Phase 6 D (Specs 016 + 024: the 12-level run)
+
+### Feature
+
+The actual game: 12 levels in 3 acts, generated mazes, tinted enemy cycles, and
+a two-beat tutorial on floor 1.
+
+### What was implemented
+
+- `systems/run/`: `LevelResource` (title / palette / counts / pattern / beats),
+  `WallPatterns` (PEN, CROSS, TIC_TAC_TOE, RING), `levels/level_01..12.tres`.
+- `RunManager` autoload + `rooms/level.gd|tscn`: one shell builds every floor.
+- `EnemyStats.tint` + four buffed variants; `TutorialOverlay` autoload.
+
+### Why this architecture?
+
+- **One scene, twelve data files.** Hand-authoring 12 room scenes would have
+  meant 12 places to fix every future change; now tuning a floor is a `.tres`.
+- **Tint cycles instead of new art:** the same two sprites carry three acts by
+  recolouring and buffing — the cheapest possible content multiplier, and it
+  reads instantly because tint = threat level.
+- **Generator rules as invariants** (never block a door, never seal a spawn)
+  encoded in `stamp()` itself, not in each pattern — a new pattern can't break
+  the run even if its author forgets.
+
+### Godot concepts learned
+
+- **Child `_ready()` runs before the parent's.** RoomTiles painted itself with
+  the default palette before the level could set one; the fix is a public
+  `repaint()` the parent calls after configuring the child.
+- A TileSet only exposes tiles that are *registered* — Act III's palette was in
+  the PNG but absent from `room_tileset.tres`, so it silently fell back.
+- `Color` multiplication in `modulate`: starting the damage lerp from a variant
+  tint keeps identity and damage feedback composable.
+
+### Common mistakes
+
+- Judging brightness from a screenshot taken during an animation: the level
+  looked "too dark" until I measured — it was LevelTitle's intentional 55% dim,
+  gone by 2.5 s. Measure (`-format %[fx:mean]`) before "fixing" a non-bug.
+- Assuming the roadmap's colour names matched the art (it said green for Act
+  III; the sheet's third room palette is red, and green is a *wall* colour).
+
+### Suggested exercises
+
+- Add a 13th level `.tres` and watch it appear in the run with no code change.
+- Write a new pattern in `WallPatterns` and confirm `stamp()` still protects
+  the door approaches.
+
+### References
+
+- Godot docs: TileMapLayer.set_cell, TileSet atlas coords, Node lifecycle order.

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="LevelResource" load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://systems/run/level_resource.gd" id="1"]
+[ext_resource type="Resource" path="res://systems/tutorial/beat_controls.tres" id="2"]
+[ext_resource type="Resource" path="res://systems/tutorial/beat_doors.tres" id="3"]
+[ext_resource type="Script" path="res://systems/tutorial/tutorial_beat_resource.gd" id="4"]
+
+[resource]
+script = ExtResource("1")
+title = "1st Floor - First Steps"
+palette_row = 0
+chaser_count = 0
+shooter_count = 0
+wall_pattern = 1
+tutorial_beats = Array[ExtResource("4")]([ExtResource("2"), ExtResource("3")])

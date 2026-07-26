@@ -1,0 +1,93 @@
+[gd_scene format=3 uid="uid://dm2xdcqs40nhf"]
+
+[ext_resource type="Script" path="res://rooms/level.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://buetenuvqyf1f" path="res://entities/player/player.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://rooms/door.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://cxf0nmga4j2iw" path="res://ui/hud.tscn" id="5"]
+[ext_resource type="TileSet" uid="uid://df3sbpup3q7g2" path="res://rooms/room_tileset.tres" id="6"]
+[ext_resource type="Script" uid="uid://c111jaovktnxn" path="res://rooms/room_tiles.gd" id="7"]
+[ext_resource type="Script" uid="uid://6253jixtuq0i" path="res://systems/juice/game_camera.gd" id="8"]
+[ext_resource type="PackedScene" path="res://ui/screen_fx.tscn" id="9"]
+
+[sub_resource type="RectangleShape2D" id="wall_top_left"]
+size = Vector2(320, 32)
+
+[sub_resource type="RectangleShape2D" id="wall_top_right"]
+size = Vector2(288, 32)
+
+[sub_resource type="RectangleShape2D" id="wall_bottom"]
+size = Vector2(640, 32)
+
+[sub_resource type="RectangleShape2D" id="wall_side_upper"]
+size = Vector2(32, 160)
+
+[sub_resource type="RectangleShape2D" id="wall_side_lower"]
+size = Vector2(32, 168)
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1")
+
+[node name="RoomTiles" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_set = ExtResource("6")
+script = ExtResource("7")
+
+[node name="WallTiles" type="TileMapLayer" parent="."]
+texture_filter = 1
+tile_set = ExtResource("6")
+
+[node name="Walls" type="StaticBody2D" parent="."]
+collision_mask = 0
+
+[node name="TopLeft" type="CollisionShape2D" parent="Walls"]
+position = Vector2(160, 16)
+shape = SubResource("wall_top_left")
+
+[node name="TopRight" type="CollisionShape2D" parent="Walls"]
+position = Vector2(496, 16)
+shape = SubResource("wall_top_right")
+
+[node name="Bottom" type="CollisionShape2D" parent="Walls"]
+position = Vector2(320, 344)
+shape = SubResource("wall_bottom")
+
+[node name="LeftUpper" type="CollisionShape2D" parent="Walls"]
+position = Vector2(16, 80)
+shape = SubResource("wall_side_upper")
+
+[node name="LeftLower" type="CollisionShape2D" parent="Walls"]
+position = Vector2(16, 276)
+shape = SubResource("wall_side_lower")
+
+[node name="RightUpper" type="CollisionShape2D" parent="Walls"]
+position = Vector2(624, 80)
+shape = SubResource("wall_side_upper")
+
+[node name="RightLower" type="CollisionShape2D" parent="Walls"]
+position = Vector2(624, 276)
+shape = SubResource("wall_side_lower")
+
+[node name="Doors" type="Node2D" parent="."]
+
+[node name="DoorTop" parent="Doors" instance=ExtResource("4")]
+position = Vector2(336, 16)
+
+[node name="DoorLeft" parent="Doors" instance=ExtResource("4")]
+position = Vector2(16, 176)
+rotation = -1.5707964
+
+[node name="DoorRight" parent="Doors" instance=ExtResource("4")]
+position = Vector2(624, 176)
+rotation = 1.5707964
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(320, 180)
+zoom = Vector2(2, 2)
+script = ExtResource("8")
+
+[node name="Player" parent="." instance=ExtResource("2")]
+position = Vector2(336, 304)
+
+[node name="HUD" parent="." instance=ExtResource("5")]
+
+[node name="ScreenFX" parent="." instance=ExtResource("9")]

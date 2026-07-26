@@ -29,6 +29,8 @@ Pause="*res://ui/menu/pause_menu.gd"
 DeathScreen="*res://ui/menu/death_screen.gd"
 LevelTitle="*res://ui/level_title.gd"
 ItemAcquired="*res://ui/item_acquired.gd"
+RunManager="*res://autoloads/run_manager.gd"
+TutorialOverlay="*res://ui/tutorial_overlay.gd"
 
 [display]
 
