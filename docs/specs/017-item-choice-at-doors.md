@@ -74,7 +74,10 @@ profile) grows with the climb.
 
 1. **Pool visibility:** shipping without any "what's in my bag" UI — remembering
    your build is part of the game for now. Revisit after playtest?
-2. Offer distribution bias: pure random-distinct per room, or guarantee at least
-   one unowned item when possible? Proposal: guarantee-one-unowned when the
-   catalog allows — a room of three "no thanks" doors feels broken. **Needs a
-   team yes/no.**
+
+## Resolved
+
+- **No guarantee of an unowned offer** (Rafael, 2026-07-27): with a 20-stage MVP
+  and a 6-item catalog, all-owned rooms are the norm in the late run — offers
+  stay purely random (still distinct within a room). All-"no thanks" rooms are
+  accepted and expected.
