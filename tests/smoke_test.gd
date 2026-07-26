@@ -27,6 +27,12 @@ func _ready() -> void:
 	# Hitstop scales Engine.time_scale; disable it so it can't skew the test's
 	# own wait timers (a slowed clock would make _wait() take real minutes).
 	Juice.hitstop_enabled = false
+	# The tutorial overlay (Spec 024) pauses the tree whenever a floor announces
+	# itself, and the fixture rooms fire level_entered like any real floor. Its
+	# SceneTreeTimers ignore pause, so every timed check below would run against
+	# a frozen game. Detach it — the run flow is covered by Section 16 instead.
+	EventBus.level_entered.disconnect(TutorialOverlay._on_level_entered)
+	EventBus.room_cleared.disconnect(TutorialOverlay._on_room_cleared)
 	_room = ROOM_SCENE.instantiate() as ROOM_SCRIPT
 	add_child(_room)
 	_run()
@@ -477,8 +483,8 @@ func _run() -> void:
 			WallPatterns.Pattern.TIC_TAC_TOE, WallPatterns.Pattern.RING]:
 		scratch.clear()
 		WallPatterns.stamp(scratch, pattern, 0)
-		for cell in WallPatterns.DOOR_APPROACH:
-			if scratch.get_used_cells().has(cell):
+		for approach_cell in WallPatterns.DOOR_APPROACH:
+			if scratch.get_used_cells().has(approach_cell):
 				door_safe = false
 	_check(door_safe, "no wall pattern blocks a door approach")
 	scratch.queue_free()
