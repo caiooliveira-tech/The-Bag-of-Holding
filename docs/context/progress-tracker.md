@@ -6,7 +6,7 @@ Phases 0–4 complete and merged to main. **Phase 4.5 (HUD trim, Spec 009) in pr
 
 ## Current Spec
 
-Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). MVP scope implemented on the branch; awaiting team review/playtest before merge.
+Spec 018 — Difficulty Levels (Phase 6.5), Draft on branch `feature/difficulty-levels`. Three levels (Apprentice/Wizard/Archmage) scaling enemy pressure + player durability; item countdowns never scale (design stance). Spec written 2026-07-27; awaiting team review before implementation. Phase 6 C–E (smart chaser, RunManager, door unlocks) remain queued.
 
 ## Completed
 
