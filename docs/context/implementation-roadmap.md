@@ -212,6 +212,12 @@ Tasks (see Spec 010 for detail; ordered by impact-per-effort)
   dash ghost trail.
 - **G5 Atmosphere (stretch):** idle bob, door dust, room-clear flourish, rumble.
 
+Deliverable
+
+✓ Hits, kills, throws, and explosions read and feel physical
+✓ Freeze feels cold, not violent; self-damage never blocked by i-frames
+✓ Smoke test green after every sub-phase; no balance drift (except G3, decided)
+
 ---
 
 # Phase 6 — Roguelike Progression (challenge & content)
@@ -261,11 +267,35 @@ Deliverable
 ✓ Maze walls with collision; 3 room palettes
 ✓ Per-run item unlocks via door choice; smoke test green after each sub-phase
 
+---
+
+# Phase 6.5 — Difficulty Levels
+
+> Added 2026-07-27 (team). Spec 018. Three selectable levels — Apprentice /
+> Wizard / Archmage — scaling enemy pressure and player durability. **Item
+> countdown timers never scale** (design stance: the countdown is the game's
+> identity; mastery must transfer across difficulties). Independent of Phase 6
+> C–E; interacts with D only in that room composition stays RunManager's job.
+
+Goal
+
+Let players pick their pressure level without changing the countdown puzzle.
+
+Tasks
+
+- Spec 018: `DifficultyResource` (+ 3 `.tres`), `GameState.difficulty` (defaults
+  to Wizard = today's exact balance)
+- Enemy multipliers applied at spawn (speed / cooldowns / detection, both
+  archetypes); player max health + G3 i-frame duration from difficulty
+- HUD hearts become count-driven (Apprentice = 7 hearts)
+- Difficulty select screen after New Game (wooden-button style, keyboard nav)
+- Smoke checks: Wizard = no drift; multipliers applied; countdowns identical
+
 Deliverable
 
-✓ Hits, kills, throws, and explosions read and feel physical
-✓ Freeze feels cold, not violent; self-damage never blocked by i-frames
-✓ Smoke test green after every sub-phase; no balance drift (except G3, decided)
+✓ Three playable difficulties selectable at New Game
+✓ Wizard identical to today's balance; countdowns identical on all levels
+✓ Smoke test green
 
 ---
 

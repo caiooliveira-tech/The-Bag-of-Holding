@@ -2,7 +2,7 @@
 
 A top-down action game built in **Godot 4.7**, where a bottomless bag of magic items is your entire arsenal — and your biggest liability. Every item you pull is both an opportunity and a risk, and a ticking countdown keeps you moving.
 
-> ⚠️ **Early development.** The project is in initial setup. Gameplay is spec'd out in `docs/` but not yet implemented — see [Status](#status).
+> 🎮 **Playable.** The full loop is in: menus, difficulty levels, tiled rooms, four magic items, two enemy archetypes, audio, and a juice pass. See [Status](#status).
 
 ## Gameplay Pillars
 
@@ -41,12 +41,18 @@ A top-down action game built in **Godot 4.7**, where a bottomless bag of magic i
 ```
 The-Bag-of-Holding/
 ├── project.godot          # Engine configuration
-├── icon.svg               # Project icon
+├── autoloads/             # EventBus, GameState, AudioManager, Juice
+├── entities/              # Player, enemies, projectiles (scene+script+.tres together)
+├── systems/               # Bag, magic items, difficulty, juice
+├── rooms/                 # Room scenes, tiles, doors
+├── ui/                    # HUD, menus (main/options/credits/pause/death), screen FX
+├── assets/                # Art (UI, fonts) — no generative AI assets (ADR-001)
+├── tests/                 # Automated smoke test (41 checks)
 └── docs/                  # Design & development documentation
     ├── CLAUDE.md          # Working agreement for AI-assisted development
     ├── context/           # Game vision, architecture, standards, roadmap
     ├── decisions/         # Architecture Decision Records (ADRs)
-    └── specs/             # Per-feature specifications
+    └── specs/             # Per-feature specifications (001-018)
 ```
 
 ## Development Approach
@@ -63,18 +69,19 @@ Coding conventions (see [`docs/context/godot-standards.md`](docs/context/godot-s
 
 ## Roadmap
 
-| Phase | Focus |
-|-------|-------|
-| 1 | Project setup, input, player movement, camera |
-| 2 | Enemy framework, health, damage |
-| 3 | Bag system, magic item framework |
-| 4 | Fire Orb (first item) |
-| 5 | Remaining magic items |
-| 6 | Rooms |
-| 7 | Polish |
+| Phase | Focus | State |
+|-------|-------|-------|
+| 0–1 | Foundation, player, first enemy | ✅ |
+| 2–3 | Bag system, magic item framework, Fire Orb, Right Hand of Ursula | ✅ |
+| 4 / 4.5 | Rooms, doors, HUD (+ art integration) | ✅ |
+| 4.6 | Game feel / juice pass (shake, hitstop, i-frames…) | ✅ |
+| 6 A–B | Maze walls + line of sight, ranged enemy + projectiles | ✅ |
+| 6.5 | Difficulty levels (Apprentice / Wizard / Archmage) | ✅ |
+| 6 C–E | Smart chaser, 20-room run (RunManager), item-choice doors | ⏳ |
+| 5 | Ship: export + itch.io | ⏳ |
 
 See [`docs/context/implementation-roadmap.md`](docs/context/implementation-roadmap.md) for the full plan.
 
 ## Status
 
-Not started — foundational documentation is in place; the first spec ([Player Controller](docs/specs/001-player-controller.md)) is next. Track live progress in [`docs/context/progress-tracker.md`](docs/context/progress-tracker.md).
+Playable end-to-end: main menu → difficulty select → tiled combat rooms → win/death screens, with 4 magic items (Fire Orb, both Hands of Ursula, Troy the Wooden Horse), melee + ranged enemies, walls with line-of-sight, audio, and a full game-feel pass. Specs 001–014 + 018 implemented; next up is the 20-room roguelike run (Phase 6 C–E). Track live progress in [`docs/context/progress-tracker.md`](docs/context/progress-tracker.md).

@@ -2,11 +2,11 @@
 
 ## Current Phase
 
-Phases 0–4 complete and merged to main. **Phase 4.5 (HUD trim, Spec 009) in progress on branch `feature/hud-special-slots`** — draft PR #3 open for team review. **Phase 5 (ship) intentionally on hold** — the team will rethink the roadmap first (menu scene and other new steps to be defined).
+Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–B (walls, ranged enemy) and **6.5 (Difficulty Levels)** complete and merged to main, plus menus/audio/death screen and items Specs 011–012. Next: Phase 6 C–E (smart chaser, RunManager 20-room run, item-choice doors), then Phase 5 (ship).
 
 ## Current Spec
 
-Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). MVP scope implemented on the branch; awaiting team review/playtest before merge.
+None — Spec 018 merged 2026-07-27 (PR #4). Next up: Spec 015 (smart chaser, Phase 6 C).
 
 ## Completed
 
@@ -29,7 +29,11 @@ Spec 009 — HUD: MVP trim to hearts + held item (special slots → post-MVP). M
 
 ## In Progress
 
-- **Phase 4.5 / Spec 009 (branch `feature/hud-special-slots`, PR #3 draft):** team decided 2026-07-26 the 🔺/⭕ special slots are post-MVP; MVP HUD = hearts (left) + held-item box moved to the right (provisional layout). Implemented 2026-07-26: PoolBox bag-pool removed, HeldSlot re-anchored right, art-ready texture hooks with graybox fallback — and HUD art **integrated** same day: wooden bar + item container (`assets/ui/`), item icons via `AtlasTexture` from `systems/magic_items/spritesheet.png` (+ `.json` frame coords) on both item `.tres`. Verified via scripted screenshots (both icons render). Smoke 21/21 PASS. Awaiting team review.
+Nothing — Spec 018 merged. Next: Spec 015 (smart chaser, Phase 6 C).
+
+## HUD trim + art integration (Phase 4.5) — merged 2026-07-26 (PR #3)
+
+- **Phase 4.5 / Spec 009 (branch `feature/hud-special-slots`):** team decided 2026-07-26 the 🔺/⭕ special slots are post-MVP; MVP HUD = hearts (left) + held-item box moved to the right (provisional layout). Implemented 2026-07-26: PoolBox bag-pool removed, HeldSlot re-anchored right, art-ready texture hooks with graybox fallback — and HUD art **integrated** same day: wooden bar + item container (`assets/ui/`), item icons via `AtlasTexture` from `systems/magic_items/spritesheet.png` (+ `.json` frame coords) on both item `.tres`. Verified via scripted screenshots (both icons render). Smoke 21/21 PASS.
 - 2026-07-26 — Heart art integrated: Design delivered `assets/ui/heart_filled.png` + `heart_empty.png`; hud.gd now takes both textures (filled/empty swap per health point, tint fallback if only filled is set), assigned in hud.tscn. HUD art is complete for the MVP layout.
 - 2026-07-26 — **Room tiles integrated via TileMapLayer**: `rooms/room_tileset.tres` (32px atlas) + `rooms/room_tiles.gd` paints at runtime (`variant_row` 0 = blue/room 1, 1 = pink/room 2). Final template (region px, row 1 y=0 / row 2 y=32): closed door x224, open door x256, corner x288, wall x320, floor x352. Border = wall tile (sides rotated 90° so the inner face points into the room), corner tile only at the 4 corners, interior + door gaps = floor tile. **3 single-tile doors per room** (top x336, left/right at mid-height via ±90° node rotation); room.gd opens/listens to all doors under `Doors/` — all lead to next_scene_path (pick-a-door choice stays post-MVP). Collision split per gap (StaticBody2D, unchanged layer). Verified via `tests/screenshot_rooms.tscn`; smoke 21/21 PASS (includes 3-door check).
 
@@ -68,6 +72,10 @@ D(RunManager/20 rooms)→E(door item unlock).
   → committed LUNGE with one contact hit → RECOVER), all parameterized on
   `EnemyStats`. Ranged archetype unchanged. Smoke +2 (two chasers separate;
   telegraphed lunge damages), 36/36 PASS.
+
+## Phase 6.5 — Difficulty Levels (Spec 018) — merged 2026-07-27 (PR #4)
+
+Three levels selected after New Game — Apprentice / Wizard / Archmage. `systems/difficulty/` (DifficultyResource + 3 .tres); `GameState.difficulty` defaults to Wizard = the pre-difficulty balance exactly (zero drift, smoke-asserted) and survives reset_run. Enemies compute `applied_*` stats at spawn (speed/cooldowns/detection — base .tres never mutated); player max health + G3 i-frame duration come from the difficulty; HUD heart bar clones its template heart to match (Apprentice = 7 hearts). `ui/menu/difficulty_select` in the wooden-button style (hotkeys 1/2/3, Wizard pre-selected, ESC back). **Item countdowns never scale** (technical-decisions.md). Playtest tune: Apprentice enemy speed 0.85 → 0.7. Smoke 41/41 PASS. Open: flavor text (Design), Archmage speed feel.
 
 ## Death screen, pause-key control, web audio, hit-sound trim — 2026-07-26
 
@@ -176,14 +184,16 @@ no balance drift except G3's post-hit i-frames (needs a team call).
 
 ## Next Spec
 
-Roadmap revision (team): add menu scene and other new steps, then decide when Phase 5 (export/itch.io) happens.
+Phase 6 C — Spec 015 (smart chaser), then D (Spec 016, RunManager 20-room run) and E (Spec 017, item-choice doors). Phase 5 (ship/itch.io) after Phase 6 lands.
 
 ## Open Questions
 
-None — all resolved as of 2026-07-25.
+- Difficulty select flavor text — placeholder shipping; Design (Silas/Flavio) to bless or rewrite (`ui/menu/difficulty_select.gd`).
+- Archmage enemy speed (×1.15) — does it read in play? Apprentice was tuned to 0.7 after Rafael's playtest; Archmage awaits the same scrutiny.
 
 ## Technical Debt
 
+- Smoke test / headless boot report a few "ObjectDB instances leaked at exit" warnings — **pre-existing** (verified present on main without the Spec 018 changes, 2026-07-27); harmless force-quit artifacts, but worth a `--verbose` look before Phase 5 ship.
 - Player death just reloads the scene (fine for jam; revisit for a real game-over in Phase 4/5).
 - Kick targets enemies via group iteration (O(n)); fine for jam room sizes.
 - ~~Enemy visuals mixed Polygon2D `color` and `modulate`~~ — resolved 2026-07-25: all feedback (flash, damage tint, freeze) is `modulate`-based and `Body` is typed as Node2D, so swapping graybox for Sprite2D/AnimatedSprite2D in Phase 4 requires zero code changes (keep the node named "Body").
@@ -196,7 +206,7 @@ None — all resolved as of 2026-07-25.
 
 ## Learning Summary
 
-See learning-journal.md — session 2026-07-25 covers autoloads, Resources as tunables, enum FSM vs node FSM, and group-based decoupling.
+See learning-journal.md — sessions 2026-07-25 → 2026-07-27 cover autoloads, Resources as tunables, enum FSM vs node FSM, group-based decoupling, HUD anchor/NinePatch/AtlasTexture patterns, resource-caching pitfalls, and the difficulty-as-data design.
 
 ## Reminders — Shoelace spritesheet: DONE (2026-07-25)
 
@@ -204,6 +214,6 @@ Both steps completed: `Body` is now the AnimatedSprite2D (32x32 frames from SHEE
 
 ## Resume Notes
 
-- Branch `fase-4`: full loop playable — telegraph beat, combat, clear, green door, room_02 (3 enemies), win screen (Attack restarts). Hearts top-left, held item top-right. Health persists between rooms; death restarts the current room at full HP.
-- Smoke test: `Godot.exe --path . res://tests/smoke_test.tscn` (21 checks). Door-crossing/scene-change is playtest-only (change_scene would kill the test container).
-- After playtest approval: merge `fase-4` → main, branch `fase-5`: balance pass, Web export preset, itch.io upload before the July 26 deadline.
+- Main is fully playable: menu → difficulty select → room_01 → room_02 → win; pause (ESC), death screen, audio, juice all live. 4 items in the pool; melee + ranged enemies; walls with LoS.
+- Smoke test: `godot --headless --path . res://tests/smoke_test.tscn` (41 checks). Door-crossing/scene-change is playtest-only (change_scene would kill the test container).
+- Known pre-existing: a few ObjectDB exit-leak warnings on headless runs (tech debt, check before ship).

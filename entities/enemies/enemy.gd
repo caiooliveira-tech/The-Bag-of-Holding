@@ -15,6 +15,13 @@ const PROJECTILE: PackedScene = preload("res://entities/projectiles/enemy_projec
 
 var hits_remaining: int = 0
 
+## Difficulty-scaled stats (Spec 018), computed once at _ready() so the shared
+## .tres resources are never mutated (they're cached across instances).
+var applied_move_speed: float = 0.0
+var applied_shoot_cooldown: float = 0.0
+var applied_detection_tiles: float = 0.0
+var applied_lunge_recover: float = 0.0
+
 ## Knockback decay (Spec 011): shared feel with the player's hit-knockback.
 const KNOCKBACK_DECAY: float = 900.0
 
@@ -48,8 +55,18 @@ var _strafe_sign: float = 1.0
 func _ready() -> void:
 	add_to_group("enemies")
 	hits_remaining = stats.max_hits
+	_apply_difficulty()
 	_body_visual.modulate = _damage_tint()
 	_strafe_sign = 1.0 if randf() < 0.5 else -1.0  # per-enemy flank side
+
+
+## Wizard's multipliers are all 1.0, so the default difficulty is a no-op.
+func _apply_difficulty() -> void:
+	var difficulty := GameState.difficulty
+	applied_move_speed = stats.move_speed * difficulty.enemy_speed_mult
+	applied_shoot_cooldown = stats.shoot_cooldown * difficulty.enemy_cooldown_mult
+	applied_detection_tiles = stats.detection_radius_tiles * difficulty.enemy_detection_mult
+	applied_lunge_recover = stats.lunge_recover * difficulty.enemy_cooldown_mult
 
 
 func _physics_process(delta: float) -> void:
@@ -75,7 +92,7 @@ func _physics_process(delta: float) -> void:
 	var to_player := _player.global_position - global_position
 	var distance := to_player.length()
 	# Vision is blocked by walls (Phase 6A): no line of sight, no chase.
-	var visible := distance <= GameState.tiles(stats.detection_radius_tiles) and _can_see_player()
+	var visible := distance <= GameState.tiles(applied_detection_tiles) and _can_see_player()
 	if stats.is_ranged:
 		if visible:
 			_ranged_behavior(to_player, distance)
@@ -166,7 +183,7 @@ func _melee_update(to_player: Vector2, distance: float, visible: bool) -> void:
 		MeleeState.CHASE:
 			if visible and not is_frozen():
 				_facing = to_player.normalized()
-				velocity = _steer_toward(to_player) * stats.move_speed
+				velocity = _steer_toward(to_player) * applied_move_speed
 				if distance <= GameState.tiles(stats.lunge_range_tiles) and _state_timer <= 0.0:
 					_enter_windup(to_player)
 		MeleeState.WINDUP:
@@ -179,7 +196,7 @@ func _melee_update(to_player: Vector2, distance: float, visible: bool) -> void:
 				_lunge_contact()
 				if _state_timer <= 0.0:
 					_melee_state = MeleeState.RECOVER
-					_state_timer = stats.lunge_recover
+					_state_timer = applied_lunge_recover
 					_body_visual.scale = Vector2.ONE
 		MeleeState.RECOVER:
 			if _state_timer <= 0.0:
@@ -252,14 +269,14 @@ func _ranged_behavior(to_player: Vector2, distance: float) -> void:
 	var band := GameState.tiles(0.75)
 	if not is_frozen():
 		if distance > preferred + band:
-			velocity = to_player.normalized() * stats.move_speed  # approach
+			velocity = to_player.normalized() * applied_move_speed  # approach
 		elif distance < preferred - band:
-			velocity = -to_player.normalized() * stats.move_speed  # back off
+			velocity = -to_player.normalized() * applied_move_speed  # back off
 		# otherwise hold position and shoot
 		_facing = to_player.normalized()
 	if _shoot_timer <= 0.0 and not is_frozen():
 		_shoot(to_player)
-		_shoot_timer = stats.shoot_cooldown
+		_shoot_timer = applied_shoot_cooldown
 
 
 func _shoot(to_player: Vector2) -> void:

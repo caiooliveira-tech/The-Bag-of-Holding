@@ -24,6 +24,16 @@ reasoning/constraint is visible without having to diff the engine config.
 - **Docs format:** all documentation lives as Markdown (.md) in the repo — no .docx. Word drafts were converted to .md on 2026-07-25.
 - **Controller/gamepad support:** yes — the input map ships keyboard + gamepad bindings for every action (left stick, Cross/dash, Square/attack, Circle/special).
 
+## Decided 2026-07-27
+
+- **Difficulty levels (Spec 018):** three levels — Apprentice / Wizard / Archmage —
+  selected after New Game. Wizard = the pre-difficulty balance exactly (all
+  multipliers 1.0); `GameState.difficulty` defaults to it. Difficulty scales enemy
+  pressure (speed / cooldowns / detection) and player durability (max health /
+  post-hit i-frames) only. **Item countdown timers never scale with difficulty** —
+  the countdown puzzle is the game's identity and timer mastery must transfer
+  across levels.
+
 ## Pending Decisions
 
 Not yet decided — flag before assuming an answer in a spec:
