@@ -1,11 +1,18 @@
-[gd_resource type="Resource" script_class="MagicItemResource" load_steps=3 format=3]
+[gd_resource type="Resource" script_class="MagicItemResource" load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://systems/magic_items/magic_item_resource.gd" id="1"]
-[ext_resource type="Texture2D" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="2"]
+[ext_resource type="Script" path="res://systems/magic_items/effects/area_damage_effect.gd" id="2"]
+[ext_resource type="Texture2D" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="3"]
 
 [sub_resource type="AtlasTexture" id="troy_icon"]
-atlas = ExtResource("2")
+atlas = ExtResource("3")
 region = Rect2(192, 96, 32, 32)
+
+[sub_resource type="Resource" id="troy_blast"]
+script = ExtResource("2")
+damage_tier = 2
+radius_tiles = 1.0
+linger_seconds = 0.3
 
 [resource]
 script = ExtResource("1")
@@ -14,4 +21,5 @@ display_name = "Troy the Wooden Horse"
 graybox_color = Color(0.8, 0.6, 0.3, 1)
 appearance = SubResource("troy_icon")
 activation_time_seconds = 4.0
+effect = SubResource("troy_blast")
 charge_on_throw = true

@@ -22,16 +22,17 @@ destroys itself when its countdown ends, like every other bomb.
 - Extends MagicItemResource/MagicItem. Same countdown/blink/held behaviour as
   other items. `activation_time_seconds = 4`.
 - New resource flag `charge_on_throw = true`. When set, `throw(direction)`
-  starts an L-charge instead of the normal 2-tile fly:
-  - move at `CHARGE_SPEED` in the throw direction;
-  - on hitting a wall (scenario limit), turn 90° toward open space **once**;
-  - on the second wall, stop (state = LANDED) and wait out the countdown.
+  starts a tile-based knight's-L charge instead of the normal 2-tile fly:
+  - legs alternate **2 tiles forward** (throw direction) then **1 tile to the
+    side** (a repeating knight staircase), at `CHARGE_SPEED`;
+  - it **explodes on the first wall** (`_trigger` runs its area blast) — the
+    countdown (4 s) is only a safety net.
 - Contact damage: while charging, each character within contact range takes 1
   hit, once per character (a per-charge hit set). Troy is not in the "enemies"
   group, so it bypasses the player's i-frames — correct, it's the player's own
-  item.
-- Countdown end destroys Troy (its `effect` is null — no area blast; the danger
-  is the contact charge). `_trigger` must guard a null effect.
+  item. Launch grace: the thrower isn't hit within 1.5 tiles of the spawn.
+- On its wall explosion Troy runs a medium AreaDamageEffect (1-tile radius,
+  0.3 s linger) — so "explode" reads as a real blast with the G1/G4 juice.
 - Appearance: AtlasTexture at sheet region (192, 96, 32, 32).
 
 ## Architecture

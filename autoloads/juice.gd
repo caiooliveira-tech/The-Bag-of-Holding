@@ -7,6 +7,8 @@ extends Node
 ## Overlapping calls extend correctly: only the most recent restore wins,
 ## so a later hit re-slows and re-schedules instead of snapping back early.
 var _token: int = 0
+## Automated tests turn this off so Engine.time_scale never skews their timers.
+var hitstop_enabled: bool = true
 
 
 func _ready() -> void:
@@ -32,6 +34,8 @@ func _on_player_damaged(_amount: int, _source: Node) -> void:
 
 ## `scale` 0..1 of normal speed; `duration` is REAL seconds (ignores the slow).
 func hitstop(duration: float, scale: float = 0.05) -> void:
+	if not hitstop_enabled:
+		return
 	_token += 1
 	var my_token := _token
 	Engine.time_scale = scale

@@ -18,6 +18,9 @@ var _failures: int = 0
 
 
 func _ready() -> void:
+	# Hitstop scales Engine.time_scale; disable it so it can't skew the test's
+	# own wait timers (a slowed clock would make _wait() take real minutes).
+	Juice.hitstop_enabled = false
 	_room = ROOM_SCENE.instantiate() as ROOM_SCRIPT
 	add_child(_room)
 	_run()
@@ -132,44 +135,59 @@ func _run() -> void:
 	_check(player.health == hp0 - 2, "own damage ignores i-frames (health %d)" % player.health)
 
 	# ---- Section 5: Left Hand of Ursula knockback (Spec 011) ----
+	# Clear leftover enemies from earlier sections (they'd chase/attack the
+	# player and pollute the shove check) and heal so nothing kills mid-test.
+	await _reset_arena(player)
 	bag.pool = _pool_with(LEFT_HAND)
 	player.global_position = Vector2(320, 180)
 	var shoved := ENEMY_SCENE.instantiate() as Enemy
 	get_tree().current_scene.add_child(shoved)
 	shoved.freeze(30.0)  # no chase; knockback still applies while frozen
-	# Sits just right of where the item lands (2 tiles right of center).
-	shoved.global_position = Vector2(400, 180)
+	# The item spawns at the bag height (~y-26) and flies 2 tiles right, so it
+	# lands near (384, 154); sit the enemy just past that for a clean shove.
+	shoved.global_position = Vector2(405, 154)
 	await _tap("move_right")
 	await _tap("attack")  # draw
-	await _tap("attack")  # throw right → lands ~384,180
+	await _tap("attack")  # throw right
 	var shoved_x0 := shoved.global_position.x
 	await _wait(3.3)  # Left Hand activation = 3 s
-	await _wait(0.2)
+	await _wait(0.3)
 	_check(shoved.global_position.x > shoved_x0 + 8.0,
 			"left hand shoved enemy outward (%.0f → %.0f)" % [shoved_x0, shoved.global_position.x])
 
-	# ---- Section 6: Troy the Wooden Horse L-charge (Spec 012) ----
+	# ---- Section 6: Troy the Wooden Horse knight's-L charge (Spec 012) ----
+	await _reset_arena(player)
 	bag.pool = _pool_with(TROY)
-	player.global_position = Vector2(320, 180)
+	player.global_position = Vector2(120, 180)  # launch rightward from the left
 	var trampled := ENEMY_SCENE.instantiate() as Enemy
 	get_tree().current_scene.add_child(trampled)
 	trampled.freeze(30.0)
-	trampled.global_position = Vector2(500, 180)  # in the rightward charge path
+	trampled.global_position = Vector2(180, 154)  # in the first forward leg's path
 	var trampled_hp := trampled.hits_remaining
 	await _tap("move_right")
 	await _tap("attack")  # draw Troy
-	await _tap("attack")  # throw → charges right
-	var troy := get_tree().get_first_node_in_group("magic_items") as MagicItem
-	await _wait(0.7)
+	await _tap("attack")  # throw → charges in a tile-based L, explodes at 1st wall
+	await _wait(0.5)
 	_check(trampled.hits_remaining < trampled_hp, "troy damaged an enemy in its charge path")
-	_check(troy != null and troy.global_position.distance_to(Vector2(320, 180)) > 100.0,
-			"troy charged well past a normal 2-tile throw")
+	await _wait(2.5)
+	_check(get_tree().get_nodes_in_group("magic_items").is_empty(),
+			"troy exploded (despawned) on reaching a wall")
 
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")
 	else:
 		print("SMOKE FAIL: %d check(s) failed" % _failures)
 	get_tree().quit(1 if _failures > 0 else 0)
+
+
+## Free every enemy and top the player up, so leftover units from earlier
+## sections can't chase/attack and skew (or reload) a later section.
+func _reset_arena(player: Player) -> void:
+	for node in get_tree().get_nodes_in_group("enemies"):
+		node.queue_free()
+	await get_tree().process_frame
+	await get_tree().physics_frame
+	player.health = player.stats.max_health
 
 
 func _pool_with(item_data: MagicItemResource) -> ItemPoolResource:

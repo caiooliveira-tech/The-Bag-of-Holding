@@ -20,11 +20,13 @@ const ARC_HEIGHT_PX: float = 22.0
 const KICK_SPIN_TURNS: float = 2.0
 const MARKER_PADDING_PX: float = 12.0
 const LANDING_MARKER: GDScript = preload("res://systems/juice/landing_marker.gd")
-# Troy the Wooden Horse (Spec 012): L-charge on throw.
-const CHARGE_SPEED: float = 340.0
+# Troy the Wooden Horse (Spec 012): tile-based knight's-L charge on throw,
+# explodes on the first wall. Legs are 2 tiles forward + 1 tile to the side.
+const CHARGE_SPEED: float = 300.0
 const CHARGE_CONTACT_PX: float = 18.0
 const CHARGE_DAMAGE: int = 1
-const CHARGE_TURN_PROBE_PX: float = 20.0
+const CHARGE_FORWARD_TILES: float = 2.0
+const CHARGE_SIDE_TILES: float = 1.0
 
 var data: MagicItemResource
 var state: State = State.HELD
@@ -36,10 +38,13 @@ var _triggered: bool = false
 var _visual: CanvasItem
 var _marker: Node2D
 var _charging: bool = false
-var _charge_dir: Vector2 = Vector2.ZERO
-var _charge_turns_left: int = 1
 var _charge_hit: Array[Node] = []
 var _charge_start: Vector2 = Vector2.ZERO
+var _charge_fwd: Vector2 = Vector2.ZERO
+var _charge_side: Vector2 = Vector2.ZERO
+var _seg_dir: Vector2 = Vector2.ZERO
+var _seg_remaining: float = 0.0
+var _seg_forward: bool = true
 
 
 func setup(item_data: MagicItemResource) -> void:
@@ -91,8 +96,11 @@ func throw(direction: Vector2) -> void:
 	reparent(get_tree().current_scene)
 	if data.charge_on_throw:
 		_charging = true
-		_charge_dir = direction.normalized()
 		_charge_start = global_position
+		_charge_fwd = direction.normalized()
+		_charge_side = _charge_fwd.orthogonal()
+		_seg_forward = true
+		_begin_charge_segment()
 	else:
 		_fly(direction, GameState.tiles(2.0), 0.0)
 
@@ -135,34 +143,32 @@ func _apply_flight(t: float, start: Vector2, target: Vector2, spin_turns: float)
 		_visual.rotation = t * TAU * spin_turns
 
 
-## Troy's L-charge (Spec 012): move in the throw direction, turn 90° toward
-## open space at the first wall, stop at the second. Damages on contact; the
-## countdown still destroys it on time (handled in _process/_trigger).
-func _charge_step(delta: float) -> void:
-	var step := CHARGE_SPEED * delta
-	var space := get_world_2d().direct_space_state
-	var ahead := global_position + _charge_dir * (step + GRAYBOX_RADIUS_PX)
-	var query := PhysicsRayQueryParameters2D.create(global_position, ahead, 1)
-	if space.intersect_ray(query).is_empty():
-		global_position += _charge_dir * step
-	elif _charge_turns_left > 0:
-		_charge_turns_left -= 1
-		_charge_dir = _perpendicular_open(_charge_dir)
+## Troy's knight's-L charge (Spec 012): move in tile-based legs — 2 tiles
+## forward, 1 tile to the side, repeating — and explode (`_trigger`) on the
+## first wall. Damages on contact along the way; the countdown is a safety net.
+func _begin_charge_segment() -> void:
+	if _seg_forward:
+		_seg_dir = _charge_fwd
+		_seg_remaining = GameState.tiles(CHARGE_FORWARD_TILES)
 	else:
-		_charging = false
-		state = State.LANDED
-	_charge_contact_damage()
+		_seg_dir = _charge_side
+		_seg_remaining = GameState.tiles(CHARGE_SIDE_TILES)
 
 
-func _perpendicular_open(dir: Vector2) -> Vector2:
+func _charge_step(delta: float) -> void:
+	var step := minf(CHARGE_SPEED * delta, _seg_remaining)
 	var space := get_world_2d().direct_space_state
-	var options: Array[Vector2] = [dir.orthogonal(), -dir.orthogonal()]
-	for option in options:
-		var probe := global_position + option * CHARGE_TURN_PROBE_PX
-		var query := PhysicsRayQueryParameters2D.create(global_position, probe, 1)
-		if space.intersect_ray(query).is_empty():
-			return option
-	return dir.orthogonal()
+	var ahead := global_position + _seg_dir * (step + GRAYBOX_RADIUS_PX)
+	var query := PhysicsRayQueryParameters2D.create(global_position, ahead, 1)
+	if not space.intersect_ray(query).is_empty():
+		_trigger()  # first wall → explode
+		return
+	global_position += _seg_dir * step
+	_seg_remaining -= step
+	if _seg_remaining <= 0.01:
+		_seg_forward = not _seg_forward
+		_begin_charge_segment()
+	_charge_contact_damage()
 
 
 func _charge_contact_damage() -> void:
