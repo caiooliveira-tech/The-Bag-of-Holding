@@ -1,6 +1,11 @@
 # Spec 018 - Difficulty Levels (Phase 6.5)
 
-**Status:** Draft (2026-07-27)
+**Status:** Implemented (2026-07-27, branch `feature/difficulty-levels`, PR #4)
+
+Implementation notes vs. the draft: hotkeys on the select screen are [1]/[2]/[3]
+(letters would collide with W/S navigation); the HUD syncs the heart count on the
+first refresh (player group lookup is lazy), not literally in `_ready()`; flavor
+text is placeholder pending Design (open question below).
 
 ## Goal
 

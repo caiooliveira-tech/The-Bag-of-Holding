@@ -15,6 +15,13 @@ const PROJECTILE: PackedScene = preload("res://entities/projectiles/enemy_projec
 
 var hits_remaining: int = 0
 
+## Difficulty-scaled stats (Spec 018), computed once at _ready() so the shared
+## .tres resources are never mutated (they're cached across instances).
+var applied_move_speed: float = 0.0
+var applied_attack_cooldown: float = 0.0
+var applied_shoot_cooldown: float = 0.0
+var applied_detection_tiles: float = 0.0
+
 ## Knockback decay (Spec 011): shared feel with the player's hit-knockback.
 const KNOCKBACK_DECAY: float = 900.0
 
@@ -41,7 +48,17 @@ var _freeze_timer: float = 0.0
 func _ready() -> void:
 	add_to_group("enemies")
 	hits_remaining = stats.max_hits
+	_apply_difficulty()
 	_body_visual.modulate = _damage_tint()
+
+
+## Wizard's multipliers are all 1.0, so the default difficulty is a no-op.
+func _apply_difficulty() -> void:
+	var difficulty := GameState.difficulty
+	applied_move_speed = stats.move_speed * difficulty.enemy_speed_mult
+	applied_attack_cooldown = stats.attack_cooldown * difficulty.enemy_cooldown_mult
+	applied_shoot_cooldown = stats.shoot_cooldown * difficulty.enemy_cooldown_mult
+	applied_detection_tiles = stats.detection_radius_tiles * difficulty.enemy_detection_mult
 
 
 func _physics_process(delta: float) -> void:
@@ -67,7 +84,7 @@ func _physics_process(delta: float) -> void:
 	var to_player := _player.global_position - global_position
 	var distance := to_player.length()
 	# Vision is blocked by walls (Phase 6A): no line of sight, no chase/attack.
-	if distance <= GameState.tiles(stats.detection_radius_tiles) and _can_see_player():
+	if distance <= GameState.tiles(applied_detection_tiles) and _can_see_player():
 		if stats.is_ranged:
 			_ranged_behavior(to_player, distance)
 		else:
@@ -152,7 +169,7 @@ func _spawn_burst() -> void:
 func _melee_behavior(to_player: Vector2, distance: float) -> void:
 	if distance > GameState.tiles(stats.attack_range_tiles):
 		if not is_frozen():
-			velocity = to_player.normalized() * stats.move_speed
+			velocity = to_player.normalized() * applied_move_speed
 	elif _attack_timer <= 0.0:
 		_attack()
 
@@ -163,14 +180,14 @@ func _ranged_behavior(to_player: Vector2, distance: float) -> void:
 	var band := GameState.tiles(0.75)
 	if not is_frozen():
 		if distance > preferred + band:
-			velocity = to_player.normalized() * stats.move_speed  # approach
+			velocity = to_player.normalized() * applied_move_speed  # approach
 		elif distance < preferred - band:
-			velocity = -to_player.normalized() * stats.move_speed  # back off
+			velocity = -to_player.normalized() * applied_move_speed  # back off
 		# otherwise hold position and shoot
 		_facing = to_player.normalized()
 	if _shoot_timer <= 0.0 and not is_frozen():
 		_shoot(to_player)
-		_shoot_timer = stats.shoot_cooldown
+		_shoot_timer = applied_shoot_cooldown
 
 
 func _shoot(to_player: Vector2) -> void:
@@ -182,7 +199,7 @@ func _shoot(to_player: Vector2) -> void:
 
 
 func _attack() -> void:
-	_attack_timer = stats.attack_cooldown
+	_attack_timer = applied_attack_cooldown
 	_facing = (_player.global_position - global_position).normalized()
 	_player.take_damage(stats.damage, self)
 	# Telegraph: quick scale punch toward readability without extra sprites.

@@ -1,6 +1,7 @@
-## Main menu (new scene). Keyboard-driven: W/S or ↑/↓ to move, Enter/Space to
-## select, or press an item's hotkey letter directly. Built in code so the
-## layout stays in one place and the wooden button art drives the look.
+## Difficulty select (Spec 018), shown after New Game. Same code-driven,
+## wooden-button pattern as the main menu: W/S or arrows to move, Enter/Space
+## to select, or a level's number directly; ESC returns to the main menu.
+## Wizard (the baseline = pre-difficulty balance) starts selected.
 extends Control
 
 const FONT_BOLD: FontFile = preload("res://assets/fonts/Dellas-Bold.otf")
@@ -8,39 +9,37 @@ const FONT_REG: FontFile = preload("res://assets/fonts/Dellas-Regular.otf")
 const BTN_ACTIVE: Texture2D = preload("res://assets/ui/btn_active.png")
 const BTN_INACTIVE: Texture2D = preload("res://assets/ui/btn_inactive.png")
 
-const DIFFICULTY_SELECT := "res://ui/menu/difficulty_select.tscn"
-const OPTIONS := "res://ui/menu/options_menu.tscn"
-const CREDITS := "res://ui/menu/credits.tscn"
+const ROOM_01 := "res://rooms/room_01.tscn"
+const MAIN_MENU := "res://ui/menu/main_menu.tscn"
 
 const BG := Color(0.09, 0.08, 0.11)
 const TEXT := Color(0.93, 0.92, 0.95)
 const MUTED := Color(0.62, 0.6, 0.66)
 
-# Load Game is hidden until a save system exists (post-MVP). The description
-# beside the buttons adapts to the selection, in the intro's tone of voice.
+# Flavor text: placeholder in the intro's tone of voice — Design to bless
+# (Spec 018 open question). Every desc restates that countdowns never change.
 const ITEMS: Array[Dictionary] = [
 	{
-		"label": "NEW GAME", "hotkey": "N", "keycode": KEY_N,
-		"desc": "Outsmart your enemies with the tools you have inside your bottomless bag.\n\n" +
-			"Unlock the doors to continue heading to the top and rescue your master.",
+		"label": "APPRENTICE", "hotkey": "1", "keycode": KEY_1,
+		"resource": preload("res://systems/difficulty/apprentice.tres"),
+		"desc": "For apprentices still learning which end of the bag opens.\n\n" +
+			"More hearts, gentler enemies. The countdowns tick just the same.",
 	},
 	{
-		"label": "OPTIONS", "hotkey": "O", "keycode": KEY_O,
-		"desc": "Set the screen to your liking and study the controls.\n\n" +
-			"A clumsy apprentice needs every advantage he can dig out of the bag.",
+		"label": "WIZARD", "hotkey": "2", "keycode": KEY_2,
+		"resource": preload("res://systems/difficulty/wizard.tres"),
+		"desc": "The tower exactly as Violet arranged it.\n\n" +
+			"Five hearts, honest enemies. The intended climb.",
 	},
 	{
-		"label": "CREDITS", "hotkey": "C", "keycode": KEY_C,
-		"desc": "Meet the clumsy hands and warm hearts that stitched this bottomless bag together.",
-	},
-	{
-		"label": "EXIT GAME", "hotkey": "E", "keycode": KEY_E,
-		"desc": "Close the bag and step away.\n\n" +
-			"The tower — and your master — will wait for your return.",
+		"label": "ARCHMAGE", "hotkey": "3", "keycode": KEY_3,
+		"resource": preload("res://systems/difficulty/archmage.tres"),
+		"desc": "For masters who juggle lit bombs for fun.\n\n" +
+			"Fewer hearts; faster, sharper enemies. Same countdowns — no excuses.",
 	},
 ]
 
-var _selected: int = 0
+var _selected: int = 1  # Wizard: the baseline is the default
 var _rows: Array[TextureRect] = []
 var _desc: Label
 
@@ -48,7 +47,6 @@ var _desc: Label
 func _ready() -> void:
 	_build()
 	_refresh()
-	AudioManager.play_music(&"menu")
 
 
 func _build() -> void:
@@ -57,7 +55,7 @@ func _build() -> void:
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	add_child(bg)
 
-	var title := _label("THE BAG OF NO BOTTOM", FONT_BOLD, 30, TEXT)
+	var title := _label("CHOOSE YOUR CHALLENGE", FONT_BOLD, 30, TEXT)
 	title.position = Vector2(80, 52)
 	add_child(title)
 
@@ -86,7 +84,7 @@ func _build() -> void:
 	var nav := _label("[W/S] / [UP/DOWN] NAVIGATE MENU", FONT_REG, 12, MUTED)
 	nav.position = Vector2(80, 688)
 	add_child(nav)
-	var sel := _label("[SPACE/ENTER] SELECT OPTION", FONT_REG, 12, MUTED)
+	var sel := _label("[SPACE/ENTER] START  [ESC] BACK", FONT_REG, 12, MUTED)
 	sel.position = Vector2(980, 688)
 	add_child(sel)
 
@@ -110,6 +108,9 @@ func _unhandled_input(event: InputEvent) -> void:
 				_move(-1)
 			KEY_ENTER, KEY_SPACE, KEY_KP_ENTER:
 				_activate(_selected)
+			KEY_ESCAPE:
+				AudioManager.play_sfx(&"button_clicked")
+				get_tree().change_scene_to_file(MAIN_MENU)
 			_:
 				for i in ITEMS.size():
 					if key == ITEMS[i]["keycode"]:
@@ -127,19 +128,9 @@ func _move(delta: int) -> void:
 
 func _activate(index: int) -> void:
 	AudioManager.play_sfx(&"button_clicked")
-	match ITEMS[index]["label"]:
-		"NEW GAME":
-			# Difficulty select owns run setup (Spec 018): it sets the
-			# difficulty, resets the run, and starts room_01.
-			get_tree().change_scene_to_file(DIFFICULTY_SELECT)
-		"LOAD GAME":
-			pass  # no save system yet (post-MVP)
-		"OPTIONS":
-			get_tree().change_scene_to_file(OPTIONS)
-		"CREDITS":
-			get_tree().change_scene_to_file(CREDITS)
-		"EXIT GAME":
-			get_tree().quit()
+	GameState.difficulty = ITEMS[index]["resource"]
+	GameState.reset_run()
+	get_tree().change_scene_to_file(ROOM_01)
 
 
 func _label(text: String, font: FontFile, size: int, color: Color) -> Label:

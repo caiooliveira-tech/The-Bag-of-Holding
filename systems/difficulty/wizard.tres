@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="DifficultyResource" load_steps=2 format=3]
+
+[ext_resource type="Script" uid="uid://iy3m36ubbe7t" path="res://systems/difficulty/difficulty_resource.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+display_name = "Wizard"
+player_max_health = 5
+hit_iframe_duration = 0.5
+enemy_speed_mult = 1.0
+enemy_cooldown_mult = 1.0
+enemy_detection_mult = 1.0

@@ -6,7 +6,9 @@ Phases 0–4 complete and merged to main. **Phase 4.5 (HUD trim, Spec 009) in pr
 
 ## Current Spec
 
-Spec 018 — Difficulty Levels (Phase 6.5), Draft on branch `feature/difficulty-levels`. Three levels (Apprentice/Wizard/Archmage) scaling enemy pressure + player durability; item countdowns never scale (design stance). Spec written 2026-07-27; awaiting team review before implementation. Phase 6 C–E (smart chaser, RunManager, door unlocks) remain queued.
+Spec 018 — Difficulty Levels (Phase 6.5) — **implemented** on branch `feature/difficulty-levels` (PR #4 draft), 2026-07-27. Awaiting team review/playtest. Phase 6 C–E (smart chaser, RunManager, door unlocks) remain queued.
+
+- **Implementation:** `systems/difficulty/` (DifficultyResource + apprentice/wizard/archmage .tres); `GameState.difficulty` (defaults Wizard = today's balance; survives reset_run). Enemies compute `applied_*` stats at spawn (speed/cooldowns/detection; base .tres never mutated); player takes max health + G3 i-frame duration from the difficulty (`Player.max_health()`); HUD heart bar syncs its count to max health (clones the template heart — Apprentice shows 7). New `ui/menu/difficulty_select` (wooden-button style, hotkeys 1/2/3, Wizard pre-selected, ESC backs out); main menu NEW GAME routes there. Smoke +7 checks (zero-drift, multipliers, countdown-invariant, 7-heart spawn), **41/41 PASS**. Flavor text = placeholder pending Design.
 
 ## Completed
 
@@ -178,6 +180,7 @@ None — all resolved as of 2026-07-25.
 
 ## Technical Debt
 
+- Smoke test / headless boot report a few "ObjectDB instances leaked at exit" warnings — **pre-existing** (verified present on main without the Spec 018 changes, 2026-07-27); harmless force-quit artifacts, but worth a `--verbose` look before Phase 5 ship.
 - Player death just reloads the scene (fine for jam; revisit for a real game-over in Phase 4/5).
 - Kick targets enemies via group iteration (O(n)); fine for jam room sizes.
 - ~~Enemy visuals mixed Polygon2D `color` and `modulate`~~ — resolved 2026-07-25: all feedback (flash, damage tint, freeze) is `modulate`-based and `Body` is typed as Node2D, so swapping graybox for Sprite2D/AnimatedSprite2D in Phase 4 requires zero code changes (keep the node named "Body").

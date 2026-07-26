@@ -55,6 +55,7 @@ func _refresh_hearts() -> void:
 		_player = get_tree().get_first_node_in_group("player") as Player
 	if _player == null:
 		return
+	_sync_heart_count(_player.max_health())
 	if _heart_tweens.is_empty():
 		_heart_tweens.resize(_hearts.size())
 	for i in _hearts.size():
@@ -78,6 +79,31 @@ func _refresh_hearts() -> void:
 			_animate_heart(i, tex, target)
 		else:
 			heart.color = HEART_FULL if full else HEART_EMPTY
+
+
+## Heart count follows the difficulty's max health (Spec 018): clone the
+## scene's first heart as a template (art + Tex child carry over) or trim
+## extras. The bar stays presentation-only — it just mirrors player state.
+func _sync_heart_count(count: int) -> void:
+	if _hearts.size() == count:
+		return
+	var box := _hearts[0].get_parent()
+	while box.get_child_count() < count:
+		box.add_child((_hearts[0] as Node).duplicate())
+	while box.get_child_count() > count:
+		var last := box.get_child(box.get_child_count() - 1)
+		box.remove_child(last)
+		last.queue_free()
+	_hearts = box.get_children()
+	for tween in _heart_tweens:
+		if tween != null and tween.is_valid():
+			tween.kill()
+	_heart_tweens.clear()
+	_heart_tweens.resize(count)
+	for heart in _hearts:
+		var tex := heart.get_node("Tex") as TextureRect
+		tex.texture = heart_filled_texture
+		tex.visible = heart_filled_texture != null
 
 
 ## Tween a heart to its raised (full) or centered (empty) offset, so losing a

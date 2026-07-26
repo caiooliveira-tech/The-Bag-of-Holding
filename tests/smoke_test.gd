@@ -15,6 +15,7 @@ const DOOR_SCRIPT: GDScript = preload("res://rooms/door.gd")
 const AREA_DAMAGE: GDScript = preload("res://systems/magic_items/effects/area_damage_effect.gd")
 const RANGED_SCENE: PackedScene = preload("res://entities/enemies/enemy2.tscn")
 const PROJECTILE_SCENE: PackedScene = preload("res://entities/projectiles/enemy_projectile.tscn")
+const PLAYER_SCENE: PackedScene = preload("res://entities/player/player.tscn")
 
 var _room: ROOM_SCRIPT
 var _failures: int = 0
@@ -271,6 +272,45 @@ func _run() -> void:
 	for i in 44:
 		await get_tree().physics_frame
 	_check(player.health == wall_hp, "projectile stopped by a wall before the player")
+
+	# ---- Section 10: difficulty levels (Spec 018) ----
+	await _reset_arena(player)
+	_check(GameState.difficulty != null and GameState.difficulty.display_name == "Wizard",
+			"default difficulty is Wizard (baseline)")
+	# Spawn far outside detection so the probes stay inert during the checks.
+	var baseline := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(baseline)
+	baseline.global_position = Vector2(2000, 2000)
+	_check(is_equal_approx(baseline.applied_move_speed, baseline.stats.move_speed)
+			and is_equal_approx(baseline.applied_attack_cooldown, baseline.stats.attack_cooldown),
+			"Wizard-applied enemy stats equal base stats (zero drift)")
+	var orb_countdown := FIRE_ORB.activation_time_seconds
+	GameState.difficulty = preload("res://systems/difficulty/archmage.tres")
+	var hard := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(hard)
+	hard.global_position = Vector2(2000, 2000)
+	_check(is_equal_approx(hard.applied_move_speed, hard.stats.move_speed * 1.15),
+			"Archmage enemy speed scaled x1.15")
+	_check(is_equal_approx(hard.applied_detection_tiles, hard.stats.detection_radius_tiles * 1.2),
+			"Archmage detection scaled x1.2")
+	_check(is_equal_approx(hard.applied_attack_cooldown, hard.stats.attack_cooldown * 0.8),
+			"Archmage attack cooldown scaled x0.8")
+	_check(is_equal_approx(FIRE_ORB.activation_time_seconds, orb_countdown),
+			"item countdown unchanged by difficulty (design stance)")
+	GameState.difficulty = preload("res://systems/difficulty/apprentice.tres")
+	GameState.player_health = -1
+	var fresh := PLAYER_SCENE.instantiate() as Player
+	get_tree().current_scene.add_child(fresh)
+	fresh.global_position = Vector2(2000, 1800)
+	_check(fresh.health == 7 and fresh.max_health() == 7,
+			"Apprentice player spawns with 7 health")
+	fresh.queue_free()
+	baseline.queue_free()
+	hard.queue_free()
+	# Let the frees process before quitting, or they report as leaked at exit.
+	await get_tree().process_frame
+	# Leave the session on the baseline so nothing later inherits a test level.
+	GameState.difficulty = preload("res://systems/difficulty/wizard.tres")
 
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")
