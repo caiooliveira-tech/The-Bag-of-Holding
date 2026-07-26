@@ -272,6 +272,35 @@ func _run() -> void:
 		await get_tree().physics_frame
 	_check(player.health == wall_hp, "projectile stopped by a wall before the player")
 
+	# ---- Section 10: smart chaser (Spec 015) ----
+	await _reset_arena(player)
+	wall_tiles.clear()
+	# Separation: two chasers starting on top of each other fan apart.
+	player.global_position = Vector2(320, 300)
+	var c1 := ENEMY_SCENE.instantiate() as Enemy
+	var c2 := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(c1)
+	get_tree().current_scene.add_child(c2)
+	c1.set_active(true)
+	c2.set_active(true)
+	c1.global_position = Vector2(320, 110)
+	c2.global_position = Vector2(324, 110)
+	for i in 30:
+		await get_tree().physics_frame
+	_check(c1.global_position.distance_to(c2.global_position) > 18.0,
+			"two chasers separate instead of clumping")
+
+	# Lunge: a chaser in range winds up then lunges and deals a hit.
+	await _reset_arena(player)
+	player.global_position = Vector2(320, 300)
+	var lunger := ENEMY_SCENE.instantiate() as Enemy
+	get_tree().current_scene.add_child(lunger)
+	lunger.set_active(true)
+	lunger.global_position = Vector2(320, 244)  # just inside lunge range
+	var lunge_hp := player.health
+	await _wait(1.3)  # windup + lunge should land one hit
+	_check(player.health < lunge_hp, "chaser's telegraphed lunge damages the player")
+
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")
 	else:

@@ -18,15 +18,22 @@ var hits_remaining: int = 0
 ## Knockback decay (Spec 011): shared feel with the player's hit-knockback.
 const KNOCKBACK_DECAY: float = 900.0
 
+## Melee attack states (Spec 015): a committed, telegraphed lunge.
+enum MeleeState { CHASE, WINDUP, LUNGE, RECOVER }
+
 var _active: bool = true
 var _dying: bool = false
 var _bob_time: float = 0.0
 var _knockback: Vector2 = Vector2.ZERO
 var _facing: Vector2 = Vector2.DOWN
 var _player: Player
-var _attack_timer: float = 0.0
 var _shoot_timer: float = 0.0
 var _freeze_timer: float = 0.0
+var _melee_state: MeleeState = MeleeState.CHASE
+var _state_timer: float = 0.0
+var _lunge_dir: Vector2 = Vector2.ZERO
+var _lunged_hit: bool = false
+var _strafe_sign: float = 1.0
 
 @onready var _collision: CollisionShape2D = $CollisionShape2D
 
@@ -42,12 +49,13 @@ func _ready() -> void:
 	add_to_group("enemies")
 	hits_remaining = stats.max_hits
 	_body_visual.modulate = _damage_tint()
+	_strafe_sign = 1.0 if randf() < 0.5 else -1.0  # per-enemy flank side
 
 
 func _physics_process(delta: float) -> void:
 	if _dying:
 		return
-	_attack_timer = maxf(_attack_timer - delta, 0.0)
+	_state_timer = maxf(_state_timer - delta, 0.0)
 	_shoot_timer = maxf(_shoot_timer - delta, 0.0)
 	var was_frozen := is_frozen()
 	_freeze_timer = maxf(_freeze_timer - delta, 0.0)
@@ -66,12 +74,14 @@ func _physics_process(delta: float) -> void:
 	velocity = Vector2.ZERO
 	var to_player := _player.global_position - global_position
 	var distance := to_player.length()
-	# Vision is blocked by walls (Phase 6A): no line of sight, no chase/attack.
-	if distance <= GameState.tiles(stats.detection_radius_tiles) and _can_see_player():
-		if stats.is_ranged:
+	# Vision is blocked by walls (Phase 6A): no line of sight, no chase.
+	var visible := distance <= GameState.tiles(stats.detection_radius_tiles) and _can_see_player()
+	if stats.is_ranged:
+		if visible:
 			_ranged_behavior(to_player, distance)
-		else:
-			_melee_behavior(to_player, distance)
+	else:
+		# A committed lunge keeps running even if line of sight breaks.
+		_melee_update(to_player, distance, visible)
 	if velocity != Vector2.ZERO:
 		_facing = velocity.normalized()
 	# Knockback rides on top of intended movement, then decays (Spec 011).
@@ -148,13 +158,92 @@ func _spawn_burst() -> void:
 	burst.burst(death_particle_color)
 
 
-## Chaser (melee): close in, then hit on cooldown when in range.
-func _melee_behavior(to_player: Vector2, distance: float) -> void:
-	if distance > GameState.tiles(stats.attack_range_tiles):
-		if not is_frozen():
-			velocity = to_player.normalized() * stats.move_speed
-	elif _attack_timer <= 0.0:
-		_attack()
+## Smart chaser (Spec 015): steer in (separation + strafe + wall avoidance),
+## then a telegraphed lunge. WINDUP/LUNGE/RECOVER are committed — they run to
+## completion even if the player breaks line of sight (dodgeable, not cancelable).
+func _melee_update(to_player: Vector2, distance: float, visible: bool) -> void:
+	match _melee_state:
+		MeleeState.CHASE:
+			if visible and not is_frozen():
+				_facing = to_player.normalized()
+				velocity = _steer_toward(to_player) * stats.move_speed
+				if distance <= GameState.tiles(stats.lunge_range_tiles) and _state_timer <= 0.0:
+					_enter_windup(to_player)
+		MeleeState.WINDUP:
+			_facing = _lunge_dir
+			if not is_frozen() and _state_timer <= 0.0:
+				_enter_lunge()
+		MeleeState.LUNGE:
+			if not is_frozen():
+				velocity = _lunge_dir * stats.lunge_speed
+				_lunge_contact()
+				if _state_timer <= 0.0:
+					_melee_state = MeleeState.RECOVER
+					_state_timer = stats.lunge_recover
+					_body_visual.scale = Vector2.ONE
+		MeleeState.RECOVER:
+			if _state_timer <= 0.0:
+				_melee_state = MeleeState.CHASE
+
+
+func _enter_windup(to_player: Vector2) -> void:
+	_melee_state = MeleeState.WINDUP
+	_state_timer = stats.lunge_windup
+	_lunge_dir = to_player.normalized()
+	_body_visual.scale = Vector2(1.3, 0.75)  # crouch — telegraph
+
+
+func _enter_lunge() -> void:
+	_melee_state = MeleeState.LUNGE
+	_state_timer = stats.lunge_duration
+	_lunged_hit = false
+	_body_visual.scale = Vector2(0.8, 1.25)  # stretch into the lunge
+
+
+func _lunge_contact() -> void:
+	if _lunged_hit:
+		return
+	if global_position.distance_to(_player.global_position) <= GameState.tiles(0.8):
+		_lunged_hit = true
+		_player.take_damage(stats.damage, self)
+
+
+## Blend: seek the player + push off neighbours + a little flank + wall dodge.
+func _steer_toward(to_player: Vector2) -> Vector2:
+	var seek := to_player.normalized()
+	var sep := _separation() * stats.separation_weight
+	var strafe := seek.orthogonal() * _strafe_sign * stats.strafe_weight
+	var avoid := _wall_avoidance(seek)
+	return (seek + sep + strafe + avoid).normalized()
+
+
+func _separation() -> Vector2:
+	var push := Vector2.ZERO
+	var radius := GameState.tiles(stats.separation_radius_tiles)
+	for other in get_tree().get_nodes_in_group("enemies"):
+		if other == self:
+			continue
+		var body := other as Node2D
+		if body == null:
+			continue
+		var offset := global_position - body.global_position
+		var dist := offset.length()
+		if dist > 0.1 and dist < radius:
+			push += offset.normalized() * (1.0 - dist / radius)
+	return push
+
+
+## If a wall is right ahead, steer toward whichever side is open.
+func _wall_avoidance(seek: Vector2) -> Vector2:
+	var space := get_world_2d().direct_space_state
+	var reach := GameState.tiles(1.0)
+	var ahead := PhysicsRayQueryParameters2D.create(global_position, global_position + seek * reach, 1)
+	if space.intersect_ray(ahead).is_empty():
+		return Vector2.ZERO
+	var left := seek.rotated(-PI / 2.0)
+	var left_query := PhysicsRayQueryParameters2D.create(global_position, global_position + left * reach, 1)
+	var open_left := space.intersect_ray(left_query).is_empty()
+	return (left if open_left else -left) * 1.3
 
 
 ## Ranged (kiter): hold a preferred distance and fire on cooldown.
@@ -179,16 +268,6 @@ func _shoot(to_player: Vector2) -> void:
 	projectile.global_position = global_position
 	projectile.launch(to_player.normalized())
 	EventBus.enemy_shot.emit()
-
-
-func _attack() -> void:
-	_attack_timer = stats.attack_cooldown
-	_facing = (_player.global_position - global_position).normalized()
-	_player.take_damage(stats.damage, self)
-	# Telegraph: quick scale punch toward readability without extra sprites.
-	_body_visual.scale = Vector2(1.3, 1.3)
-	var tween := create_tween()
-	tween.tween_property(_body_visual, "scale", Vector2.ONE, 0.15)
 
 
 ## Darker/more saturated as the enemy nears its last hit (art-direction.md).

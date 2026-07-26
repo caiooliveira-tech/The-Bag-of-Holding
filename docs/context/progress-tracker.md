@@ -62,6 +62,12 @@ D(RunManager/20 rooms)→E(door item unlock).
   → `ranged_shooter.tres`, `enemy1` stays melee). Firing plays shot.mp3 via
   `EventBus.enemy_shot`. Smoke +2 (ranged shot damages in the open; projectile
   stopped by a wall), 33/33 PASS.
+- **C — Smart chaser (Spec 015, done):** the melee enemy replaced the magnet with
+  steering (separation so they don't clump + a per-enemy strafe/flank + raycast
+  wall-avoidance) and a **telegraphed lunge** state machine (CHASE → WINDUP crouch
+  → committed LUNGE with one contact hit → RECOVER), all parameterized on
+  `EnemyStats`. Ranged archetype unchanged. Smoke +2 (two chasers separate;
+  telegraphed lunge damages), 36/36 PASS.
 
 ## Death screen, pause-key control, web audio, hit-sound trim — 2026-07-26
 
