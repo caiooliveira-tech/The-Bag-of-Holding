@@ -22,6 +22,7 @@ const ENTRIES: Array[Dictionary] = [
 
 
 func _ready() -> void:
+	AudioManager.play_music(&"menu")
 	var bg := ColorRect.new()
 	bg.color = BG
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)

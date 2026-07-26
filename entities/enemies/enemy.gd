@@ -105,6 +105,7 @@ func take_damage(amount: int) -> void:
 		return
 	hits_remaining -= amount
 	damage_taken.emit(amount)
+	EventBus.enemy_damaged.emit(self)
 	if hits_remaining <= 0:
 		_die()
 		return

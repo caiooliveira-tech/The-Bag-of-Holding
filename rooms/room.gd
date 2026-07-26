@@ -20,6 +20,7 @@ var _enemies_alive: int = 0
 
 
 func _ready() -> void:
+	AudioManager.play_music(&"in_game")
 	EventBus.enemy_died.connect(_on_enemy_died)
 	for node in _doors:
 		(node as DOOR_SCRIPT).player_entered.connect(_on_player_entered_door)

@@ -23,6 +23,7 @@ boot_splash/minimum_display_time=2000
 EventBus="*res://autoloads/event_bus.gd"
 GameState="*res://autoloads/game_state.gd"
 Juice="*res://autoloads/juice.gd"
+AudioManager="*res://autoloads/audio_manager.gd"
 
 [display]
 

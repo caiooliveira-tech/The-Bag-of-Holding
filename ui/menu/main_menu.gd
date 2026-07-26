@@ -16,21 +16,39 @@ const BG := Color(0.09, 0.08, 0.11)
 const TEXT := Color(0.93, 0.92, 0.95)
 const MUTED := Color(0.62, 0.6, 0.66)
 
+# Load Game is hidden until a save system exists (post-MVP). The description
+# beside the buttons adapts to the selection, in the intro's tone of voice.
 const ITEMS: Array[Dictionary] = [
-	{"label": "NEW GAME", "hotkey": "N", "keycode": KEY_N},
-	{"label": "LOAD GAME", "hotkey": "L", "keycode": KEY_L},
-	{"label": "OPTIONS", "hotkey": "O", "keycode": KEY_O},
-	{"label": "CREDITS", "hotkey": "C", "keycode": KEY_C},
-	{"label": "EXIT GAME", "hotkey": "E", "keycode": KEY_E},
+	{
+		"label": "NEW GAME", "hotkey": "N", "keycode": KEY_N,
+		"desc": "Outsmart your enemies with the tools you have inside your bottomless bag.\n\n" +
+			"Unlock the doors to continue heading to the top and rescue your master.",
+	},
+	{
+		"label": "OPTIONS", "hotkey": "O", "keycode": KEY_O,
+		"desc": "Set the screen to your liking and study the controls.\n\n" +
+			"A clumsy apprentice needs every advantage he can dig out of the bag.",
+	},
+	{
+		"label": "CREDITS", "hotkey": "C", "keycode": KEY_C,
+		"desc": "Meet the clumsy hands and warm hearts that stitched this bottomless bag together.",
+	},
+	{
+		"label": "EXIT GAME", "hotkey": "E", "keycode": KEY_E,
+		"desc": "Close the bag and step away.\n\n" +
+			"The tower — and your master — will wait for your return.",
+	},
 ]
 
 var _selected: int = 0
 var _rows: Array[TextureRect] = []
+var _desc: Label
 
 
 func _ready() -> void:
 	_build()
 	_refresh()
+	AudioManager.play_music(&"menu")
 
 
 func _build() -> void:
@@ -58,14 +76,12 @@ func _build() -> void:
 		row.add_child(key_label)
 		_rows.append(row)
 
-	var desc := _label(
-		"Outsmart your enemies with the tools you have inside your bottomless bag.\n\n" +
-		"Unlock the doors to continue heading to the top and rescue your master.",
-		FONT_REG, 16, MUTED)
-	desc.position = Vector2(470, 140)
-	desc.custom_minimum_size = Vector2(260, 0)
-	desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	add_child(desc)
+	_desc = _label("", FONT_REG, 16, MUTED)
+	_desc.position = Vector2(470, 140)
+	_desc.custom_minimum_size = Vector2(280, 0)
+	_desc.size.x = 280.0
+	_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	add_child(_desc)
 
 	var nav := _label("[W/S] / [UP/DOWN] NAVIGATE MENU", FONT_REG, 12, MUTED)
 	nav.position = Vector2(80, 688)
@@ -81,6 +97,7 @@ func _refresh() -> void:
 		_rows[i].texture = BTN_ACTIVE if active else BTN_INACTIVE
 		_rows[i].custom_minimum_size.x = 360.0 if active else 320.0
 		_rows[i].size.x = _rows[i].custom_minimum_size.x
+	_desc.text = ITEMS[_selected]["desc"]
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -105,9 +122,11 @@ func _unhandled_input(event: InputEvent) -> void:
 func _move(delta: int) -> void:
 	_selected = wrapi(_selected + delta, 0, ITEMS.size())
 	_refresh()
+	AudioManager.play_sfx(&"button_change")
 
 
 func _activate(index: int) -> void:
+	AudioManager.play_sfx(&"button_clicked")
 	match ITEMS[index]["label"]:
 		"NEW GAME":
 			GameState.reset_run()

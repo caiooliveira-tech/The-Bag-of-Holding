@@ -22,3 +22,12 @@ signal item_thrown(item_id: StringName, position: Vector2, direction: Vector2)
 # (shake vs. zoom punch) without hardcoding item ids.
 @warning_ignore("unused_signal")
 signal item_effect_triggered(item_id: StringName, position: Vector2, effect_kind: StringName)
+# Fired for SFX/feedback (audio hooks, Spec 013).
+@warning_ignore("unused_signal")
+signal enemy_damaged(enemy: Node)
+@warning_ignore("unused_signal")
+signal player_dashed
+@warning_ignore("unused_signal")
+signal player_kicked
+@warning_ignore("unused_signal")
+signal door_opened

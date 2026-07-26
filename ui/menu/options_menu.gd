@@ -18,6 +18,7 @@ const RESOLUTIONS: Array[Vector2i] = [
 
 
 func _ready() -> void:
+	AudioManager.play_music(&"menu")
 	_build()
 
 

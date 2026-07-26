@@ -28,6 +28,7 @@ func open() -> void:
 	if is_open:
 		return
 	is_open = true
+	EventBus.door_opened.emit()
 	_blocker.set_deferred("disabled", true)
 	_passage.set_deferred("monitoring", true)
 	if open_texture != null:

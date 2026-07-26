@@ -101,10 +101,9 @@ func _run() -> void:
 	_check(player.global_position.distance_to(pos_before) < 1.0,
 			"frozen player cannot move")
 	await _tap("attack")
-	_check(bag.has_held_item(), "frozen player can still act (drew an item)")
-	await _tap("attack")  # throw it away; its own trigger must hit nobody
-	# Move the (frozen) enemy clear of that second blast — frozen position
-	# doesn't affect its freeze timer, which is what we're measuring.
+	_check(not bag.has_held_item(), "frozen player cannot draw a bomb (bag locked)")
+	# Park the frozen enemy far away; its position doesn't affect the freeze
+	# timer, which is what the unfreeze checks below measure.
 	enemy2.global_position = player.global_position + Vector2(-200, 0)
 
 	await _wait(5.0)

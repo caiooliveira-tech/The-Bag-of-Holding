@@ -68,12 +68,15 @@ func _physics_process(delta: float) -> void:
 	_facing_pivot.rotation = facing.angle()
 	_update_animation()
 	_update_idle_bob(delta)
-	if Input.is_action_just_pressed("attack"):
-		attack_pressed.emit()
-		_bag.draw_or_throw(facing)
-	if Input.is_action_just_pressed("special"):
-		special_pressed.emit()
-		_kick()
+	# Frozen locks the bag and the boot too, not just movement — a frozen
+	# apprentice can't rummage for a bomb (fix: no drawing/throwing/kicking).
+	if not is_frozen():
+		if Input.is_action_just_pressed("attack"):
+			attack_pressed.emit()
+			_bag.draw_or_throw(facing)
+		if Input.is_action_just_pressed("special"):
+			special_pressed.emit()
+			_kick()
 
 
 func is_dashing() -> bool:
@@ -168,6 +171,7 @@ func _start_dash(direction: Vector2) -> void:
 	_dash_direction = direction.normalized()
 	_dash_timer = stats.dash_duration
 	dash_started.emit()
+	EventBus.player_dashed.emit()
 
 
 func _tick_dash(delta: float) -> void:
@@ -205,6 +209,7 @@ func _spawn_dash_ghost() -> void:
 ## Apprentice Boot: redirect a thrown/landed item 5 tiles further,
 ## OR (if no item is in reach) 1 hit to enemies near the facing point.
 func _kick() -> void:
+	EventBus.player_kicked.emit()
 	var kick_point := throw_origin()
 	var kick_range := GameState.tiles(stats.kick_range_tiles)
 	for node: Node in get_tree().get_nodes_in_group("magic_items"):
