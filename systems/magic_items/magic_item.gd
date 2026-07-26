@@ -39,7 +39,8 @@ var _visual: CanvasItem
 var _marker: Node2D
 var _charging: bool = false
 var _charge_hit: Array[Node] = []
-var _charge_start: Vector2 = Vector2.ZERO
+## Troy can hit the thrower only after it has pulled ≥2 tiles clear of them.
+var _cleared_thrower: bool = false
 var _charge_fwd: Vector2 = Vector2.ZERO
 var _charge_side: Vector2 = Vector2.ZERO
 var _seg_dir: Vector2 = Vector2.ZERO
@@ -96,7 +97,6 @@ func throw(direction: Vector2) -> void:
 	reparent(get_tree().current_scene)
 	if data.charge_on_throw:
 		_charging = true
-		_charge_start = global_position
 		_charge_fwd = direction.normalized()
 		_charge_side = _charge_fwd.orthogonal()
 		_seg_forward = true
@@ -173,21 +173,27 @@ func _charge_step(delta: float) -> void:
 
 func _charge_contact_damage() -> void:
 	var reach := CHARGE_CONTACT_PX + GRAYBOX_RADIUS_PX
+	var arm := GameState.tiles(2.0)
 	var targets: Array[Node] = get_tree().get_nodes_in_group("enemies")
 	targets.append_array(get_tree().get_nodes_in_group("player"))
 	for target in targets:
 		if target in _charge_hit:
 			continue
 		var body := target as Node2D
-		if body == null or body.global_position.distance_to(global_position) > reach:
+		if body == null:
 			continue
-		if target.is_in_group("enemies"):
+		var to_target := body.global_position.distance_to(global_position)
+		var is_player := not target.is_in_group("enemies")
+		# Troy only "arms" against the thrower once it has pulled clear of them,
+		# so launching never hurts you — but the L can loop back and hit (pillar 4).
+		if is_player and to_target > arm:
+			_cleared_thrower = true
+		if to_target > reach:
+			continue
+		if not is_player:
 			_charge_hit.append(target)
 			(target as Enemy).take_damage(CHARGE_DAMAGE)
-		# Launch grace: Troy leaving the thrower's hand doesn't hurt them, but
-		# if the L-path crosses back it does (pillar 4). Bypasses i-frames —
-		# it's the player's own item.
-		elif global_position.distance_to(_charge_start) > GameState.tiles(1.5):
+		elif _cleared_thrower:
 			_charge_hit.append(target)
 			(target as Player).take_damage(CHARGE_DAMAGE, self)
 

@@ -30,7 +30,10 @@ destroys itself when its countdown ends, like every other bomb.
 - Contact damage: while charging, each character within contact range takes 1
   hit, once per character (a per-charge hit set). Troy is not in the "enemies"
   group, so it bypasses the player's i-frames — correct, it's the player's own
-  item. Launch grace: the thrower isn't hit within 1.5 tiles of the spawn.
+  item. Launch grace (fixed 2026-07-26): Troy only "arms" against the thrower
+  once it has pulled ≥2 tiles clear of them, so launching over yourself never
+  hurts — but the L can loop back and hit (the old fixed-radius grace failed
+  when the throw direction swept Troy across the player).
 - On its wall explosion Troy runs a medium AreaDamageEffect (1-tile radius,
   0.3 s linger) — so "explode" reads as a real blast with the G1/G4 juice.
 - Appearance: AtlasTexture at sheet region (192, 96, 32, 32).

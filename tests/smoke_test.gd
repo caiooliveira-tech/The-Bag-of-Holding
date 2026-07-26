@@ -178,6 +178,18 @@ func _run() -> void:
 	_check(get_tree().get_nodes_in_group("magic_items").is_empty(),
 			"troy exploded (despawned) on reaching a wall")
 
+	# Troy charging over the thrower at launch must not hurt them.
+	await _reset_arena(player)
+	(_room.get_node("WallTiles") as TileMapLayer).clear()
+	bag.pool = _pool_with(TROY)
+	player.global_position = Vector2(320, 180)
+	var self_hp := player.health
+	await _tap("move_down")
+	await _tap("attack")  # draw
+	await _tap("attack")  # throw down — charges over the player
+	await _wait(0.6)
+	_check(player.health == self_hp, "throwing Troy over yourself does not hurt at launch")
+
 	# ---- Section 7: interior wall-tile collision (Phase 6A) ----
 	await _reset_arena(player)
 	var wall_tiles := _room.get_node("WallTiles") as TileMapLayer
