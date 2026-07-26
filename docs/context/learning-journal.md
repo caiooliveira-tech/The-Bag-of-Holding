@@ -437,3 +437,59 @@ drop-in Level Title sign on room entry.
 ### References
 
 - Godot docs: TextureRect.stretch_mode, ProjectSettings boot_splash, CanvasLayer.
+
+---
+
+## Session 2026-07-28 — Phase 4.7 (Spec 023: Cutscenes)
+
+### Feature
+
+A data-driven cutscene player plus the 12-frame intro: Eliza the raven brings
+Euclidus's letter and the Bag, and Shoelace resolves to climb the tower.
+
+### What was implemented
+
+- `systems/cutscenes/`: `CutsceneFrameResource` (text / art / layout / sfx),
+  `CutsceneResource` (frames + next_scene_path), `intro.tres` (12 frames).
+- `ui/cutscene/cutscene_player.gd` — renders either layout, typewriter reveal,
+  press-to-complete then press-to-advance, ESC skip, cross-fade between beats.
+- `GameState.intro_seen` (session-only) so the intro plays once per launch.
+- Art imported to `assets/cutscenes/` (raven, letter, bag).
+
+### Why this architecture?
+
+- **Cutscene as data, not code:** the same instinct as the magic-item framework
+  — the ending cutscene will be a `.tres` and a scene binding, no new script.
+  Content people can reorder or reword beats without touching GDScript.
+- **Reusing `MenuUI` tokens** (Spec 022) instead of new fonts/colors keeps the
+  cutscene visually part of the front-end for free.
+- **Standalone scene rather than an overlay:** nothing gameplay-side is running
+  during the intro, so there is no pause/i-frame/timer interaction to reason
+  about — the cheapest correct option.
+
+### Godot concepts learned
+
+- `Label.visible_characters` tweened from 0 → length is a typewriter that can be
+  *completed* instantly (set to -1) — much simpler than a per-character timer.
+- Tween chaining as a state machine: fade-out → `tween_callback(swap_frame)` →
+  fade-in gives a clean cross-fade in three lines.
+- `@export var cutscene: CutsceneResource` on the scene root = one player scene
+  reused by every future cutscene, bound in the editor.
+
+### Common mistakes
+
+- Trusting a mockup's proportions from memory: a centered 880 px banner left
+  black margins the storyboard didn't have. Screenshot, compare, then tune —
+  the full-bleed 1160 px banner with the art perched on it is what reads right.
+- Placing a hint over art that later grows: `[ESC] SKIP` was swallowed by the
+  banner; it belongs on the black backdrop at the top-right.
+
+### Suggested exercises
+
+- Write an `ending.tres` with three frames and point a new scene at it — proof
+  the system is content-driven (no code should be needed).
+- Set `REVEAL_CHARS_PER_SEC` to 8 and feel why press-to-complete matters.
+
+### References
+
+- Godot docs: Label.visible_characters, Tween.tween_callback, Control anchors.

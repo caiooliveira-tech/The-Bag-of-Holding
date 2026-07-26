@@ -26,6 +26,11 @@ const ITEM_CATALOG: Array[MagicItemResource] = [
 	preload("res://systems/magic_items/magnetic_horseshoe.tres"),
 ]
 
+## Intro cutscene shown at least once this launch (Spec 023). Session-only —
+## no save system — so repeat testers and jam judges aren't forced to rewatch,
+## but a fresh launch always tells the story.
+var intro_seen: bool = false
+
 ## The run's draw pool (Spec 017): starts at Fire Orb, grows via door pickups.
 ## Empty = "no run active" — the Bag then falls back to its static .tres pool
 ## (dev scene runs and the smoke test's injected pools keep working).

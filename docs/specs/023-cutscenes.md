@@ -1,6 +1,14 @@
 # Spec 023 - Cutscenes (system + intro)
 
-**Status:** Draft (2026-07-28)
+**Status:** Implemented (2026-07-28, branch `feature/cutscenes`, PR #7)
+
+Implementation notes: the three delivered PNGs were imported to
+`assets/cutscenes/` as planned. Dialogue layout tuned against the storyboard
+after a screenshot pass — the banner now bleeds off the bottom edge at 1160 px
+wide and the art perches on it (a centered 880 px banner left black margins the
+mockups don't have); the `[ESC] SKIP` hint moved to the top-right because the
+banner swallowed it at the bottom. Open questions 1 and 2 shipped as proposed
+(once per launch via `GameState.intro_seen`; difficulty select first).
 
 **Builds on:** Spec 022 (screen redesign) — reuses `MenuUI` tokens (Dellas fonts,
 ink/parchment colors) and the delivered `assets/screens/` art, so the cutscene

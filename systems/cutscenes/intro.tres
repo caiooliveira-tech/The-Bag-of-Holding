@@ -1,0 +1,73 @@
+[gd_resource type="Resource" script_class="CutsceneResource" load_steps=18 format=3]
+
+[ext_resource type="Script" uid="uid://c3lxqjib5t4x6" path="res://systems/cutscenes/cutscene_frame_resource.gd" id="1"]
+[ext_resource type="Script" uid="uid://dksy8vb6aqdib" path="res://systems/cutscenes/cutscene_resource.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://xrl51yjumlfg" path="res://assets/cutscenes/raven.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://c1ttmejkcsgmt" path="res://assets/cutscenes/letter.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://b8xltt65g4lsk" path="res://assets/cutscenes/bag.png" id="5"]
+
+[sub_resource type="Resource" id="frame_01"]
+script = ExtResource("1")
+text = "CACAW!  CACAW!"
+
+[sub_resource type="Resource" id="frame_02"]
+script = ExtResource("1")
+text = "WHAT'S ALL THIS RUCKUS AT THIS TIME IN THE MORNING?"
+
+[sub_resource type="Resource" id="frame_03"]
+script = ExtResource("1")
+text = "CACAW!  CACAW!"
+art = ExtResource("3")
+
+[sub_resource type="Resource" id="frame_04"]
+script = ExtResource("1")
+text = "OH, IT'S MY MASTER'S RAVEN.\nWHAT IS IT ELIZA?\nDID YOU ESCAPE AGAIN?"
+art = ExtResource("3")
+
+[sub_resource type="Resource" id="frame_05"]
+script = ExtResource("1")
+text = "YOU HAVE A LETTER,\nAND... AN OLD BAG??"
+art = ExtResource("3")
+
+[sub_resource type="Resource" id="frame_06"]
+script = ExtResource("1")
+text = "MY DEAR SHOELACE.\n\nSHE HAS FOUND ME. AND LOCKED ME. IN MY OWN TOWER.\n\nI NEED HELP. I CAN'T DO MAGIC ANYMORE.\n\nPLEASE COME TO THE TOWER AND HELP ME."
+art = ExtResource("4")
+layout = 1
+
+[sub_resource type="Resource" id="frame_07"]
+script = ExtResource("1")
+text = "THIS IS MY BAG OF HOLDING.\n\nUSE IT.  WHATEVER YOU PUT IN IT WILL STAY THERE UNTIL YOU DIE. EVEN IF YOU TAKE IT OUT.\n\nUSE IT TO TURN MY MAGIC OBJECTS INTO WEAPONS. BUT BEWARE THEIR DANGER."
+art = ExtResource("5")
+layout = 2
+
+[sub_resource type="Resource" id="frame_08"]
+script = ExtResource("1")
+text = "AND BEWARE OF HER. SHE IS EVIL AND VERY, VERY ANGRY.\n\nTRUST NO ONE IN THE TOWER. MADNESS IS RUNNING FREE.\n\nTRY NOT TO DIE.\n\nYOUR MASTER,\nEUCLIDUS"
+art = ExtResource("5")
+layout = 2
+
+[sub_resource type="Resource" id="frame_09"]
+script = ExtResource("1")
+text = "MASTER EUCLIDUS IS TRAPPED?\nWHO IS SHE???"
+art = ExtResource("5")
+
+[sub_resource type="Resource" id="frame_10"]
+script = ExtResource("1")
+text = "WHAT DO I DO???"
+art = ExtResource("5")
+
+[sub_resource type="Resource" id="frame_11"]
+script = ExtResource("1")
+text = "CACAW!  CACAW!"
+art = ExtResource("3")
+
+[sub_resource type="Resource" id="frame_12"]
+script = ExtResource("1")
+text = "YOU'RE RIGHT, ELIZA. I HAVE NO CHOICE.\nI'LL TAKE THE BAG TO THE TOWER AND\nHOPE FOR THE BEST."
+art = ExtResource("3")
+
+[resource]
+script = ExtResource("2")
+frames = Array[ExtResource("1")]([SubResource("frame_01"), SubResource("frame_02"), SubResource("frame_03"), SubResource("frame_04"), SubResource("frame_05"), SubResource("frame_06"), SubResource("frame_07"), SubResource("frame_08"), SubResource("frame_09"), SubResource("frame_10"), SubResource("frame_11"), SubResource("frame_12")])
+next_scene_path = "res://rooms/room_01.tscn"

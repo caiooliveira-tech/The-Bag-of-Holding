@@ -6,9 +6,15 @@ Phases 0–4, 4.5 (HUD + art), 4.6 (juice G1–G5), 6 A–C (walls, ranged enemy
 
 ## Current Spec
 
-**Spec 023 — Cutscenes (Phase 4.7), Draft** on branch `feature/cutscenes` (PR #7): data-driven cutscene player + the 12-frame intro (raven Eliza → Euclidus's letter → the Bag → "I'll take the bag to the tower"). Docs only; awaiting review. Needs the raven/letter/bag art imported to `assets/cutscenes/` at implementation (delivered by Design, not yet in the repo).
+**Spec 023 — Cutscenes (Phase 4.7) — implemented** on branch `feature/cutscenes` (PR #7), 2026-07-28; awaiting playtest + team review.
 
-Parked: **Spec 019 (floor-based difficulty, Phase 6.6)** on `feature/floor-difficulty`, PR #5 closed pending team alignment (tier values, bonus-hits, .tres renames).
+- `systems/cutscenes/`: `CutsceneFrameResource` (text / art / layout / optional sfx) + `CutsceneResource` (frames + next_scene_path) + `intro.tres` (12 frames). `ui/cutscene/cutscene_player.gd|tscn` renders it; `intro_cutscene.tscn` binds the resource. Adding the ending cutscene is now pure data.
+- Two layouts per Design's storyboard: DIALOGUE (art perched on a full-bleed `bg.png` banner, centered ink text) and READING (letter/Bag on one side, Euclidus's words in light text on the other, no banner).
+- Typewriter reveal; a press completes the line, the next advances; ESC skips. Flow: New Game → difficulty → cutscene → room_01, **once per launch** via `GameState.intro_seen`.
+- Art imported to `assets/cutscenes/` (raven/letter/bag). Smoke +4 data checks, **59/59 PASS**; layouts verified by scripted screenshots.
+- Still open: caw SFX + optional cutscene music (Design); ending cutscene content.
+
+Parked: **Spec 019 (floor-based difficulty, Phase 6.6)** on `feature/floor-difficulty`, PR #5 closed pending team alignment.
 
 Queued next: Phase 6 D — Spec 016 (RunManager, 20-room run).
 
