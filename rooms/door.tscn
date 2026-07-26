@@ -4,10 +4,10 @@
 [ext_resource type="Texture2D" path="res://entities/SHEETS_SHOELACE_INIMIGOS_ITENS_PROJETIL.png" id="2"]
 
 [sub_resource type="RectangleShape2D" id="blocker_shape"]
-size = Vector2(64, 32)
+size = Vector2(32, 32)
 
 [sub_resource type="RectangleShape2D" id="passage_shape"]
-size = Vector2(56, 44)
+size = Vector2(28, 44)
 
 [sub_resource type="AtlasTexture" id="door_closed_row1"]
 atlas = ExtResource("2")
@@ -26,12 +26,7 @@ open_texture = SubResource("door_open_row1")
 
 [node name="Body" type="Node2D" parent="."]
 
-[node name="LeafLeft" type="Sprite2D" parent="Body"]
-position = Vector2(-16, 0)
-texture_filter = 1
-
-[node name="LeafRight" type="Sprite2D" parent="Body"]
-position = Vector2(16, 0)
+[node name="Leaf" type="Sprite2D" parent="Body"]
 texture_filter = 1
 
 [node name="Blocker" type="CollisionShape2D" parent="."]

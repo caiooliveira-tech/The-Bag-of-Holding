@@ -109,8 +109,13 @@ func _run() -> void:
 	# ---- Section 3: room flow (Spec 007) ----
 	# The room's only own enemy died back in section 1, so by now:
 	_check(_room.state == ROOM_SCRIPT.State.CLEARED, "room CLEARED after its last enemy died")
-	var door := _room.get_node("Door") as DOOR_SCRIPT
-	_check(door != null and door.is_open, "door opened on room clear")
+	var doors := _room.get_node("Doors").get_children()
+	var open_count := 0
+	for node in doors:
+		if (node as DOOR_SCRIPT).is_open:
+			open_count += 1
+	_check(doors.size() == 3 and open_count == 3,
+			"all 3 doors opened on room clear (%d of %d)" % [open_count, doors.size()])
 
 	if _failures == 0:
 		print("SMOKE PASS: fire orb + ursula core loops OK")

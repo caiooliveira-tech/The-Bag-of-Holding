@@ -16,12 +16,13 @@ var state: State = State.WAITING
 
 var _enemies_alive: int = 0
 
-@onready var _door: DOOR_SCRIPT = $Door
+@onready var _doors: Array[Node] = $Doors.get_children()
 
 
 func _ready() -> void:
 	EventBus.enemy_died.connect(_on_enemy_died)
-	_door.player_entered.connect(_on_player_entered_door)
+	for node in _doors:
+		(node as DOOR_SCRIPT).player_entered.connect(_on_player_entered_door)
 	var enemies := get_tree().get_nodes_in_group("enemies")
 	_enemies_alive = enemies.size()
 	for node in enemies:
@@ -43,7 +44,10 @@ func _on_enemy_died(_enemy: Node) -> void:
 	if _enemies_alive <= 0 and state != State.CLEARED:
 		state = State.CLEARED
 		EventBus.room_cleared.emit()
-		_door.open()
+		# MVP: every door opens and leads to the same next room; the
+		# pick-a-door power-up choice is post-MVP (see Spec 007).
+		for node in _doors:
+			(node as DOOR_SCRIPT).open()
 
 
 func _on_player_entered_door(player: Player) -> void:
